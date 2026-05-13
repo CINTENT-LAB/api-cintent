@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINTENT Developer Platform v2 - Enterprise Cognitive API Operating Ecosystem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --success: #10b981;
+            --info: #06b6d4;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--gray-900);
+            color: var(--gray-100);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            border-bottom: 1px solid var(--primary);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-sub {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.7);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-tab {
+            padding: 0.5rem 1rem;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-tab:hover {
+            color: white;
+        }
+
+        .nav-tab.active {
+            color: white;
+            border-bottom-color: white;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--info);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--gray-800);
+            border-right: 1px solid var(--gray-700);
+            overflow-y: auto;
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-section {
+            padding: 0 1rem 1.5rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--gray-400);
+            padding: 0.75rem 0;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-item {
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            cursor: pointer;
+            border-radius: 6px;
+            color: var(--gray-300);
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+
+        .sidebar-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--gray-900);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Views */
+        .view-header {
+            padding: 2rem;
+            border-bottom: 1px solid var(--gray-700);
+            background: var(--gray-800);
+        }
+
+        .view-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .view-subtitle {
+            color: var(--gray-400);
+            font-size: 1rem;
+        }
+
+        .view-body {
+            padding: 2rem;
+        }
+
+        /* Discovery System */
+        .discovery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .discovery-card {
+            background: var(--gray-800);
+            border: 1px solid var(--gray-700);
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .discovery-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .discovery-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .discovery-card-desc {
+            color: var(--gray-400);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .discovery-card-meta {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(37, 99, 235, 0.2);
+            color: var(--primary-light);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .badge.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        /* Search */
+        .search-area {
+            margin-bottom: 2rem;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            max-width: 600px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            background: var(--gray-800);
+            border: 1px solid var(--gray-700);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-500);
+        }
+
+        /* Playground */
+        .playground-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .playground-panel {
+            background: var(--gray-800);
+            border: 1px solid var(--gray-700);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-700);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .panel-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--gray-700);
+            border: 1px solid var(--gray-600);
+            border-radius: 6px;
+            color: white;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--gray-700);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-600);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* Execution Modes */
+        .mode-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: var(--gray-700);
+            border: 2px solid transparent;
+            border-radius: 6px;
+            color: var(--gray-300);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .mode-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .mode-btn:hover {
+            border-color: var(--primary);
+        }
+
+        /* Response Display */
+        .response-display {
+            background: var(--gray-700);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            color: #a1e8ff;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Dashboards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: var(--gray-800);
+            border: 1px solid var(--gray-700);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .dashboard-card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-400);
+            margin-bottom: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .dashboard-card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-card-trend {
+            font-size: 0.9rem;
+            color: var(--success);
+        }
+
+        /* Billing */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-card {
+            background: var(--gray-800);
+            border: 1px solid var(--gray-700);
+            border-radius: 8px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.2);
+            transform: scale(1.05);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .pricing-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .pricing-period {
+            color: var(--gray-400);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            color: var(--gray-300);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pricing-features li:before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--gray-800);
+            border: 1px solid var(--gray-700);
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--gray-400);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Replay Viewer */
+        .replay-timeline {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin-top: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .timeline-item.pending .timeline-dot {
+            background: var(--gray-500);
+        }
+
+        .timeline-item.error .timeline-dot {
+            background: var(--danger);
+        }
+
+        .timeline-item.success .timeline-dot {
+            background: var(--success);
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: var(--gray-700);
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--gray-400);
+            font-size: 0.85rem;
+        }
+
+        /* Workspace Management */
+        .workspace-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .workspace-card {
+            background: var(--gray-800);
+            border: 1px solid var(--gray-700);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .workspace-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .workspace-members {
+            color: var(--gray-400);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .workspace-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--gray-800);
+            border: 1px solid var(--gray-700);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background: var(--gray-700);
+        }
+
+        .table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-400);
+        }
+
+        .table td {
+            padding: 1rem;
+            border-top: 1px solid var(--gray-700);
+            font-size: 0.9rem;
+        }
+
+        .table tr:hover {
+            background: var(--gray-700);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-800);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-600);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-500);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .playground-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .nav-tabs {
+                gap: 1rem;
+            }
+
+            .view-body {
+                padding: 1rem;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-2 {
+            margin-top: 1rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 1rem;
+        }
+
+        .gap-1 {
+            gap: 0.5rem;
+        }
+
+        .gap-2 {
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">
+                    CINTENT<br><div class="logo-sub">DEVELOPER PLATFORM V2</div>
+                </div>
+                <div class="nav-tabs">
+                    <div class="nav-tab active" onclick="switchTab('discovery')">Discovery</div>
+                    <div class="nav-tab" onclick="switchTab('playground')">Playground</div>
+                    <div class="nav-tab" onclick="switchTab('replay')">Replay</div>
+                    <div class="nav-tab" onclick="switchTab('billing')">Billing</div>
+                    <div class="nav-tab" onclick="switchTab('dashboards')">Dashboards</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-profile">
+                    <div class="avatar">RP</div>
+                    <span>Ron P.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Platform</div>
+                    <div class="sidebar-item active" onclick="switchView('discovery')">API Discovery</div>
+                    <div class="sidebar-item" onclick="switchView('search')">Advanced Search</div>
+                    <div class="sidebar-item" onclick="switchView('playground')">Playground</div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Operations</div>
+                    <div class="sidebar-item" onclick="switchView('orchestration')">Orchestration</div>
+                    <div class="sidebar-item" onclick="switchView('replay')">Replay Explorer</div>
+                    <div class="sidebar-item" onclick="switchView('governance')">Governance</div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Account</div>
+                    <div class="sidebar-item" onclick="switchView('billing')">Billing & Subscription</div>
+                    <div class="sidebar-item" onclick="switchView('usage')">Usage Analytics</div>
+                    <div class="sidebar-item" onclick="switchView('workspace')">Workspace</div>
+                    <div class="sidebar-item" onclick="switchView('keys')">API Keys</div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Support</div>
+                    <div class="sidebar-item" onclick="switchView('cogni')">Ask COGNI</div>
+                    <div class="sidebar-item" onclick="switchView('issues')">Report Issue</div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Discovery View -->
+                <div id="discovery" class="content-section active">
+                    <div class="view-header">
+                        <div class="view-title">API Discovery</div>
+                        <div class="view-subtitle">Find cognitive capabilities across 7 domains and 100+ APIs</div>
+                    </div>
+                    <div class="view-body">
+                        <div class="search-area">
+                            <div class="search-input-wrapper">
+                                <span class="search-icon">🔍</span>
+                                <input class="search-input" type="text" placeholder="Search by domain, problem, workflow..." onkeyup="filterAPIs(this.value)">
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Discovery Dimensions</h3>
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <button class="btn btn-primary btn-sm" onclick="openModal('domainModal')">By Domain</button>
+                                <button class="btn btn-primary btn-sm" onclick="openModal('problemModal')">By Business Problem</button>
+                                <button class="btn btn-primary btn-sm" onclick="openModal('workflowModal')">By Workflow</button>
+                                <button class="btn btn-primary btn-sm" onclick="openModal('orchestrationModal')">By Orchestration Type</button>
+                                <button class="btn btn-primary btn-sm" onclick="openModal('capabilityModal')">By Capability</button>
+                                <button class="btn btn-primary btn-sm" onclick="openModal('replayModal')">Replay & Explainability</button>
+                            </div>
+                        </div>
+
+                        <h3 style="margin-bottom: 1.5rem; font-size: 1.1rem;">Featured APIs</h3>
+                        <div class="discovery-grid" id="apiGrid">
+                            <!-- APIs populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Playground View -->
+                <div id="playground" class="content-section">
+                    <div class="view-header">
+                        <div class="view-title">API Playground</div>
+                        <div class="view-subtitle">Test APIs in Sandbox, Production, or Simulated modes</div>
+                    </div>
+                    <div class="view-body">
+                        <div class="playground-grid">
+                            <div class="playground-panel">
+                                <div class="panel-header">🎯 Request Builder</div>
+                                <div class="panel-body">
+                                    <div class="mode-selector">
+                                        <div class="mode-btn active" onclick="setMode('sandbox')">Sandbox</div>
+                                        <div class="mode-btn" onclick="setMode('production')">Production</div>
+                                        <div class="mode-btn" onclick="setMode('simulated')">Simulated</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Select API</label>
+                                        <select class="form-select" id="apiSelect">
+                                            <option>Route Optimization Engine</option>
+                                            <option>Drone Fleet Coordinator</option>
+                                            <option>Risk Assessment AI</option>
+                                            <option>Orchestration Executor</option>
+                                            <option>Replay Inspector</option>
+                                            <option>Governance Enforcer</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Request Payload</label>
+                                        <textarea class="form-textarea" id="requestPayload">{
+  "query": "Plan optimal route from NYC to LA",
+  "parameters": {
+    "passengers": 250,
+    "constraints": ["cost", "time"],
+    "preferences": ["direct"]
+  },
+  "options": {
+    "enableReplay": true,
+    "enableGovernance": true
+  }
+}</textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <input type="checkbox" checked id="replayCheckbox">
+                                            Capture Replay Data
+                                        </label>
+                                    </div>
+
+                                    <button class="btn btn-success" style="width: 100%;" onclick="executeRequest()">Execute Request</button>
+                                </div>
+                            </div>
+
+                            <div class="playground-panel">
+                                <div class="panel-header">📊 Response & Metrics</div>
+                                <div class="panel-body">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                                        <div>
+                                            <div style="color: var(--gray-400); font-size: 0.85rem; margin-bottom: 0.25rem;">Status</div>
+                                            <div style="font-size: 1.2rem; font-weight: 600; color: var(--success);">✓ Success</div>
+                                        </div>
+                                        <div>
+                                            <div style="color: var(--gray-400); font-size: 0.85rem; margin-bottom: 0.25rem;">Latency</div>
+                                            <div style="font-size: 1.2rem; font-weight: 600;">245 ms</div>
+                                        </div>
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                                        <div>
+                                            <div style="color: var(--gray-400); font-size: 0.85rem; margin-bottom: 0.25rem;">Cost</div>
+                                            <div style="font-size: 1.2rem; font-weight: 600;">$0.015</div>
+                                        </div>
+                                        <div>
+                                            <div style="color: var(--gray-400); font-size: 0.85rem; margin-bottom: 0.25rem;">Confidence</div>
+                                            <div style="font-size: 1.2rem; font-weight: 600;">98.2%</div>
+                                        </div>
+                                    </div>
+
+                                    <div style="border-top: 1px solid var(--gray-700); padding-top: 1rem;">
+                                        <div style="color: var(--gray-400); font-size: 0.85rem; margin-bottom: 0.75rem; font-weight: 500;">Response</div>
+                                        <div class="response-display">{
+  "status": "success",
+  "routes": [
+    {
+      "id": "route-1",
+      "distance": 2456,
+      "estimatedTime": "35h 12m",
+      "cost": 1245.50,
+      "confidence": 0.982
+    }
+  ],
+  "orchestrationTrace": {
+    "steps": 7,
+    "duration": 245,
+    "governance": "approved"
+  }
+}</div>
+                                    </div>
+
+                                    <button class="btn btn-primary btn-sm mt-2" style="width: 100%;" onclick="openModal('replayModal')">View Replay</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Replay View -->
+                <div id="replay" class="content-section">
+                    <div class="view-header">
+                        <div class="view-title">Replay & Explainability Explorer</div>
+                        <div class="view-subtitle">Visualize orchestration lineage and confidence evolution</div>
+                    </div>
+                    <div class="view-body">
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="margin-bottom: 1rem;">Orchestration Lineage: Route Optimization (Execution #12847)</h3>
+                            <div class="replay-timeline">
+                                <div class="timeline-item success">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">Route Optimization Engine</div>
+                                        <div class="timeline-meta">
+                                            <span>Duration: 245ms</span>
+                                            <span>Confidence: 98.2%</span>
+                                            <span>Status: Complete</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="timeline-item success">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">Distributed Orchestration (5 agents)</div>
+                                        <div class="timeline-meta">
+                                            <span>Duration: 156ms</span>
+                                            <span>Status: Synchronized</span>
+                                            <span>Agents: 5/5 in sync</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="timeline-item success">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">Governance Checkpoint</div>
+                                        <div class="timeline-meta">
+                                            <span>Duration: 1250ms</span>
+                                            <span>Decision: Approved</span>
+                                            <span>Approver: system-policy</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="timeline-item success">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">Passenger Experience AI</div>
+                                        <div class="timeline-meta">
+                                            <span>Duration: 320ms</span>
+                                            <span>Confidence: 97.1%</span>
+                                            <span>Personalization: 12 factors</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 8px; padding: 1.5rem;">
+                            <h3 style="margin-bottom: 1rem;">Confidence Evolution</h3>
+                            <div style="background: var(--gray-700); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.85rem;">
+Step 1 (Route Optimization): 0.984 → 0.982<br>
+Step 2 (Orchestration): 0.982 → 0.978<br>
+Step 3 (Governance): 0.978 → 0.982 ✓ (Approved)<br>
+Step 4 (Personalization): 0.982 → 0.971<br>
+<br>
+Final Confidence: 97.1% (High confidence, safe to deploy)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Billing View -->
+                <div id="billing" class="content-section">
+                    <div class="view-header">
+                        <div class="view-title">Billing & Subscription</div>
+                        <div class="view-subtitle">Manage API access and billing preferences</div>
+                    </div>
+                    <div class="view-body">
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="margin-bottom: 1.5rem;">Current Subscription: Developer Plan</h3>
+                            <div style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem; margin-bottom: 1.5rem;">
+                                    <div>
+                                        <div style="color: var(--gray-400); font-size: 0.85rem; margin-bottom: 0.5rem;">Monthly Cost</div>
+                                        <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">$49</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: var(--gray-400); font-size: 0.85rem; margin-bottom: 0.5rem;">API Calls/Month</div>
+                                        <div style="font-size: 2rem; font-weight: 700;">50K</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: var(--gray-400); font-size: 0.85rem; margin-bottom: 0.5rem;">Renewal Date</div>
+                                        <div style="font-size: 1.2rem; font-weight: 600;">June 13, 2026</div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-secondary">Download Invoice</button>
+                            </div>
+                        </div>
+
+                        <h3 style="margin-bottom: 1.5rem;">Upgrade to Higher Tier</h3>
+                        <div class="pricing-grid">
+                            <div class="pricing-card">
+                                <div class="pricing-name">Startup</div>
+                                <div class="pricing-price">$299</div>
+                                <div class="pricing-period">/month</div>
+                                <ul class="pricing-features">
+                                    <li>500K API calls</li>
+                                    <li>10 team members</li>
+                                    <li>Priority support</li>
+                                    <li>Advanced analytics</li>
+                                </ul>
+                                <button class="btn btn-primary" style="width: 100%;">Upgrade</button>
+                            </div>
+
+                            <div class="pricing-card featured">
+                                <div class="pricing-badge">Recommended</div>
+                                <div class="pricing-name">Enterprise</div>
+                                <div class="pricing-price">Custom</div>
+                                <div class="pricing-period">contact sales</div>
+                                <ul class="pricing-features">
+                                    <li>Unlimited API calls</li>
+                                    <li>Unlimited team members</li>
+                                    <li>Dedicated support</li>
+                                    <li>Custom SLA</li>
+                                    <li>Governance isolation</li>
+                                </ul>
+                                <button class="btn btn-primary" style="width: 100%;">Contact Sales</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 3rem;">
+                            <h3 style="margin-bottom: 1.5rem;">API Cart</h3>
+                            <div style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 8px; padding: 1.5rem;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>API</th>
+                                            <th>Calls/Month</th>
+                                            <th>Cost</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Route Optimization</td>
+                                            <td>5,000</td>
+                                            <td>$25.00</td>
+                                            <td><button class="btn btn-secondary btn-sm">Remove</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Drone Coordinator</td>
+                                            <td>3,000</td>
+                                            <td>$15.00</td>
+                                            <td><button class="btn btn-secondary btn-sm">Remove</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Risk Assessment</td>
+                                            <td>2,000</td>
+                                            <td>$9.00</td>
+                                            <td><button class="btn btn-secondary btn-sm">Remove</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--gray-700); display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="font-size: 1.2rem; font-weight: 600;">Total: $49.00/month</div>
+                                    <button class="btn btn-success">Proceed to Checkout</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboards View -->
+                <div id="dashboards" class="content-section">
+                    <div class="view-header">
+                        <div class="view-title">Usage & Analytics</div>
+                        <div class="view-subtitle">Monitor your API usage and performance metrics</div>
+                    </div>
+                    <div class="view-body">
+                        <h3 style="margin-bottom: 1.5rem;">Current Usage</h3>
+                        <div class="dashboard-grid">
+                            <div class="dashboard-card">
+                                <div class="dashboard-card-title">API Calls This Month</div>
+                                <div class="dashboard-card-value">18,456</div>
+                                <div class="dashboard-card-trend">↑ 12% from last month</div>
+                            </div>
+
+                            <div class="dashboard-card">
+                                <div class="dashboard-card-title">Monthly Spend</div>
+                                <div class="dashboard-card-value">$245.30</div>
+                                <div class="dashboard-card-trend">↓ 8% from last month</div>
+                            </div>
+
+                            <div class="dashboard-card">
+                                <div class="dashboard-card-title">Success Rate</div>
+                                <div class="dashboard-card-value">99.8%</div>
+                                <div class="dashboard-card-trend">↑ 0.2% from last month</div>
+                            </div>
+
+                            <div class="dashboard-card">
+                                <div class="dashboard-card-title">Avg Latency</div>
+                                <div class="dashboard-card-value">156 ms</div>
+                                <div class="dashboard-card-trend">↓ 12 ms from last month</div>
+                            </div>
+
+                            <div class="dashboard-card">
+                                <div class="dashboard-card-title">Orchestrations</div>
+                                <div class="dashboard-card-value">324</div>
+                                <div class="dashboard-card-trend">↑ 45% from last month</div>
+                            </div>
+
+                            <div class="dashboard-card">
+                                <div class="dashboard-card-title">Replays Inspected</div>
+                                <div class="dashboard-card-value">89</div>
+                                <div class="dashboard-card-trend">↑ 23% from last month</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 2rem;">
+                            <h3 style="margin-bottom: 1.5rem;">API Usage Breakdown</h3>
+                            <div style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 8px; overflow: hidden;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>API</th>
+                                            <th>Calls</th>
+                                            <th>Success Rate</th>
+                                            <th>Avg Latency</th>
+                                            <th>Cost</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Route Optimization</td>
+                                            <td>8,234</td>
+                                            <td>99.9%</td>
+                                            <td>142 ms</td>
+                                            <td>$82.34</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Drone Fleet Coordinator</td>
+                                            <td>5,123</td>
+                                            <td>99.7%</td>
+                                            <td>178 ms</td>
+                                            <td>$51.23</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Risk Assessment AI</td>
+                                            <td>3,456</td>
+                                            <td>99.8%</td>
+                                            <td>165 ms</td>
+                                            <td>$34.56</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Governance Enforcer</td>
+                                            <td>1,643</td>
+                                            <td>100.0%</td>
+                                            <td>89 ms</td>
+                                            <td>$16.43</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orchestration View -->
+                <div id="orchestration" class="content-section">
+                    <div class="view-header">
+                        <div class="view-title">Simulated Orchestration Environment</div>
+                        <div class="view-subtitle">Visualize how cognitive processes flow through CINTENT</div>
+                    </div>
+                    <div class="view-body">
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="margin-bottom: 1rem;">Travel Route Orchestration</h3>
+                            <div style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 8px; padding: 2rem;">
+                                <div style="font-family: monospace; font-size: 0.9rem; color: #a1e8ff;">
+User Query: "Plan optimal route from NYC to LA for 250 passengers"<br><br>
+<span style="color: var(--success);">✓ Step 1: Route Optimization Engine (0-245ms)</span><br>
+   • Factors: distance, cost, airport capacity<br>
+   • Generated: 3 alternatives<br>
+   • Status: Complete<br><br>
+<span style="color: var(--success);">✓ Step 2: Distributed Orchestration (245-401ms)</span><br>
+   • Coordinating: 5 cognitive agents<br>
+   • Synchronization: Real-time<br>
+   • Status: All agents in sync<br><br>
+<span style="color: var(--warning);">⏳ Step 3: Governance Checkpoint (401-1651ms)</span><br>
+   • Risk assessment: Route distance > 2000 miles<br>
+   • Decision: Requires human approval<br>
+   • Status: Awaiting approval...<br><br>
+<span style="color: var(--primary);">ℹ Step 4: Passenger Experience AI (1651-1971ms)</span><br>
+   • Status: Ready to execute<br><br>
+Result: Animated visualization showing entire flow
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 style="margin-bottom: 1rem;">Drone Fleet Operations</h3>
+                            <div style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 8px; padding: 2rem;">
+                                <div style="font-family: monospace; font-size: 0.9rem; color: #a1e8ff;">
+User Query: "Coordinate fleet of 8 drones for survey mission"<br><br>
+<span style="color: var(--success);">✓ Step 1: Mission Planning (0-156ms)</span><br>
+   • Path generation: 8 drones<br>
+   • Conflict detection: Complete<br><br>
+<span style="color: var(--success);">✓ Step 2: Fleet Synchronization (156-312ms)</span><br>
+   • Agents: 8/8 synchronized<br>
+   • Arbitration: Real-time<br><br>
+<span style="color: var(--success);">✓ Step 3: Safety Governance (312-1000ms)</span><br>
+   • Airspace clearance: Approved<br>
+   • Weather assessment: Favorable<br>
+   • Status: Ready for execution<br><br>
+<span style="color: var(--primary);">▶ Step 4: Execution Monitoring (1000-ongoing)</span><br>
+   • Live position updates: Animated<br>
+   • Confidence evolution: 0.98 → 0.97<br>
+   • Synchronization health: All agents in sync<br><br>
+Result: Live animation of drone paths and synchronization status
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Governance View -->
+                <div id="governance" class="content-section">
+                    <div class="view-header">
+                        <div class="view-title">Governance & Compliance</div>
+                        <div class="view-subtitle">Monitor approvals, policies, and compliance events</div>
+                    </div>
+                    <div class="view-body">
+                        <div style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 8px; overflow: hidden;">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Execution ID</th>
+                                        <th>API</th>
+                                        <th>Decision</th>
+                                        <th>Timestamp</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>exec_12847</td>
+                                        <td>Route Optimization</td>
+                                        <td>Approved</td>
+                                        <td>2026-05-13 10:45:32</td>
+                                        <td><span class="badge success">Approved</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>exec_12846</td>
+                                        <td>Drone Coordinator</td>
+                                        <td>Approved</td>
+                                        <td>2026-05-13 09:22:15</td>
+                                        <td><span class="badge success">Approved</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>exec_12845</td>
+                                        <td>Risk Assessment</td>
+                                        <td>Requires Review</td>
+                                        <td>2026-05-13 08:15:48</td>
+                                        <td><span class="badge warning">Pending</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>exec_12844</td>
+                                        <td>Governance Enforcer</td>
+                                        <td>Rejected</td>
+                                        <td>2026-05-13 07:30:22</td>
+                                        <td><span class="badge" style="background: rgba(239, 68, 68, 0.2); color: var(--danger);">Rejected</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search View -->
+                <div id="search" class="content-section">
+                    <div class="view-header">
+                        <div class="view-title">Advanced API Search</div>
+                        <div class="view-subtitle">Find APIs by multiple dimensions</div>
+                    </div>
+                    <div class="view-body">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                            <div>
+                                <label class="form-label">Search Query</label>
+                                <input class="form-input" type="text" placeholder="e.g., drone fleet coordination">
+                            </div>
+                            <div>
+                                <label class="form-label">Domain</label>
+                                <select class="form-select">
+                                    <option>All Domains</option>
+                                    <option>Core Infrastructure</option>
+                                    <option>Travel</option>
+                                    <option>Drone</option>
+                                    <option>Robotics</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Capability</label>
+                                <select class="form-select">
+                                    <option>All Capabilities</option>
+                                    <option>Orchestration</option>
+                                    <option>Synchronization</option>
+                                    <option>Governance</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Support</label>
+                                <select class="form-select">
+                                    <option>All APIs</option>
+                                    <option>With Replay</option>
+                                    <option>With Explainability</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+
+                <!-- Workspace View -->
+                <div id="workspace" class="content-section">
+                    <div class="view-header">
+                        <div class="view-title">Workspace Management</div>
+                        <div class="view-subtitle">Manage team members and workspace settings</div>
+                    </div>
+                    <div class="view-body">
+                        <button class="btn btn-primary mb-2" onclick="openModal('createWorkspaceModal')">Create Workspace</button>
+
+                        <h3 style="margin-bottom: 1.5rem;">Active Workspaces</h3>
+                        <div class="workspace-list">
+                            <div class="workspace-card">
+                                <div class="workspace-name">Production</div>
+                                <div class="workspace-members">4 members</div>
+                                <div class="workspace-actions">
+                                    <button class="btn btn-secondary btn-sm">Settings</button>
+                                    <button class="btn btn-secondary btn-sm">Members</button>
+                                </div>
+                            </div>
+
+                            <div class="workspace-card">
+                                <div class="workspace-name">Development</div>
+                                <div class="workspace-members">2 members</div>
+                                <div class="workspace-actions">
+                                    <button class="btn btn-secondary btn-sm">Settings</button>
+                                    <button class="btn btn-secondary btn-sm">Members</button>
+                                </div>
+                            </div>
+
+                            <div class="workspace-card">
+                                <div class="workspace-name">Testing</div>
+                                <div class="workspace-members">3 members</div>
+                                <div class="workspace-actions">
+                                    <button class="btn btn-secondary btn-sm">Settings</button>
+                                    <button class="btn btn-secondary btn-sm">Members</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Keys View -->
+                <div id="keys" class="content-section">
+                    <div class="view-header">
+                        <div class="view-title">API Keys & Credentials</div>
+                        <div class="view-subtitle">Manage authentication tokens and API keys</div>
+                    </div>
+                    <div class="view-body">
+                        <button class="btn btn-primary mb-2">Generate New Key</button>
+
+                        <div style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 8px; overflow: hidden;">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Key Name</th>
+                                        <th>Created</th>
+                                        <th>Last Used</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Production Key</td>
+                                        <td>2026-01-15</td>
+                                        <td>2 hours ago</td>
+                                        <td><span class="badge success">Active</span></td>
+                                        <td><button class="btn btn-secondary btn-sm">Rotate</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Development Key</td>
+                                        <td>2026-02-20</td>
+                                        <td>30 minutes ago</td>
+                                        <td><span class="badge success">Active</span></td>
+                                        <td><button class="btn btn-secondary btn-sm">Rotate</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Legacy Key</td>
+                                        <td>2025-12-01</td>
+                                        <td>Never</td>
+                                        <td><span class="badge" style="background: rgba(107, 114, 128, 0.2); color: var(--gray-400);">Inactive</span></td>
+                                        <td><button class="btn btn-secondary btn-sm">Delete</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ask COGNI View -->
+                <div id="cogni" class="content-section">
+                    <div class="view-header">
+                        <div class="view-title">Ask COGNI</div>
+                        <div class="view-subtitle">Platform intelligence assistant for APIs and workflows</div>
+                    </div>
+                    <div class="view-body">
+                        <div style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 8px; padding: 1.5rem; height: 500px; display: flex; flex-direction: column;">
+                            <div style="flex: 1; overflow-y: auto; margin-bottom: 1rem;">
+                                <div style="margin-bottom: 1.5rem;">
+                                    <div style="color: var(--gray-400); font-size: 0.85rem; margin-bottom: 0.25rem;">COGNI</div>
+                                    <div style="background: var(--gray-700); border-radius: 6px; padding: 1rem; max-width: 80%;">
+                                        Hi! I'm COGNI, your platform intelligence assistant. I can help you discover APIs, understand workflows, get integration guidance, troubleshoot issues, and recommend the best APIs for your use case.
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-end;">
+                                    <div style="background: var(--primary); border-radius: 6px; padding: 1rem; max-width: 80%;">
+                                        Show me APIs for drone fleet coordination
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 1.5rem;">
+                                    <div style="color: var(--gray-400); font-size: 0.85rem; margin-bottom: 0.25rem;">COGNI</div>
+                                    <div style="background: var(--gray-700); border-radius: 6px; padding: 1rem; max-width: 80%;">
+                                        For drone fleet coordination, I recommend:<br><br>
+                                        1. <strong>Drone Fleet Coordinator</strong> - Primary orchestration<br>
+                                        2. <strong>Route Optimization Engine</strong> - Path planning<br>
+                                        3. <strong>Governance Enforcer</strong> - Safety policies<br><br>
+                                        <button class="btn btn-primary btn-sm" onclick="alert('Opening APIs...')">View APIs</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input class="form-input" type="text" placeholder="Ask me anything..." style="margin: 0;">
+                                <button class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Send</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 2rem;">
+                            <h3 style="margin-bottom: 1rem;">Quick Questions</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <button class="btn btn-secondary" onclick="ask('Show me APIs with replay support')">APIs with Replay</button>
+                                <button class="btn btn-secondary" onclick="ask('How do I set up orchestration?')">Setup Orchestration</button>
+                                <button class="btn btn-secondary" onclick="ask('What APIs support distributed coordination?')">Distributed Coordination</button>
+                                <button class="btn btn-secondary" onclick="ask('Explain governance propagation')">Governance Propagation</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Issues View -->
+                <div id="issues" class="content-section">
+                    <div class="view-header">
+                        <div class="view-title">Report Issue</div>
+                        <div class="view-subtitle">Report runtime issues with detailed diagnostic data</div>
+                    </div>
+                    <div class="view-body">
+                        <div style="max-width: 600px;">
+                            <div class="form-group">
+                                <label class="form-label">Issue Type</label>
+                                <select class="form-select">
+                                    <option>API Error</option>
+                                    <option>Orchestration Failure</option>
+                                    <option>Governance Issue</option>
+                                    <option>Replay Anomaly</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Severity</label>
+                                <select class="form-select">
+                                    <option>Low</option>
+                                    <option>Medium</option>
+                                    <option>High</option>
+                                    <option>Critical</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">API</label>
+                                <input class="form-input" type="text" placeholder="e.g., Route Optimization Engine">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-textarea" placeholder="Describe the issue..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Expected Behavior</label>
+                                <textarea class="form-textarea" placeholder="What should happen..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Actual Behavior</label>
+                                <textarea class="form-textarea" placeholder="What actually happened..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" checked>
+                                    Include diagnostic package (trace, logs, environment info)
+                                </label>
+                            </div>
+
+                            <button class="btn btn-primary">Submit Issue Report</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usage View -->
+                <div id="usage" class="content-section">
+                    <div class="view-header">
+                        <div class="view-title">Usage Analytics</div>
+                        <div class="view-subtitle">Detailed usage metrics and trends</div>
+                    </div>
+                    <div class="view-body">
+                        <div style="background: var(--gray-800); border: 1px solid var(--gray-700); border-radius: 8px; overflow: hidden;">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>API Calls</th>
+                                        <th>Cost</th>
+                                        <th>Success Rate</th>
+                                        <th>Avg Latency</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2026-05-13</td>
+                                        <td>1,234</td>
+                                        <td>$6.17</td>
+                                        <td>99.9%</td>
+                                        <td>142 ms</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2026-05-12</td>
+                                        <td>1,567</td>
+                                        <td>$7.84</td>
+                                        <td>99.8%</td>
+                                        <td>156 ms</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2026-05-11</td>
+                                        <td>1,432</td>
+                                        <td>$7.16</td>
+                                        <td>99.9%</td>
+                                        <td>138 ms</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="domainModal" class="modal" onclick="if(event.target===this) closeModal('domainModal')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('domainModal')">×</button>
+            <div class="modal-title">Discover by Domain</div>
+            <div class="discovery-grid">
+                <div class="discovery-card" onclick="selectDomain('core-infrastructure')">
+                    <div class="discovery-card-title">Core Infrastructure</div>
+                    <div class="discovery-card-desc">200+ APIs across 14 CEF layers</div>
+                    <div class="discovery-card-meta"><span class="badge">200+ APIs</span></div>
+                </div>
+                <div class="discovery-card" onclick="selectDomain('travel')">
+                    <div class="discovery-card-title">Travel</div>
+                    <div class="discovery-card-desc">Route optimization and coordination</div>
+                    <div class="discovery-card-meta"><span class="badge">100+ APIs</span></div>
+                </div>
+                <div class="discovery-card" onclick="selectDomain('drone')">
+                    <div class="discovery-card-title">Drone</div>
+                    <div class="discovery-card-desc">Fleet coordination and autonomy</div>
+                    <div class="discovery-card-meta"><span class="badge">100+ APIs</span></div>
+                </div>
+                <div class="discovery-card" onclick="selectDomain('robotics')">
+                    <div class="discovery-card-title">Robotics</div>
+                    <div class="discovery-card-desc">Robotic systems orchestration</div>
+                    <div class="discovery-card-meta"><span class="badge">100+ APIs</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="problemModal" class="modal" onclick="if(event.target===this) closeModal('problemModal')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('problemModal')">×</button>
+            <div class="modal-title">Discover by Business Problem</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="discovery-card" onclick="selectProblem('fleet-coordination')">
+                    <div class="discovery-card-title">Fleet Coordination</div>
+                    <div class="discovery-card-desc">Coordinate multi-agent operations</div>
+                </div>
+                <div class="discovery-card" onclick="selectProblem('route-optimization')">
+                    <div class="discovery-card-title">Route Optimization</div>
+                    <div class="discovery-card-desc">Find optimal paths and sequences</div>
+                </div>
+                <div class="discovery-card" onclick="selectProblem('risk-assessment')">
+                    <div class="discovery-card-title">Risk Assessment</div>
+                    <div class="discovery-card-desc">Evaluate and mitigate risks</div>
+                </div>
+                <div class="discovery-card" onclick="selectProblem('accessibility')">
+                    <div class="discovery-card-title">Accessibility</div>
+                    <div class="discovery-card-desc">Ensure inclusive workflows</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="replayModal" class="modal" onclick="if(event.target===this) closeModal('replayModal')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('replayModal')">×</button>
+            <div class="modal-title">APIs with Replay & Explainability</div>
+            <div class="discovery-grid">
+                <div class="discovery-card">
+                    <div class="discovery-card-title">Route Optimization</div>
+                    <div class="discovery-card-desc">Full orchestration replay support</div>
+                    <div class="discovery-card-meta"><span class="badge success">Replay</span><span class="badge success">Explainability</span></div>
+                </div>
+                <div class="discovery-card">
+                    <div class="discovery-card-title">Drone Coordinator</div>
+                    <div class="discovery-card-desc">Distributed synchronization tracing</div>
+                    <div class="discovery-card-meta"><span class="badge success">Replay</span><span class="badge success">Explainability</span></div>
+                </div>
+                <div class="discovery-card">
+                    <div class="discovery-card-title">Risk Assessment</div>
+                    <div class="discovery-card-desc">Decision tree visualization</div>
+                    <div class="discovery-card-meta"><span class="badge success">Explainability</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apis = [
+            {
+                id: 1,
+                name: 'Route Optimization Engine',
+                domain: 'Travel',
+                capabilities: ['orchestration', 'optimization'],
+                rating: 4.9,
+                adoption: 2345,
+                replay: true,
+                explainability: true,
+                description: 'Advanced route planning with distributed optimization'
+            },
+            {
+                id: 2,
+                name: 'Drone Fleet Coordinator',
+                domain: 'Drone',
+                capabilities: ['synchronization', 'orchestration'],
+                rating: 4.8,
+                adoption: 1876,
+                replay: true,
+                explainability: true,
+                description: 'Real-time multi-drone coordination and conflict resolution'
+            },
+            {
+                id: 3,
+                name: 'Risk Assessment AI',
+                domain: 'Core',
+                capabilities: ['governance', 'analysis'],
+                rating: 4.7,
+                adoption: 1543,
+                replay: false,
+                explainability: true,
+                description: 'Cognitive risk evaluation and mitigation'
+            },
+            {
+                id: 4,
+                name: 'Orchestration Executor',
+                domain: 'Core',
+                capabilities: ['orchestration', 'execution'],
+                rating: 4.9,
+                adoption: 3124,
+                replay: true,
+                explainability: true,
+                description: 'Distributed orchestration with full tracing'
+            },
+            {
+                id: 5,
+                name: 'Replay Inspector',
+                domain: 'Core',
+                capabilities: ['observability', 'analysis'],
+                rating: 4.8,
+                adoption: 892,
+                replay: true,
+                explainability: true,
+                description: 'Deep execution replay and analysis toolkit'
+            },
+            {
+                id: 6,
+                name: 'Governance Enforcer',
+                domain: 'Core',
+                capabilities: ['governance', 'compliance'],
+                rating: 4.9,
+                adoption: 2156,
+                replay: true,
+                explainability: false,
+                description: 'Policy enforcement with approval workflows'
+            }
+        ];
+
+        function renderAPIs(filter = '') {
+            const grid = document.getElementById('apiGrid');
+            let filtered = apis;
+
+            if (filter) {
+                filtered = apis.filter(api =>
+                    api.name.toLowerCase().includes(filter.toLowerCase()) ||
+                    api.domain.toLowerCase().includes(filter.toLowerCase()) ||
+                    api.capabilities.some(c => c.toLowerCase().includes(filter.toLowerCase()))
+                );
+            }
+
+            grid.innerHTML = filtered.map(api => `
+                <div class="discovery-card" onclick="selectAPI(${api.id})">
+                    <div class="discovery-card-title">${api.name}</div>
+                    <div class="discovery-card-desc">${api.description}</div>
+                    <div style="margin-bottom: 0.75rem;">
+                        <div style="color: var(--gray-400); font-size: 0.85rem;">Rating: ${api.rating}/5.0 • ${api.adoption.toLocaleString()} using</div>
+                    </div>
+                    <div class="discovery-card-meta">
+                        <span class="badge">${api.domain}</span>
+                        ${api.replay ? '<span class="badge success">Replay</span>' : ''}
+                        ${api.explainability ? '<span class="badge success">Explain</span>' : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterAPIs(query) {
+            renderAPIs(query);
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            const sections = {
+                'discovery': 'discovery',
+                'playground': 'playground',
+                'replay': 'replay',
+                'billing': 'billing',
+                'dashboards': 'dashboards'
+            };
+            if (sections[tab]) {
+                document.getElementById(sections[tab]).classList.add('active');
+            }
+        }
+
+        function switchView(view) {
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            const section = document.getElementById(view);
+            if (section) {
+                section.classList.add('active');
+
+                // Initialize views
+                if (view === 'discovery') {
+                    renderAPIs();
+                }
+            }
+        }
+
+        function selectAPI(id) {
+            const api = apis.find(a => a.id === id);
+            alert(`Selected: ${api.name}\n\nDomain: ${api.domain}\nCapabilities: ${api.capabilities.join(', ')}\nRating: ${api.rating}/5.0`);
+        }
+
+        function selectDomain(domain) {
+            closeModal('domainModal');
+            alert(`Filtering by domain: ${domain}`);
+        }
+
+        function selectProblem(problem) {
+            closeModal('problemModal');
+            alert(`Filtering by problem: ${problem}`);
+        }
+
+        function setMode(mode) {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function executeRequest() {
+            alert('Request executed!\n\nResponse: 3 route alternatives generated\nLatency: 245ms\nCost: $0.015\nConfidence: 98.2%');
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function ask(question) {
+            alert(`COGNI: Processing your question: "${question}"\n\nGenerating intelligent response...`);
+        }
+
+        // Initialize
+        renderAPIs();
+    </script>
+</body>
+</html>
