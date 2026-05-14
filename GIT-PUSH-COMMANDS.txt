@@ -1,0 +1,74 @@
+CINTENT PLATFORM V2 - FOUNDATION COMPLETE
+Git Push Instructions for Local Machine
+========================================
+
+CONTEXT:
+The sandbox environment has git lock file permission issues that prevent direct commits.
+Execute these commands on your LOCAL machine in PowerShell to push the architecture files.
+
+STEP 1: Navigate to the repository
+========================================
+cd C:\Users\rpm_T\RAJA_REP\api-cintent
+
+STEP 2: Verify git status (should show staged files)
+========================================
+git status
+
+Expected output should show these 9 files as "Changes to be committed":
+  - .env.example
+  - CANONICAL-METADATA-SCHEMA-V1.md
+  - ENTERPRISE-OPERATIONALIZATION.md
+  - IMPLEMENTATION-GUIDE.md
+  - api-metadata-registry.sql
+  - enterprise-endpoints.js
+  - enterprise-operationalization.sql
+  - package.json (modified)
+  - server-metadata-driven.js
+
+STEP 3: If files are NOT staged, stage them now
+========================================
+git add .env.example CANONICAL-METADATA-SCHEMA-V1.md ENTERPRISE-OPERATIONALIZATION.md IMPLEMENTATION-GUIDE.md api-metadata-registry.sql enterprise-endpoints.js enterprise-operationalization.sql package.json server-metadata-driven.js
+
+STEP 4: Create the commit
+========================================
+git commit -m "CINTENT Platform v2 - Foundation Complete
+
+Metadata-driven architecture fully specified and frozen.
+
+Core Components:
+- api-metadata-registry.sql: Centralized API metadata registry with pgvector RAG support
+- enterprise-operationalization.sql: 8 enterprise systems (versioning, dependencies, SDKs, access policies, visualization, health, audit, metadata automation)
+- server-metadata-driven.js: Express backend with metadata-driven API catalog, playground, Ask COGNI, billing, dashboard
+- enterprise-endpoints.js: Modular routers for all 8 enterprise systems
+- CANONICAL-METADATA-SCHEMA-V1.md: Frozen specification (operating system of platform)
+- IMPLEMENTATION-GUIDE.md: Complete setup guide with database, backend, Ask COGNI, Stripe, security
+- ENTERPRISE-OPERATIONALIZATION.md: Detailed documentation for all 8 systems
+
+Status: Ready for Platform Stabilization & Operational Validation phase
+Next: (1) PostgreSQL setup, (2) Populate 50-100 APIs, (3) End-to-end workflow validation"
+
+STEP 5: Push to GitHub
+========================================
+git push origin main
+
+STEP 6: Verify the push succeeded
+========================================
+Open https://github.com/CINTENT-LAB/api-cintent in your browser
+Confirm all 9 files are now visible in the repository
+
+
+TROUBLESHOOTING:
+================
+
+If you get "fatal: Unable to create '.git/index.lock'":
+1. Close any text editors or IDEs with the repository open
+2. Run: git status
+3. If that fails, close all applications and retry
+
+If git push fails with "permission denied":
+1. Verify you have push access to https://github.com/CINTENT-LAB/api-cintent
+2. Check GitHub SSH key or personal access token is configured
+
+If the commit message is too long:
+1. Use the shorter version:
+   git commit -m "CINTENT Platform v2 - Foundation Complete. Metadata-driven architecture, 8 enterprise systems, frozen schema v1.0. Ready for stabilization phase."

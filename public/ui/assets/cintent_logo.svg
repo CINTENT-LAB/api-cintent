@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">CINTENT logo</title>
+  <desc id="desc">CINTENT cognitive infrastructure mark</desc>
+  <rect width="160" height="160" rx="28" fill="#101827"/>
+  <path d="M80 24 127 51v58L80 136l-47-27V51L80 24Z" fill="#f8fafc"/>
+  <path d="M80 39 114 59v42l-34 20-34-20V59l34-20Z" fill="#1b63c9"/>
+  <circle cx="80" cy="80" r="22" fill="#e4f7f8"/>
+  <path d="M80 58v44M58 80h44M65 65l30 30M95 65 65 95" stroke="#087f8c" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="80" cy="80" r="8" fill="#101827"/>
+</svg>

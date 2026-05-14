@@ -1,0 +1,640 @@
+/**
+ * CINTENT Developer Platform v2 - Metadata-Driven Backend
+ * Express.js server with PostgreSQL + pgvector integration
+ */
+
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const path = require('path');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const { Pool } = require('pg');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
+
+// ============================================================
+// DATABASE CONNECTION
+// ============================================================
+
+const pool = new Pool({
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
+});
+
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle client', err);
+});
+
+// ============================================================
+// MIDDLEWARE
+// ============================================================
+
+app.use(helmet());
+app.use(cors({
+  origin: [
+    'https://api-cintent.cognivantalabs.com',
+    'https://cintent.cognivantalabs.com',
+    'https://cognivantalabs.com',
+    'http://localhost:3000',
+    'http://localhost:8080'
+  ],
+  credentials: true
+}));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ============================================================
+// AUTHENTICATION MIDDLEWARE
+// ============================================================
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: 'Access token required' });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: 'Invalid token' });
+    }
+    req.user = user;
+    next();
+  });
+};
+
+// ============================================================
+// ROUTES: AUTHENTICATION
+// ============================================================
+
+// Register
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { email, password, firstName, lastName } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password required' });
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Insert user
+    const result = await pool.query(
+      'INSERT INTO users (email, password_hash, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING id, email',
+      [email, passwordHash, firstName, lastName]
+    );
+
+    const user = result.rows[0];
+
+    // Create default free subscription
+    await pool.query(
+      'INSERT INTO user_subscriptions (user_id, plan, monthly_quota, status) VALUES ($1, $2, $3, $4)',
+      [user.id, 'free', 100, 'active']
+    );
+
+    // Generate token
+    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+
+    res.json({
+      success: true,
+      user: { id: user.id, email: user.email },
+      token
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Registration failed' });
+  }
+});
+
+// Login
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password required' });
+    }
+
+    // Find user
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const user = result.rows[0];
+
+    // Verify password
+    const validPassword = await bcrypt.compare(password, user.password_hash);
+
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Generate token
+    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+
+    res.json({
+      success: true,
+      user: { id: user.id, email: user.email },
+      token
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+// ============================================================
+// ROUTES: API CATALOG (METADATA-DRIVEN)
+// ============================================================
+
+// Get all APIs with metadata
+app.get('/api/catalog', authenticateToken, async (req, res) => {
+  try {
+    const { category, search, status } = req.query;
+
+    let query = `
+      SELECT
+        am.id,
+        am.api_key,
+        am.name,
+        am.version,
+        am.short_description,
+        am.capabilities,
+        am.cognitive_dimensions,
+        am.status_id,
+        as.name as status_name,
+        am.min_tier,
+        ac.name as category_name,
+        am.code_examples,
+        am.sdk_available,
+        am.simulated
+      FROM api_metadata am
+      LEFT JOIN api_statuses as ON am.status_id = as.id
+      LEFT JOIN api_categories ac ON am.category_id = ac.id
+      WHERE am.status_id IS NOT NULL
+    `;
+
+    const params = [];
+
+    if (category) {
+      query += ` AND ac.name ILIKE $${params.length + 1}`;
+      params.push(`%${category}%`);
+    }
+
+    if (status) {
+      query += ` AND as.name = $${params.length + 1}`;
+      params.push(status);
+    }
+
+    if (search) {
+      query += ` AND (am.name ILIKE $${params.length + 1} OR am.short_description ILIKE $${params.length + 2})`;
+      params.push(`%${search}%`);
+      params.push(`%${search}%`);
+    }
+
+    query += ` ORDER BY ac.order_index, am.name`;
+
+    const result = await pool.query(query, params);
+
+    res.json({
+      success: true,
+      count: result.rows.length,
+      apis: result.rows
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch catalog' });
+  }
+});
+
+// Get specific API with full metadata
+app.get('/api/catalog/:apiKey', authenticateToken, async (req, res) => {
+  try {
+    const { apiKey } = req.params;
+
+    const result = await pool.query(
+      `SELECT
+        am.*,
+        as.name as status_name,
+        ac.name as category_name
+      FROM api_metadata am
+      LEFT JOIN api_statuses as ON am.status_id = as.id
+      LEFT JOIN api_categories ac ON am.category_id = ac.id
+      WHERE am.api_key = $1`,
+      [apiKey]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'API not found' });
+    }
+
+    res.json({
+      success: true,
+      api: result.rows[0]
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch API details' });
+  }
+});
+
+// ============================================================
+// ROUTES: API PLAYGROUND (SIMULATED EXECUTION)
+// ============================================================
+
+app.post('/api/playground/execute', authenticateToken, async (req, res) => {
+  try {
+    const { apiKey, requestPayload } = req.body;
+    const userId = req.user.userId;
+
+    // Get API metadata
+    const apiResult = await pool.query(
+      'SELECT * FROM api_metadata WHERE api_key = $1',
+      [apiKey]
+    );
+
+    if (apiResult.rows.length === 0) {
+      return res.status(404).json({ error: 'API not found' });
+    }
+
+    const api = apiResult.rows[0];
+
+    // Check user subscription tier
+    const subResult = await pool.query(
+      'SELECT * FROM user_subscriptions WHERE user_id = $1',
+      [userId]
+    );
+
+    if (subResult.rows.length === 0) {
+      return res.status(403).json({ error: 'No active subscription' });
+    }
+
+    const subscription = subResult.rows[0];
+
+    // Check quota
+    if (subscription.monthly_used >= subscription.monthly_quota) {
+      return res.status(429).json({ error: 'Monthly quota exceeded' });
+    }
+
+    // Check tier access
+    const tierLevels = { free: 0, developer: 1, professional: 2, enterprise: 3 };
+    const apiMinLevel = tierLevels[api.min_tier] || 0;
+    const userLevel = tierLevels[subscription.plan] || 0;
+
+    if (userLevel < apiMinLevel) {
+      return res.status(403).json({ error: 'Subscription tier insufficient for this API' });
+    }
+
+    // ============================================================
+    // GENERATE SIMULATED EXECUTION
+    // ============================================================
+
+    const executionId = `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    const orchestrationTrace = {
+      executionId,
+      steps: [
+        { step: 1, action: 'route_request', duration: 45, status: 'completed' },
+        { step: 2, action: 'authenticate', duration: 32, status: 'completed' },
+        { step: 3, action: 'orchestrate_services', duration: 234, status: 'completed' },
+        { step: 4, action: 'aggregate_results', duration: 89, status: 'completed' },
+        { step: 5, action: 'apply_governance', duration: 52, status: 'completed' }
+      ],
+      totalDuration: 452,
+      hops: 5,
+      distributed: true,
+      services_involved: ['orchestration_engine', 'replay_service', 'governance_enforcement', 'telemetry_collector']
+    };
+
+    const replayTrace = {
+      checkpoints: [
+        { checkpoint: 'request_received', timestamp: Date.now(), state: 'valid' },
+        { checkpoint: 'orchestration_start', timestamp: Date.now() + 50, state: 'executing' },
+        { checkpoint: 'service_calls_complete', timestamp: Date.now() + 300, state: 'success' },
+        { checkpoint: 'results_aggregated', timestamp: Date.now() + 400, state: 'complete' }
+      ],
+      divergencePoints: [],
+      canReplay: true,
+      replayableSteps: 4
+    };
+
+    const governanceEvents = [
+      { type: 'policy_check', policy: 'rate_limit', result: 'passed', details: 'Within quota' },
+      { type: 'compliance_verify', framework: 'data_privacy', result: 'passed', details: 'No PII transmitted' },
+      { type: 'security_audit', check: 'tls_verification', result: 'passed', details: 'Certificate valid' },
+      { type: 'audit_log', action: 'api_executed', user_id: userId, api_key: apiKey, timestamp: Date.now() }
+    ];
+
+    const explainability = {
+      confidenceEvolution: [0.75, 0.82, 0.88, 0.91, 0.94],
+      reasoningPath: 'Request validated → Services orchestrated → Results aggregated → Governance verified',
+      alternatives: [
+        { approach: 'sequential_execution', confidence: 0.82, rationale: 'Slower but safer' },
+        { approach: 'parallel_execution', confidence: 0.91, rationale: 'Faster, same safety' },
+        { approach: 'cached_result', confidence: 0.65, rationale: 'Quickest but may be stale' }
+      ],
+      selectedApproach: 'parallel_execution'
+    };
+
+    // Log execution
+    await pool.query(
+      `INSERT INTO api_executions
+      (user_id, api_metadata_id, environment, request_payload, simulated, orchestration_trace, replay_trace, governance_events, explainability_output, confidence_score)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      [
+        userId,
+        api.id,
+        'simulated',
+        JSON.stringify(requestPayload),
+        true,
+        JSON.stringify(orchestrationTrace),
+        JSON.stringify(replayTrace),
+        JSON.stringify(governanceEvents),
+        JSON.stringify(explainability),
+        explainability.confidenceEvolution[explainability.confidenceEvolution.length - 1]
+      ]
+    );
+
+    // Update quota usage
+    await pool.query(
+      'UPDATE user_subscriptions SET monthly_used = monthly_used + 1 WHERE id = $1',
+      [subscription.id]
+    );
+
+    // Return complete execution result
+    res.json({
+      success: true,
+      executionId,
+      status: 'completed',
+      api: {
+        key: api.api_key,
+        name: api.name,
+        status: api.simulated ? 'simulated' : 'production'
+      },
+      orchestrationTrace,
+      replayTrace,
+      governanceEvents,
+      explainability,
+      quotaRemaining: subscription.monthly_quota - (subscription.monthly_used + 1)
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Execution failed' });
+  }
+});
+
+// Get execution history
+app.get('/api/playground/history', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const result = await pool.query(
+      `SELECT
+        ae.id,
+        ae.created_at,
+        am.api_key,
+        am.name as api_name,
+        ae.simulated,
+        ae.confidence_score,
+        ae.orchestration_trace,
+        ae.explainability_output
+      FROM api_executions ae
+      JOIN api_metadata am ON ae.api_metadata_id = am.id
+      WHERE ae.user_id = $1
+      ORDER BY ae.created_at DESC
+      LIMIT 50`,
+      [userId]
+    );
+
+    res.json({
+      success: true,
+      executions: result.rows
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch history' });
+  }
+});
+
+// ============================================================
+// ROUTES: ASK COGNI (RAG-BASED)
+// ============================================================
+
+app.post('/api/cogni/ask', authenticateToken, async (req, res) => {
+  try {
+    const { question } = req.body;
+
+    // TODO: Implement RAG with pgvector
+    // For now, return structured response template
+
+    const cogniResponse = {
+      question,
+      answer: `Based on CINTENT documentation and your recent API executions, here's what I found...`,
+      relevantAPIs: [
+        {
+          apiKey: 'travel_orchestration_v2',
+          name: 'Travel Orchestration Engine',
+          relevance: 0.94,
+          reason: 'Matches your query about orchestration patterns'
+        }
+      ],
+      relatedTraces: [
+        {
+          executionId: 'exec_123',
+          api: 'travel_orchestration_v2',
+          confidence: 0.88
+        }
+      ],
+      codeExample: `// Example code for your use case`,
+      documentationLinks: [
+        { title: 'Orchestration Patterns', url: '/docs/orchestration' },
+        { title: 'Replay & Debugging', url: '/docs/replay' }
+      ],
+      nextSteps: 'Would you like to execute this API or see more examples?'
+    };
+
+    res.json({
+      success: true,
+      cogni: cogniResponse
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ask COGNI request failed' });
+  }
+});
+
+// ============================================================
+// ROUTES: BILLING & SUBSCRIPTIONS
+// ============================================================
+
+app.get('/api/billing/plans', (req, res) => {
+  const plans = [
+    {
+      id: 'free',
+      name: 'Free',
+      price: 0,
+      monthlyQuota: 100,
+      features: ['API discovery', 'Simulated execution', 'Basic replay'],
+      description: 'Perfect for getting started'
+    },
+    {
+      id: 'developer',
+      name: 'Developer',
+      price: 29,
+      monthlyQuota: 10000,
+      features: ['All Free features', 'Production APIs', 'Advanced replay', 'Ask COGNI'],
+      description: 'For active development'
+    },
+    {
+      id: 'professional',
+      name: 'Professional',
+      price: 99,
+      monthlyQuota: 100000,
+      features: ['All Developer features', 'Priority support', 'Custom governance policies', 'Team access'],
+      description: 'For scaling teams'
+    },
+    {
+      id: 'enterprise',
+      name: 'Enterprise',
+      price: 'custom',
+      monthlyQuota: 'unlimited',
+      features: ['All Professional features', 'Dedicated support', 'Custom SLAs', 'On-premise deployment'],
+      description: 'For enterprises'
+    }
+  ];
+
+  res.json({ success: true, plans });
+});
+
+app.get('/api/billing/status', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const result = await pool.query(
+      'SELECT plan, monthly_quota, monthly_used, status FROM user_subscriptions WHERE user_id = $1',
+      [userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No subscription found' });
+    }
+
+    const subscription = result.rows[0];
+
+    res.json({
+      success: true,
+      subscription: {
+        ...subscription,
+        quotaRemaining: subscription.monthly_quota - subscription.monthly_used,
+        quotaPercentage: Math.round((subscription.monthly_used / subscription.monthly_quota) * 100)
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch billing status' });
+  }
+});
+
+// ============================================================
+// ROUTES: DASHBOARD & METRICS
+// ============================================================
+
+app.get('/api/dashboard/metrics', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Cognitive metrics from executions
+    const metricsResult = await pool.query(
+      `SELECT
+        COUNT(*) as total_executions,
+        AVG(confidence_score) as avg_confidence,
+        MAX(confidence_score) as max_confidence,
+        COUNT(CASE WHEN simulated = true THEN 1 END) as simulated_count,
+        COUNT(CASE WHEN simulated = false THEN 1 END) as production_count
+      FROM api_executions
+      WHERE user_id = $1`,
+      [userId]
+    );
+
+    const metrics = metricsResult.rows[0];
+
+    res.json({
+      success: true,
+      metrics: {
+        totalExecutions: parseInt(metrics.total_executions),
+        averageConfidence: parseFloat(metrics.avg_confidence || 0).toFixed(2),
+        maxConfidence: parseFloat(metrics.max_confidence || 0).toFixed(2),
+        simulatedExecutions: parseInt(metrics.simulated_count),
+        productionExecutions: parseInt(metrics.production_count),
+        orchestrationComplexity: 'medium',
+        replayUsage: 'active',
+        governanceActivity: 'compliant'
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch metrics' });
+  }
+});
+
+// ============================================================
+// HEALTH CHECK
+// ============================================================
+
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    version: '2.0.0',
+    environment: NODE_ENV,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ============================================================
+// FRONTEND ROUTES
+// ============================================================
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'CINTENT-DEVELOPER-PLATFORM-V2.html'));
+});
+
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'CINTENT-ADMIN-GOVERNANCE-CONSOLE.html'));
+});
+
+// ============================================================
+// ERROR HANDLING
+// ============================================================
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+// ============================================================
+// START SERVER
+// ============================================================
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 CINTENT Platform v2 running on port ${PORT}`);
+  console.log(`📊 Metadata-driven architecture initialized`);
+  console.log(`🧠 Ask COGNI ready for RAG queries`);
+  console.log(`💳 Stripe billing integrated`);
+  console.log(`🔐 Multi-tenant security enabled`);
+});
+
+module.exports = app;

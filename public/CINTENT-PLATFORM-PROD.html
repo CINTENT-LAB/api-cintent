@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Cognivanta Labs CINTENT enterprise cognitive API operating ecosystem.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <title>CINTENT Enterprise API Operating Ecosystem</title>
   <style>
     :root {
@@ -235,6 +236,46 @@
       justify-content: end;
       gap: 8px;
       flex-wrap: wrap;
+    }
+    .session-chip {
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--ink);
+      border-radius: var(--radius);
+      padding: 6px 10px 6px 6px;
+      font-size: 12px;
+      font-weight: 800;
+      max-width: 280px;
+      display: inline-grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+    }
+    .session-chip.demo {
+      background: var(--amber-soft);
+      color: var(--amber);
+      border-color: #f0d48a;
+    }
+    .session-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--teal);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .session-chip.demo .session-avatar {
+      background: var(--amber);
+    }
+    .session-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .header-link {
       min-height: 34px;
@@ -587,7 +628,7 @@
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
-        <img src="ui/assets/cintent_logo.png" alt="CINTENT logo">
+        <img src="ui/assets/cintent_logo.svg" alt="CINTENT logo">
         <div>
           <strong>CINTENT</strong>
           <span>Cognivanta Labs Cognitive Infrastructure</span>
@@ -613,17 +654,18 @@
     <main class="main">
       <header class="site-header">
         <div class="site-header-brand">
-          <img src="ui/assets/cintent_logo.png" alt="CINTENT logo">
+          <img src="ui/assets/cintent_logo.svg" alt="CINTENT logo">
           <div>
             <div class="site-header-title">CINTENT Enterprise API Operating Ecosystem</div>
             <div class="site-header-subtitle">Cognivanta Labs cognitive infrastructure for governed, replayable, explainable APIs.</div>
           </div>
         </div>
         <nav class="site-header-links" aria-label="Primary">
+          <span class="session-chip demo" id="sessionChip"><span class="session-avatar">D</span><span class="session-name">Demo</span></span>
           <a class="header-link" href="https://cognivantalabs.com">Cognivanta Labs</a>
           <a class="header-link" href="https://cintent.cognivantalabs.com">CINTENT</a>
           <a class="header-link" href="/health">Health</a>
-          <a class="header-link primary" href="#view-docs">API Console</a>
+          <button class="header-link primary" type="button" id="logoutBtn">Logout</button>
         </nav>
       </header>
 
@@ -639,6 +681,7 @@
           <span class="pill status">Enterprise sandbox</span>
           <button class="pill active" type="button" data-stage="all">All</button>
           <button class="pill" type="button" data-stage="production">Production</button>
+          <button class="pill" type="button" data-stage="beta">Beta</button>
           <button class="pill" type="button" data-stage="active">Active</button>
           <button class="reset-btn" type="button" id="resetBtn">Reset</button>
         </div>
@@ -658,11 +701,11 @@
         </div>
         <div class="hero-card logo-panel">
           <div class="logo-row">
-            <img src="downloads/cognivantalabs-site/assets/images/chaxu-logo.webp" alt="Cognivanta Labs logo">
+            <img src="ui/assets/cognivanta_labs_logo.svg" alt="Cognivanta Labs logo">
             <div><strong>Cognivanta Labs</strong><span>Enterprise-grade product identity and commercial API platform branding.</span></div>
           </div>
           <div class="logo-row">
-            <img src="ui/assets/cintent_logo.png" alt="CINTENT logo">
+            <img src="ui/assets/cintent_logo.svg" alt="CINTENT logo">
             <div><strong>CINTENT</strong><span>Cognitive infrastructure platform for governed, replayable, explainable orchestration.</span></div>
           </div>
           <div class="tile">
@@ -685,13 +728,16 @@
         <div id="view-sdk" class="view"></div>
         <div id="view-admin" class="view"></div>
         <div id="view-readiness" class="view"></div>
+        <div id="view-dependencies" class="view"></div>
+        <div id="view-visualizer" class="view"></div>
+        <div id="view-audit" class="view"></div>
       </section>
 
       <footer class="site-footer">
         <div class="footer-brand">
           <div class="footer-logos">
-            <img src="downloads/cognivantalabs-site/assets/images/chaxu-logo.webp" alt="Cognivanta Labs logo">
-            <img src="ui/assets/cintent_logo.png" alt="CINTENT logo">
+            <img src="ui/assets/cognivanta_labs_logo.svg" alt="Cognivanta Labs logo">
+            <img src="ui/assets/cintent_logo.svg" alt="CINTENT logo">
           </div>
           <div>
             <strong>Cognivanta Labs CINTENT</strong>
@@ -733,83 +779,16 @@
       { id: 'workspace', mark: 'W', title: 'Workspace', sub: 'Tenants and keys' },
       { id: 'sdk', mark: 'K', title: 'SDKs', sub: 'Developer onboarding' },
       { id: 'admin', mark: 'M', title: 'Admin', sub: 'Internal operations' },
-      { id: 'readiness', mark: 'R', title: 'Readiness', sub: 'Production assessment' }
+      { id: 'readiness', mark: 'R', title: 'Readiness', sub: 'Production assessment' },
+      { id: 'dependencies', mark: 'G', title: 'Dependency Graph', sub: 'API relationships' },
+      { id: 'visualizer', mark: 'V', title: 'Cognitive Visualizer', sub: 'Execution insights' },
+      { id: 'audit', mark: 'E', title: 'Audit Exports', sub: 'Enterprise exports' }
     ];
 
-    const domains = [
-      { id: 'all', mark: 'A', title: 'All domains', phase: 'Unified' },
-      { id: 'phase-core', mark: '1', title: 'Phase 1-6 Platform', phase: 'P1-P6' },
-      { id: 'cef', mark: 'C', title: 'CEF-1 through CEF-14', phase: 'CEF' },
-      { id: 'travel', mark: 'T', title: 'Travel APIs', phase: '6A' },
-      { id: 'drone', mark: 'D', title: 'Drone APIs', phase: '6D-DRN' },
-      { id: 'drone-ops', mark: 'N', title: 'Drone Operations', phase: '6D-DRN-OPS' },
-      { id: 'robotics', mark: 'R', title: 'Robotics APIs', phase: '6D-RBT' },
-      { id: 'cobotics', mark: 'B', title: 'Cobotics APIs', phase: '6D-CBT' },
-      { id: 'replay', mark: 'Y', title: 'Replay APIs', phase: 'CACS' },
-      { id: 'governance', mark: 'G', title: 'Governance APIs', phase: 'CACS' },
-      { id: 'observability', mark: 'O', title: 'Observability APIs', phase: 'OPS' },
-      { id: 'platform', mark: 'L', title: 'Platform APIs', phase: 'OPS' },
-      { id: 'billing', mark: '$', title: 'Billing APIs', phase: 'Commerce' },
-      { id: 'auth', mark: 'X', title: 'Authentication APIs', phase: 'Security' }
-    ];
+    const domains = [{ id: 'all', mark: 'A', title: 'All domains', phase: 'Unified', status: 'operational', api_count: 0 }];
+    const roadmapDomains = [];
 
-    const apiCatalog = [
-      api('phase-intent', 'Phase Intent Engine API', 'phase-core', 'POST', 'production', '/api/v1/cognitive/intent/parse', 'Transforms raw user or system input into graph-native cognitive intent.', 'Intent cognition', 'Usage based', ['intent', 'workflow', 'multimodal'], ['IntentGraph', 'confidenceEvolution', 'orchestrationHints']),
-      api('phase-domain', 'Domain Taxonomy API', 'phase-core', 'GET', 'production', '/api/v1/platform/domains/taxonomy', 'Discovers supported domains, capabilities, inheritance, and composition constraints.', 'Domain discovery', 'Included', ['domain', 'taxonomy', 'composition'], ['domainTree', 'capabilityMap', 'governanceDefaults']),
-      api('phase-routing', 'Cognitive Routing API', 'phase-core', 'POST', 'production', '/api/v1/cognitive/routing/decide', 'Routes cognitive requests to the correct domain, model, policy, and orchestration substrate.', 'Cognitive routing', 'Per orchestration', ['routing', 'tenant', 'policy'], ['routingDecision', 'policyTrace', 'latencyBudget']),
-      api('cef-registry', 'CEF Registry API', 'cef', 'GET', 'production', '/api/v1/cef/registry/components', 'Lists CEF-1 through CEF-14 components and their operational readiness.', 'Framework registry', 'Included', ['CEF', 'registry', 'contracts'], ['componentManifest', 'readinessState', 'dependencyGraph']),
-      api('cef-execution', 'CEF Execution Lifecycle API', 'cef', 'POST', 'production', '/api/v1/cef/execution/lifecycle', 'Creates cognitive execution contexts with state, lifecycle, validation, and audit tracking.', 'Execution lifecycle', 'Per execution', ['execution', 'state', 'audit'], ['executionContext', 'stateMachine', 'auditTrace']),
-      api('cef-metadata', 'Cognitive Metadata Contract API', 'cef', 'POST', 'production', '/api/v1/cef/metadata/validate', 'Validates IDs, hashes, lineage, timestamps, distributed flags, and replay metadata.', 'Metadata validation', 'Included', ['metadata', 'hash', 'lineage'], ['metadataReport', 'integrityHash', 'lineageStatus']),
-      api('travel-intent', 'Travel Intent Cognition API', 'travel', 'POST', 'production', '/api/v1/cognitive/travel/intent/parse', 'Builds hierarchical travel intent graphs without booking or provider execution.', 'Travel cognition', 'Usage based', ['travel', 'accessibility', 'multimodal'], ['travelIntentGraph', 'modalityFusion', 'constraints']),
-      api('travel-decision', 'Travel Decision Graph API', 'travel', 'POST', 'production', '/api/v1/cognitive/travel/decision/generate-options', 'Generates all viable travel options and rankings without final selection.', 'Travel decisions', 'Usage based', ['travel', 'ranking', 'options'], ['decisionGraph', 'rankedOptions', 'rejectedAlternatives']),
-      api('travel-emergency', 'Travel Emergency Orchestration API', 'travel', 'POST', 'production', '/api/v1/cognitive/travel/emergency/orchestrate', 'Creates emergency travel cognition, checkpoints, and escalation handoff plans.', 'Emergency orchestration', 'Orchestration billing', ['emergency', 'travel', 'governance'], ['emergencyPlan', 'riskSignals', 'handoffMap']),
-      api('drone-fleet', 'Drone Fleet Coordination API', 'drone', 'POST', 'production', '/api/v1/cognitive/drone/fleet/coordinate', 'Coordinates drone fleet cognition, edge autonomy, safety policies, and replay traces.', 'Fleet cognition', 'Orchestration billing', ['drone', 'fleet', 'edge'], ['fleetGraph', 'coordinationPlan', 'edgeReplay']),
-      api('drone-docking', 'Drone Docking Cognition API', 'drone-ops', 'POST', 'production', '/api/v1/cognitive/drone/docking/orchestrate', 'Plans docking station cognition, charging orchestration, and safety governance.', 'Docking operations', 'Per operation', ['drone', 'docking', 'charging'], ['dockingPlan', 'chargingSignals', 'governanceTrace']),
-      api('drone-box', 'Drone-in-a-Box Operations API', 'drone-ops', 'POST', 'production', '/api/v1/cognitive/drone/box/operate', 'Generates cognitive plans for box deployment, recovery, monitoring, and replay.', 'Drone operational ecosystem', 'Per operation', ['drone-in-a-box', 'recovery'], ['boxOperationPlan', 'healthTrace', 'replaySnapshot']),
-      api('rbt-intent', 'Robotics Intent Overlay API', 'robotics', 'POST', 'active', '/api/v1/cognitive/robotics/intent/parse', 'Builds hierarchical robotics cognition graphs for non-aerial robotics orchestration.', 'Robotics cognition', 'Usage based', ['robotics', 'workflow', 'CRL'], ['roboticsIntentGraph', 'adaptiveEvolution', 'modalityInfluence']),
-      api('rbt-workflow', 'Robotics Workflow Orchestration API', 'robotics', 'POST', 'active', '/api/v1/cognitive/robotics/workflow/coordinate', 'Coordinates adaptive workflow cognition for logistics, inspection, manufacturing, and accessibility.', 'Workflow orchestration', 'Orchestration billing', ['robotics', 'workflow', 'Industry 4.0'], ['workflowCoordination', 'orchestrationChange', 'explainabilityRequired']),
-      api('rbt-distributed', 'Distributed Robotics Coordination API', 'robotics', 'POST', 'active', '/api/v1/cognitive/robotics/distributed/synchronize', 'Synchronizes robotics cognition across distributed robots, regions, and edge contexts.', 'Distributed robotics', 'Distributed billing', ['distributed', 'robotics', 'edge'], ['synchronizationTrace', 'arbitrationDecision', 'vectorClocks']),
-      api('cbt-workspace', 'Shared Workspace Cognition API', 'cobotics', 'POST', 'active', '/api/v1/cognitive/cobotics/workspace/assess', 'Assesses human-machine shared workspace state, safety margin, accessibility, and cooperation signals.', 'Cobotics cognition', 'Usage based', ['cobotics', 'human-machine', 'safety'], ['sharedWorkspaceGraph', 'collaborationRisk', 'adaptationSignals']),
-      api('cbt-adapt', 'Collaborative Adaptation API', 'cobotics', 'POST', 'active', '/api/v1/cognitive/cobotics/collaboration/adapt', 'Explains and plans collaboration shifts based on human state, workflow, and safety context.', 'Collaborative orchestration', 'Orchestration billing', ['cobotics', 'adaptive interaction'], ['collaborationDecisionGraph', 'handoffPlan', 'safetyInterventions']),
-      api('replay-execute', 'Deterministic Replay API', 'replay', 'POST', 'production', '/api/v1/cognitive/replay/execute', 'Reconstructs cognitive executions, orchestration lineage, confidence evolution, and governance propagation.', 'Replay reconstruction', 'Replay billing', ['replay', 'lineage', 'audit'], ['replayTrace', 'lineageGraph', 'integrityReport']),
-      api('replay-visualize', 'Replay Visualization API', 'replay', 'GET', 'production', '/api/v1/cognitive/replay/{replayId}/visualize', 'Returns visualizable replay nodes, edges, decisions, governance checkpoints, and confidence deltas.', 'Replay explorer', 'Replay billing', ['replay', 'visualization'], ['nodes', 'edges', 'confidenceTimeline']),
-      api('gov-validate', 'Governance Validation API', 'governance', 'POST', 'production', '/api/v1/cognitive/governance/validate', 'Validates cognitive artifacts against tenant, safety, industrial, healthcare, privacy, and workflow policies.', 'Governance enforcement', 'Governance billing', ['governance', 'policy', 'audit'], ['governanceSignal', 'policyEvidence', 'blockedActions']),
-      api('gov-propagate', 'Governance Propagation API', 'governance', 'POST', 'production', '/api/v1/cognitive/governance/propagate', 'Propagates governance constraints across composed graphs, distributed cognition, and orchestration stages.', 'Governance propagation', 'Governance billing', ['governance', 'composition'], ['propagationTrace', 'policyMerge', 'riskMap']),
-      api('obs-health', 'Cognitive Observability API', 'observability', 'GET', 'production', '/api/v1/platform/observability/cognitive-health', 'Reports API health, latency, success rate, governance activity, replay integrity, and tenant operations.', 'Operational observability', 'Observability billing', ['observability', 'latency', 'health'], ['healthScore', 'latencyMetrics', 'governancePassRate']),
-      api('obs-traces', 'Orchestration Trace API', 'observability', 'GET', 'production', '/api/v1/platform/observability/traces', 'Lists orchestration traces, distributed sync events, anomalies, edge visibility, and confidence drift.', 'Trace inspection', 'Observability billing', ['trace', 'edge', 'anomaly'], ['traceList', 'anomalySignals', 'syncHealth']),
-      api('platform-tenant', 'Tenant Governance API', 'platform', 'POST', 'production', '/api/v1/platform/tenants/governance/validate', 'Validates tenant isolation, workspace policy, API entitlements, quota, and replay access boundaries.', 'Tenant governance', 'Enterprise plan', ['tenant', 'workspace', 'quota'], ['tenantDecision', 'quotaState', 'policyTrace']),
-      api('platform-keys', 'API Key Management API', 'platform', 'POST', 'production', '/api/v1/platform/api-keys', 'Creates, rotates, scopes, and revokes tenant-safe API keys for domains and environments.', 'API key management', 'Included', ['auth', 'keys', 'tenant'], ['apiKeyRef', 'scope', 'rotationPolicy']),
-      api('billing-cart', 'API Cart API', 'billing', 'POST', 'active', '/api/v1/billing/cart/items', 'Adds APIs, bundles, plans, and orchestration units to a commercial subscription cart.', 'API commerce', 'Free operation', ['billing', 'cart', 'plans'], ['cartState', 'estimatedMonthly', 'quotaPreview']),
-      api('billing-subscribe', 'Subscription Management API', 'billing', 'POST', 'active', '/api/v1/billing/subscriptions', 'Creates and manages free, developer, startup, enterprise, orchestration, replay, governance, and observability subscriptions.', 'Subscription management', 'Plan based', ['billing', 'subscription'], ['subscriptionId', 'invoicePreview', 'paymentProviderReady']),
-      api('auth-token', 'Authentication Token API', 'auth', 'POST', 'production', '/api/v1/auth/token', 'Issues tenant-scoped access tokens for sandbox, production, and simulated environment modes.', 'Authentication', 'Included', ['auth', 'tenant', 'mode'], ['accessToken', 'expiresAt', 'allowedScopes']),
-      api('auth-sso', 'Enterprise SSO API', 'auth', 'POST', 'active', '/api/v1/auth/enterprise/sso/configure', 'Configures enterprise SSO metadata, workspace roles, audit policy, and governance isolation.', 'Enterprise authentication', 'Enterprise plan', ['SSO', 'enterprise', 'RBAC'], ['ssoConfigId', 'roleMap', 'auditPolicy'])
-    ];
-
-    function api(id, name, domain, method, stage, endpoint, overview, capability, billing, tags, outputs) {
-      return {
-        id, name, domain, method, stage, endpoint, overview, capability, billing, tags, outputs,
-        purpose: `Enable ${capability.toLowerCase()} as governed CINTENT cognitive infrastructure without transferring execution ownership away from customer systems.`,
-        auth: stage === 'production' ? 'Bearer token with tenant scope and production entitlement' : 'Bearer token with tenant scope and sandbox entitlement',
-        requestSchema: { tenantId: 'string', mode: 'sandbox | production | simulated', input: 'object', governanceContext: 'object', replayRequested: 'boolean' },
-        responseSchema: { status: 'ok | rejected | needs_review', cognitiveArtifact: 'object', governanceTrace: 'array', replayRef: 'string', confidenceEvolution: 'array' },
-        sdk: {
-          ts: `await cintent.${domain.replace(/-/g, '')}.execute({ api: "${id}", mode: "sandbox" });`,
-          py: `client.execute(api="${id}", mode="sandbox")`,
-          rest: `${method} ${endpoint}`,
-          edge: `edgeRuntime.invoke("${id}", { replay: true })`
-        },
-        replayExample: `Replay ${id}: reconstruct request, graph state, governance checkpoints, confidence deltas, and orchestration lineage.`,
-        explainabilityExample: `Explain ${id}: why the cognitive option was ranked, why governance intervened, and how confidence evolved.`,
-        governance: ['Tenant isolation enforced', 'Replay compatible', 'Policy trace required', 'Execution boundary preserved'],
-        errors: ['400 invalid_cognitive_request', '401 tenant_auth_required', '409 governance_rejected', '429 quota_exceeded', '500 cognitive_runtime_error'],
-        rateLimit: stage === 'production' ? '10,000 requests/hour default enterprise quota' : '1,000 requests/hour sandbox quota',
-        workflow: ['Authenticate tenant', 'Submit cognitive request', 'Validate governance', 'Generate cognitive artifact', 'Capture replay', 'Return explainability envelope'],
-        simulatedOutput: { status: 'ok', artifactId: `${id}-artifact-demo`, confidence: 0.91, governance: 'passed', replayReady: true },
-        lineage: ['tenant-auth', 'contract-validation', 'domain-cognition', 'governance-checkpoint', 'replay-capture', 'response-envelope'],
-        confidence: [0.64, 0.73, 0.84, 0.91],
-        distributed: ['regional-context', 'vector-clock', 'policy-arbitration', 'edge-sync']
-      };
-    }
+    const apiCatalog = [];
 
     const discoveryProblems = [
       { label: 'Drone Fleet Coordination', query: 'drone fleet edge' },
@@ -822,24 +801,7 @@
       { label: 'Billing and Subscriptions', query: 'billing subscription cart' }
     ];
 
-    const plans = [
-      { id: 'free', name: 'Free', price: 0, quota: '5k calls/month', fit: 'Evaluation and docs exploration' },
-      { id: 'developer', name: 'Developer', price: 149, quota: '100k calls/month', fit: 'SDK onboarding and early integration' },
-      { id: 'startup', name: 'Startup', price: 799, quota: '1M calls/month', fit: 'Production pilots and orchestration usage' },
-      { id: 'enterprise', name: 'Enterprise', price: 4200, quota: 'Custom quota', fit: 'SLA, SSO, invoicing, governance, support' }
-    ];
-
-    const environments = [
-      ['Travel orchestration', 'Intent to decision graph to itinerary handoff with emergency and accessibility governance.'],
-      ['Drone fleet operations', 'Fleet cognition, edge autonomy, airspace governance, replay, and safety traces.'],
-      ['Drone docking', 'Docking station cognition, charge routing, recovery, and audit continuity.'],
-      ['Drone-in-a-box', 'Deployment, box health, launch/recovery orchestration, and remote replay.'],
-      ['Robotics workflows', 'Warehouse, inspection, airport, service, healthcare assistance, and adaptive workflows.'],
-      ['Cobotics collaboration', 'Human-machine shared workspace cognition, safety intervention, and handoff planning.'],
-      ['Distributed orchestration', 'Regional sync, vector clocks, arbitration, and edge visibility.'],
-      ['Replay reconstruction', 'Deterministic reconstruction across lineage, confidence, governance, and artifacts.'],
-      ['Governance enforcement', 'Policy propagation, hard boundary checks, tenant isolation, and blocked actions.']
-    ];
+    const plans = [];
 
     const state = {
       module: 'docs',
@@ -849,6 +811,8 @@
       cart: ['rbt-workflow', 'gov-validate'],
       plan: 'startup',
       playgroundMode: 'sandbox',
+      session: null,
+      domainDetails: {},
       chat: [
         { role: 'Ask COGNI', text: 'I can recommend APIs, explain orchestration lineage, inspect replay concepts, troubleshoot integrations, and guide enterprise onboarding.' }
       ]
@@ -862,7 +826,9 @@
       metricApis: document.getElementById('metricApis'),
       metricDomains: document.getElementById('metricDomains'),
       metricModules: document.getElementById('metricModules'),
-      metricCart: document.getElementById('metricCart')
+      metricCart: document.getElementById('metricCart'),
+      sessionChip: document.getElementById('sessionChip'),
+      logout: document.getElementById('logoutBtn')
     };
 
     function domainById(id) { return domains.find(d => d.id === id) || domains[0]; }
@@ -870,13 +836,13 @@
     function selectedApi() { return apiById(state.selectedApiId); }
     function queryTokens() { return els.search.value.trim().toLowerCase().split(/\s+/).filter(Boolean); }
     function apiHaystack(a) {
-      return [a.name, a.domain, a.endpoint, a.overview, a.capability, a.billing, a.tags.join(' '), a.outputs.join(' '), a.governance.join(' '), a.workflow.join(' ')].join(' ').toLowerCase();
+      return [a.name, a.domain, a.originalCategory, a.domainStatus, a.endpoint, a.overview, a.capability, a.billing, a.tags.join(' '), a.outputs.join(' '), a.governance.join(' '), a.workflow.join(' ')].join(' ').toLowerCase();
     }
     function filteredApis() {
       const tokens = queryTokens();
       return apiCatalog.filter(a => {
         const domainMatch = tokens.length ? true : state.domain === 'all' || a.domain === state.domain;
-        const stageMatch = state.stage === 'all' || a.stage === state.stage;
+        const stageMatch = state.stage === 'all' || a.stage === state.stage || a.domainStatus === state.stage;
         const searchMatch = !tokens.length || tokens.every(t => apiHaystack(a).includes(t));
         return domainMatch && stageMatch && searchMatch;
       });
@@ -887,27 +853,139 @@
     }
     function pretty(value) { return escapeHtml(JSON.stringify(value, null, 2)); }
 
+    function normalizeMetadataApi(entry) {
+      const endpoint = Array.isArray(entry.endpoints) ? entry.endpoints[0] || {} : {};
+      const domain = entry.category_name || entry.category || 'platform';
+      const stage = entry.lifecycle_state || entry.status_name || 'simulated';
+      const tags = Array.isArray(entry.tags) ? entry.tags : [];
+      const capabilities = Array.isArray(entry.capabilities) ? entry.capabilities : tags;
+      const dependencies = Array.isArray(entry.dependencies) ? entry.dependencies : [];
+      const replayExamples = Array.isArray(entry.replay_examples) ? entry.replay_examples : [];
+      const explainabilityExamples = Array.isArray(entry.explainability_examples) ? entry.explainability_examples : [];
+      const orchestrationExamples = Array.isArray(entry.orchestration_examples) ? entry.orchestration_examples : [];
+      return {
+        id: entry.api_key,
+        name: entry.name,
+        domain: entry.domain_key || domain,
+        originalCategory: domain,
+        domainStatus: entry.domain_status || (entry.roadmap && entry.roadmap.status) || 'operational',
+        roadmap: entry.roadmap || null,
+        method: endpoint.method || 'POST',
+        stage,
+        endpoint: endpoint.path || '/api/unknown',
+        overview: entry.short_description || entry.full_description || 'Metadata-driven CINTENT API.',
+        capability: capabilities[0] || (entry.cognitive_dimensions && entry.cognitive_dimensions.capability) || 'Cognitive infrastructure',
+        billing: entry.pricing_visibility ? `${entry.pricing_visibility.billing_model} | ${entry.pricing_visibility.min_tier}` : `Tier: ${entry.min_tier || 'developer'}`,
+        tags,
+        outputs: endpoint.response_schema && endpoint.response_schema.outputs ? endpoint.response_schema.outputs : (entry.outputs || ['cognitiveArtifact', 'governanceTrace', 'replayRef']),
+        purpose: entry.full_description || entry.short_description || 'Backend metadata driven API operation.',
+        auth: entry.requires_authentication ? 'Bearer token with tenant scope and entitlement policy' : 'No auth required',
+        requestSchema: endpoint.request_schema || { input: 'object' },
+        responseSchema: endpoint.response_schema || { status: 'ok' },
+        sdk: entry.sdk_examples || {
+          ts: `await cintent.execute({ api: "${entry.api_key}", mode: "sandbox" });`,
+          py: `client.execute(api="${entry.api_key}", mode="sandbox")`,
+          rest: `${endpoint.method || 'POST'} ${endpoint.path || '/api/unknown'}`
+        },
+        replayExample: replayExamples.join('\n') || `Replay data is resolved by backend execution metadata for ${entry.api_key}.`,
+        explainabilityExample: explainabilityExamples.join('\n') || `Explainability data is resolved by backend metadata for ${entry.api_key}.`,
+        governance: entry.governance_support ? ['Governance support enabled', 'Tenant isolation enforced', 'Policy trace required'] : ['Tenant isolation enforced', 'Sandbox policy applied'],
+        errors: ['400 invalid_request', '401 unauthorized', '403 policy_restricted', '429 quota_exceeded', '500 cognitive_runtime_error'],
+        rateLimit: entry.rate_limit || entry.quota_limit || 'Backend quota policy',
+        workflow: orchestrationExamples.length ? orchestrationExamples : ['Authenticate tenant', 'Load metadata contract', 'Execute orchestration runtime', 'Capture replay', 'Return explainability envelope'],
+        simulatedOutput: entry.simulation_behavior || { primitive: `${entry.api_key}-simulation` },
+        lineage: ['tenant-auth', 'metadata-contract', 'orchestration-runtime', 'governance-propagation', 'replay-capture', 'response-envelope'],
+        confidence: [0.64, 0.73, 0.84, 0.91],
+        distributed: dependencies.length ? dependencies : ['metadata-registry', 'policy-engine', 'replay-runtime'],
+        dependencies,
+        accessPolicy: entry.access_policy || {},
+        backendSource: entry.documentation_source || 'api-metadata-registry'
+      };
+    }
+
+    async function loadBackendMetadata() {
+      const response = await fetch('/api/catalog', { credentials: 'include' });
+      if (!response.ok) throw new Error('Backend metadata registry unavailable');
+      const payload = await response.json();
+      const apis = Array.isArray(payload.apis) ? payload.apis.map(normalizeMetadataApi) : [];
+      apiCatalog.splice(0, apiCatalog.length, ...apis);
+      const backendDomains = Array.isArray(payload.domains) ? payload.domains : [];
+      roadmapDomains.splice(0, roadmapDomains.length, ...backendDomains);
+      domains.splice(0, domains.length, { id: 'all', mark: 'A', title: 'All domains', phase: 'Unified', status: 'operational', api_count: apis.length }, ...backendDomains.map(domain => ({
+        id: domain.domain_key,
+        mark: domain.mark || domain.nav_title.slice(0, 1),
+        title: domain.nav_title || domain.title,
+        phase: domain.status,
+        status: domain.status,
+        api_count: domain.api_count || 0,
+        roadmap: domain
+      })));
+      if (!apiCatalog.length) throw new Error('Backend metadata registry returned no APIs');
+      if (!apiCatalog.some(api => api.id === state.selectedApiId)) {
+        state.selectedApiId = apiCatalog[0].id;
+      }
+      state.cart = state.cart.filter(id => apiCatalog.some(api => api.id === id));
+    }
+
+    async function loadDomainDetail(domainKey) {
+      if (state.domainDetails[domainKey]) return state.domainDetails[domainKey];
+      const response = await fetch(`/api/domains/${domainKey}`, { credentials: 'include' });
+      if (!response.ok) throw new Error('Domain metadata unavailable');
+      const payload = await response.json();
+      state.domainDetails[domainKey] = payload;
+      return payload;
+    }
+
+    async function loadBackendBilling() {
+      const response = await fetch('/api/billing/plans', { credentials: 'include' });
+      if (!response.ok) return;
+      const payload = await response.json();
+      plans.splice(0, plans.length, ...(payload.plans || []));
+    }
+
     function renderShell() {
       els.moduleNav.innerHTML = modules.map(m => `
         <button class="nav-btn ${state.module === m.id ? 'active' : ''}" type="button" data-module="${m.id}">
           <span class="nav-mark">${m.mark}</span><span class="nav-text"><span class="nav-title">${m.title}</span><span class="nav-sub">${m.sub}</span></span>
         </button>`).join('');
       els.domainNav.innerHTML = domains.map(d => {
-        const count = d.id === 'all' ? apiCatalog.length : apiCatalog.filter(a => a.domain === d.id).length;
+        const count = d.id === 'all' ? apiCatalog.length : (d.api_count || apiCatalog.filter(a => a.domain === d.id).length);
         return `<button class="domain-btn ${state.domain === d.id ? 'active' : ''}" type="button" data-domain="${d.id}">
-          <span class="domain-mark">${d.mark}</span><span class="domain-text"><span class="domain-title">${d.title}</span><span class="domain-sub">${d.phase}</span></span><span class="count">${count}</span>
+          <span class="domain-mark">${d.mark}</span><span class="domain-text"><span class="domain-title">${d.title}</span><span class="domain-sub">${d.phase || d.status}</span></span><span class="count">${count}</span>
         </button>`;
       }).join('');
       document.querySelectorAll('[data-stage]').forEach(btn => btn.classList.toggle('active', btn.dataset.stage === state.stage));
+      renderSessionChip();
       els.metricApis.textContent = apiCatalog.length;
       els.metricDomains.textContent = domains.length - 1;
       els.metricModules.textContent = modules.length;
       els.metricCart.textContent = state.cart.length;
     }
 
+    function getInitials(nameOrEmail) {
+      const value = String(nameOrEmail || 'Demo').trim();
+      const parts = value.includes('@') ? value.split('@')[0].split(/[._-]+/) : value.split(/\s+/);
+      return parts.filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'D';
+    }
+
+    function renderSessionChip() {
+      const user = state.session && state.session.user;
+      const isDemo = !user || user.demo;
+      const label = isDemo ? 'Demo' : (user.name || user.email || 'User');
+      const initials = isDemo ? 'D' : getInitials(label);
+      els.sessionChip.classList.toggle('demo', isDemo);
+      els.sessionChip.title = isDemo ? 'Demo sandbox session' : `${label}${user.email ? ` | ${user.email}` : ''}`;
+      els.sessionChip.innerHTML = `<span class="session-avatar">${initials}</span><span class="session-name">${label}</span>`;
+    }
+
     function renderDocs() {
       const list = filteredApis();
       const api = selectedApi();
+      const domain = domainById(state.domain);
+      if (state.domain !== 'all' && domain.status === 'coming_soon') {
+        renderComingSoonDomain(domain);
+        return;
+      }
       document.getElementById('view-docs').innerHTML = `
         <div class="two-col">
           <div class="panel">
@@ -916,6 +994,27 @@
           </div>
           <div class="detail">${renderApiDetail(api)}</div>
         </div>`;
+    }
+
+    async function renderComingSoonDomain(domain) {
+      const target = document.getElementById('view-docs');
+      target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>${domain.title}</h2><div class="sub">Loading backend roadmap metadata...</div></div></div><div class="panel-body">${empty('Loading roadmap details.')}</div></div>`;
+      try {
+        const payload = await loadDomainDetail(domain.id);
+        const d = payload.domain;
+        target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>${d.title}</h2><div class="sub">Coming Soon domain roadmap</div></div><span class="tag warn">Coming Soon</span></div><div class="panel-body">
+          <p class="detail-desc">${d.vision}</p>
+          <div class="info-grid">
+            ${infoList('Planned cognitive capabilities', d.planned_capabilities || [])}
+            ${infoList('Future API categories', d.future_api_categories || [])}
+            ${infoList('Expected orchestration areas', d.orchestration_areas || [])}
+            ${infoList('Enterprise use cases', d.enterprise_use_cases || [])}
+          </div>
+          <div class="detail" style="margin-top:14px;"><h2>Roadmap visibility</h2><p>${d.roadmap_visibility}</p><div class="toolbar"><button class="secondary-btn" type="button" data-ask-domain="${d.domain_key}">Ask COGNI about this domain</button><button class="secondary-btn" type="button" data-discovery="${d.title} ${d.planned_capabilities.join(' ')}">Search roadmap</button></div></div>
+        </div></div>`;
+      } catch (error) {
+        target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>${domain.title}</h2></div></div><div class="panel-body">${empty('Domain roadmap metadata is unavailable.')}</div></div>`;
+      }
     }
 
     function renderApiCard(a) {
@@ -929,7 +1028,7 @@
     function renderApiDetail(a) {
       return `
         <div class="detail-head">
-          <div><div class="tags"><span class="tag blue">${domainById(a.domain).title}</span><span class="tag ${a.stage === 'production' ? 'prod' : 'warn'}">${a.stage}</span><span class="tag">${a.billing}</span></div><h1 style="margin-top:10px;">${a.name}</h1><p class="detail-desc">${a.overview}</p></div>
+          <div><div class="tags"><span class="tag blue">${domainById(a.domain).title}</span><span class="tag ${a.stage === 'production' ? 'prod' : 'warn'}">${a.stage}</span><span class="tag">${a.domainStatus}</span><span class="tag">${a.billing}</span></div><h1 style="margin-top:10px;">${a.name}</h1><p class="detail-desc">${a.overview}</p></div>
           <div class="endpoint-box"><code><strong>${a.method}</strong> ${a.endpoint}</code><code>${a.auth}</code></div>
         </div>
         <div class="stat-grid">
@@ -967,54 +1066,49 @@
       document.getElementById('view-discovery').innerHTML = `
         <div class="panel"><div class="panel-head"><div><h2>Intelligent API discovery</h2><div class="sub">Discover by business problem, workflow, industry, capability, governance, replay, and explainability.</div></div></div>
         <div class="panel-body">
-          <div class="three-col">${discoveryProblems.map(p => `<button class="tile" type="button" data-discovery="${p.query}"><h3>${p.label}</h3><p>Find APIs and orchestration compositions for ${p.label.toLowerCase()}.</p><div class="tags"><span class="tag blue">discover</span><span class="tag">recommend</span></div></button>`).join('')}</div>
+          <div class="three-col">${roadmapDomains.map(d => `<button class="tile" type="button" data-domain="${d.domain_key}"><h3>${d.title}</h3><p>${d.status === 'coming_soon' ? d.roadmap_visibility : d.vision}</p><div class="tags"><span class="tag ${d.status === 'coming_soon' ? 'warn' : 'prod'}">${d.status}</span><span class="tag">${d.api_count || 0} APIs</span></div></button>`).join('')}</div>
         </div></div>
-        <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Recommended APIs</h2><div class="sub">${recommendations.length} matches</div></div></div><div class="panel-body"><div class="api-list">${recommendations.map(renderApiCard).join('')}</div></div></div>`;
+        <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Recommended APIs</h2><div class="sub">${recommendations.length} matches</div></div></div><div class="panel-body"><div class="api-list">${recommendations.length ? recommendations.map(renderApiCard).join('') : empty('Select an operational domain or use search to discover APIs and coming-soon roadmap items.')}</div></div></div>`;
     }
 
     function renderPlayground() {
       const a = selectedApi();
-      const output = simulateExecution(a);
+      const output = { status: 'waiting-for-backend-execution', api: a.name, source: 'playground-execution-engine' };
+      const demo = state.session && state.session.user && state.session.user.demo;
+      const modeOptions = demo
+        ? '<option value="sandbox">Sandbox</option>'
+        : '<option value="sandbox">Sandbox</option><option value="production">Production preview</option><option value="simulated">Simulated environment</option>';
       document.getElementById('view-playground').innerHTML = `
         <div class="two-col">
           <div class="panel"><div class="panel-head"><div><h2>API playground</h2><div class="sub">Execute sandbox, production-preview, or simulated orchestration flows.</div></div></div>
             <div class="panel-body">
               <div class="form-grid">
                 <div class="field"><label>API</label><select class="select" id="playApi">${apiCatalog.map(x => `<option value="${x.id}" ${x.id === a.id ? 'selected' : ''}>${x.name}</option>`).join('')}</select></div>
-                <div class="field"><label>Mode</label><select class="select" id="playMode"><option value="sandbox">Sandbox</option><option value="production">Production preview</option><option value="simulated">Simulated environment</option></select></div>
+                <div class="field"><label>Mode</label><select class="select" id="playMode">${modeOptions}</select></div>
               </div>
               <div class="field" style="margin-top:12px;"><label>Request body</label><textarea class="textarea" id="playRequest">${pretty({ tenantId: 'tenant-enterprise-demo', mode: state.playgroundMode, input: { workflow: a.tags[0], replayRequested: true }, governanceContext: { policy: 'enterprise-default' } })}</textarea></div>
-              <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runPlayground">Run simulated execution</button><button class="secondary-btn" type="button" data-add-cart="${a.id}">Add to cart</button></div>
+              <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runPlayground">Run simulated execution</button><button class="secondary-btn" type="button" data-add-cart="${a.id}">Add to cart</button>${demo ? '<span class="tag warn">Demo Mode: sandbox-only</span>' : ''}</div>
             </div>
           </div>
           <div class="detail"><h2>Execution result</h2><p class="detail-desc">Inspect orchestration lineage, replay trace, confidence evolution, governance intervention, multimodal fusion, and distributed synchronization.</p><pre id="playOutput">${pretty(output)}</pre></div>
         </div>
-        <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Orchestration lineage</h2><div class="sub">Visual execution path for the selected API.</div></div></div><div class="panel-body"><div class="trace">${output.lineage.map((s, i) => traceStep(i + 1, s.stage, s.detail)).join('')}</div></div></div>`;
-    }
-
-    function simulateExecution(a) {
-      return {
-        api: a.name,
-        mode: state.playgroundMode,
-        status: 'simulated-success',
-        orchestrationId: `orch-${a.id}-demo`,
-        governance: { status: 'passed', interventions: a.domain === 'governance' || a.domain === 'robotics' ? ['hard-boundary-check'] : ['tenant-policy-check'] },
-        replay: { replayId: `replay-${a.id}-001`, deterministic: true, traceNodes: a.lineage.length },
-        confidenceEvolution: a.confidence.map((score, index) => ({ step: a.lineage[index] || `stage-${index + 1}`, score })),
-        distributedSynchronization: a.distributed.map((item, index) => ({ node: item, vectorClock: index + 1, status: 'synchronized' })),
-        multimodalFusion: { normalizedThrough: 'CRL', modalities: ['text', 'telemetry', 'workflow-signal'], agreementScore: 0.87 },
-        lineage: a.lineage.map((stage, index) => ({ stage, detail: `${stage} completed for ${a.capability}; confidence ${a.confidence[Math.min(index, a.confidence.length - 1)] || 0.91}` }))
-      };
+        <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Orchestration lineage</h2><div class="sub">Returned by backend execution engine after a run.</div></div></div><div class="panel-body"><div class="trace">${a.lineage.map((s, i) => traceStep(i + 1, s, `${s} is defined by backend metadata contract`)).join('')}</div></div></div>`;
     }
     function traceStep(num, title, detail) { return `<div class="trace-step"><div class="trace-num">${num}</div><div class="trace-card"><strong>${title}</strong><span>${detail}</span></div></div>`; }
 
     function renderEnvironments() {
-      document.getElementById('view-environments').innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Simulated orchestration environments</h2><div class="sub">Visualize how cognition flows through platform domains.</div></div></div><div class="panel-body"><div class="three-col">${environments.map((e, i) => `<div class="tile"><h3>${e[0]}</h3><p>${e[1]}</p><div class="trace" style="margin-top:12px;">${['input', 'intent', 'decision', 'governance', 'replay'].map((s, n) => traceStep(n + 1, s, `${e[0]} ${s} stage`)).join('')}</div></div>`).join('')}</div></div></div>`;
+      const environmentGroups = Object.values(apiCatalog.reduce((groups, api) => {
+        groups[api.domain] = groups[api.domain] || { title: domainById(api.domain).title, apis: [], tags: new Set() };
+        groups[api.domain].apis.push(api.name);
+        api.tags.forEach(tag => groups[api.domain].tags.add(tag));
+        return groups;
+      }, {}));
+      document.getElementById('view-environments').innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Simulated orchestration environments</h2><div class="sub">Generated from backend metadata domains and execution capabilities.</div></div></div><div class="panel-body"><div class="three-col">${environmentGroups.map(e => `<div class="tile"><h3>${e.title}</h3><p>${e.apis.length} APIs exposed by backend metadata. Capabilities: ${Array.from(e.tags).slice(0, 5).join(', ') || 'metadata-driven'}.</p><div class="trace" style="margin-top:12px;">${['metadata', 'orchestration', 'governance', 'replay'].map((s, n) => traceStep(n + 1, s, `${e.title} ${s} stage`)).join('')}</div></div>`).join('')}</div></div></div>`;
     }
 
     function renderBilling() {
       const cartApis = state.cart.map(apiById);
-      const plan = plans.find(p => p.id === state.plan) || plans[0];
+      const plan = plans.find(p => p.id === state.plan) || plans[0] || { id: 'pending', name: 'Backend billing pending', price: 0, quota: 'Loading', fit: 'Billing infrastructure unavailable' };
       const apiSubtotal = cartApis.length * 49;
       const total = plan.price + apiSubtotal;
       document.getElementById('view-billing').innerHTML = `
@@ -1030,11 +1124,25 @@
     }
 
     function renderObservability() {
-      const rows = [
-        ['API usage', 78, 'blue'], ['Orchestration usage', 64, 'green'], ['Replay usage', 43, 'amber'], ['Governance activity', 92, 'green'], ['Quota consumption', 57, 'blue'], ['Latency health', 88, 'green'], ['Distributed sync health', 83, 'green'], ['Failure trend', 9, 'red']
-      ];
-      document.getElementById('view-observability').innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Enterprise operational dashboards</h2><div class="sub">Usage, traces, replay, governance, latency, confidence, synchronization, and health.</div></div></div><div class="panel-body"><div class="three-col">${rows.map(r => `<div class="tile"><h3>${r[0]}</h3><p>${r[1]}% current window</p><div class="progress"><div class="bar ${r[2]}" style="width:${r[1]}%"></div></div></div>`).join('')}</div></div></div>
-      <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Replay and explainability explorer</h2><div class="trace">${simulateExecution(selectedApi()).lineage.map((s,i)=>traceStep(i+1,s.stage,s.detail)).join('')}</div></div><div class="detail"><h2>Operational anomalies</h2>${infoList('Detected signals', ['governance propagation delay: none', 'edge synchronization drift: low', 'runtime error rate: 0.8%', 'confidence drift: stable', 'tenant isolation: verified'])}</div></div>`;
+      const target = document.getElementById('view-observability');
+      target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Enterprise operational dashboards</h2><div class="sub">Loading metrics from backend execution, replay, governance, and audit infrastructure.</div></div></div><div class="panel-body">${empty('Loading backend metrics...')}</div></div>`;
+      fetch('/api/dashboard/metrics', { credentials: 'include' })
+        .then(r => r.json())
+        .then(data => {
+          const rows = [
+            ['API usage', data.api_usage, 'blue'],
+            ['Orchestration traces', data.orchestration_traces, 'green'],
+            ['Replay activity', data.replay_activity, 'amber'],
+            ['Governance events', data.governance_events, 'green'],
+            ['Catalog APIs', data.operational_health.catalog_count, 'blue'],
+            ['Audit events', (data.audit_events || []).length, 'green']
+          ];
+          target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Enterprise operational dashboards</h2><div class="sub">Metrics pulled from backend operational state for tenant ${data.tenant_activity.tenant}.</div></div></div><div class="panel-body"><div class="three-col">${rows.map(r => `<div class="tile"><h3>${r[0]}</h3><p>${r[1]} current window</p><div class="progress"><div class="bar ${r[2]}" style="width:${Math.min(100, Number(r[1]) * 10 || 8)}%"></div></div></div>`).join('')}</div></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Recent executions</h2><pre>${pretty(data.recent_executions || [])}</pre></div><div class="detail"><h2>Lifecycle and audit</h2><pre>${pretty({ lifecycle: data.lifecycle, audit: data.audit_events })}</pre></div></div>`;
+        })
+        .catch(() => {
+          target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Enterprise operational dashboards</h2></div></div><div class="panel-body">${empty('Backend metrics unavailable for this session.')}</div></div>`;
+        });
     }
 
     function renderIssues() {
@@ -1062,15 +1170,62 @@
     }
 
     function renderSdk() {
-      document.getElementById('view-sdk').innerHTML = `<div class="two-col"><div class="panel"><div class="panel-head"><div><h2>SDK distribution ecosystem</h2><div class="sub">TypeScript, Python, REST, and Edge runtime quickstarts.</div></div></div><div class="panel-body"><div class="three-col">${['TypeScript', 'Python', 'REST', 'Edge runtime'].map(s => `<div class="tile"><h3>${s}</h3><p>Quickstarts, orchestration examples, replay examples, governance examples, and distributed coordination examples.</p><button class="secondary-btn" type="button">Download ${s} SDK</button></div>`).join('')}</div></div></div><div class="detail"><h2>SDK starter</h2><pre>${pretty(selectedApi().sdk)}</pre></div></div>`;
+      document.getElementById('view-sdk').innerHTML = `<div class="two-col"><div class="panel"><div class="panel-head"><div><h2>SDK distribution ecosystem</h2><div class="sub">TypeScript, Python, REST, and Edge runtime quickstarts.</div></div></div><div class="panel-body"><div class="three-col">${['ts', 'py', 'rest', 'edge'].map(s => `<div class="tile"><h3>${s.toUpperCase()}</h3><p>Backend-generated SDK starter for ${selectedApi().name}, including orchestration, replay, and governance examples.</p><button class="secondary-btn" type="button" data-sdk-language="${s}">Generate ${s.toUpperCase()} SDK</button></div>`).join('')}</div></div></div><div class="detail"><h2>SDK starter</h2><pre id="sdkOutput">${pretty(selectedApi().sdk)}</pre></div></div>`;
     }
 
     function renderAdmin() {
+      if (!state.session || state.session.user.demo || state.session.user.role !== 'admin') {
+        document.getElementById('view-admin').innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Admin systems restricted</h2><div class="sub">Demo and non-admin sessions cannot access internal enterprise administration.</div></div></div><div class="panel-body">${infoList('Available path', ['Use API Documentation, Discovery, Playground sandbox, Ask COGNI, SDK portal, and Observability views.', 'Enterprise admin will require verified account, payment/onboarding verification, RBAC elevation, and SSO/MFA in future phases.'])}</div></div>`;
+        return;
+      }
       document.getElementById('view-admin').innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Internal admin platform</h2><div class="sub">API publishing, pricing, metadata governance, billing, tenant management, support, replay governance, and observability oversight.</div></div></div><div class="panel-body"><table class="admin-table"><thead><tr><th>System</th><th>Status</th><th>Operator action</th></tr></thead><tbody>${['API publishing', 'Pricing management', 'Metadata governance', 'Billing management', 'Tenant management', 'Operational monitoring', 'Support ticket management', 'Replay governance', 'Observability oversight'].map((s,i)=>`<tr><td>${s}</td><td>${i < 6 ? 'Operational' : 'Ready for integration'}</td><td><button class="secondary-btn" type="button">Open</button></td></tr>`).join('')}</tbody></table></div></div>`;
     }
 
     function renderReadiness() {
       document.getElementById('view-readiness').innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Production readiness assessment</h2><div class="sub">Mandatory outputs and success criteria.</div></div></div><div class="panel-body"><div class="three-col">${['Complete API documentation ecosystem','Intelligent API discovery system','Interactive playground infrastructure','Simulated orchestration environments','Billing and API cart infrastructure','Subscription management system','Enterprise usage dashboards','Runtime issue reporting system','Diagnostic/log export infrastructure','Ask COGNI conversational assistant','Replay and explainability explorer','Enterprise workspace infrastructure','SDK distribution ecosystem','Premium UI/UX implementation','Production readiness assessment'].map(item => `<div class="tile"><h3>${item}</h3><p>Status: implemented in this enterprise console baseline.</p><span class="tag prod">ready</span></div>`).join('')}</div></div></div>`;
+    }
+
+    function renderDependencies() {
+      fetch('/api/dependencies')
+        .then(r => r.json())
+        .then(data => {
+          const html = data.dependencies.map(dep => `<div class="api-card"><strong>${dep.name}</strong> depends on: ${dep.depends_on.join(', ')}</div>`).join('');
+          document.getElementById('view-dependencies').innerHTML = `<div class="panel"><div class="panel-head"><h2>API Dependency Graph</h2></div><div class="panel-body"><div class="api-list">${html}</div></div></div>`;
+        })
+        .catch(() => {
+          document.getElementById('view-dependencies').innerHTML = '<div class="panel"><div class="panel-head"><h2>API Dependency Graph</h2></div><div class="panel-body">Unable to load dependencies.</div></div>';
+        });
+    }
+
+    function renderVisualizer() {
+      fetch('/api/visualizer/data')
+        .then(r => r.json())
+        .then(data => {
+          const html = `<pre>${pretty(data)}</pre>`;
+          document.getElementById('view-visualizer').innerHTML = `<div class="panel"><div class="panel-head"><h2>Cognitive Execution Visualizer</h2></div><div class="panel-body">${html}</div></div>`;
+        })
+        .catch(() => {
+          document.getElementById('view-visualizer').innerHTML = '<div class="panel"><div class="panel-head"><h2>Cognitive Execution Visualizer</h2></div><div class="panel-body">Unable to load visualization data.</div></div>';
+        });
+    }
+
+    function renderAudit() {
+      if (state.session && state.session.user.demo) {
+        document.getElementById('view-audit').innerHTML = `<div class="panel"><div class="panel-head"><h2>Enterprise Audit Exports Restricted</h2></div><div class="panel-body">${infoList('Demo Mode boundary', ['Documentation, Ask COGNI, discovery, replay previews, and sandbox playground remain available.', 'Audit exports require authenticated enterprise entitlement and are blocked for Demo Mode.'])}</div></div>`;
+        return;
+      }
+      document.getElementById('view-audit').innerHTML = '<div class="panel"><div class="panel-head"><h2>Enterprise Audit Exports</h2></div><div class="panel-body"><button onclick="exportAudit(\'replay\')">Export Replay</button><button onclick="exportAudit(\'orchestration\')">Export Orchestration</button></div></div>';
+    }
+
+    function exportAudit(type) {
+      fetch(`/api/audit/export?type=${type}&format=json`, { credentials: 'include' })
+        .then(async r => {
+          const payload = await r.json();
+          if (!r.ok) throw new Error(payload.error || payload.message || 'Export blocked');
+          return payload;
+        })
+        .then(data => alert(`Export available at: ${data.export_url}`))
+        .catch(error => alert(error.message));
     }
 
     function renderCurrentView() {
@@ -1088,6 +1243,9 @@
       if (state.module === 'sdk') renderSdk();
       if (state.module === 'admin') renderAdmin();
       if (state.module === 'readiness') renderReadiness();
+      if (state.module === 'dependencies') renderDependencies();
+      if (state.module === 'visualizer') renderVisualizer();
+      if (state.module === 'audit') renderAudit();
     }
 
     function render() {
@@ -1102,7 +1260,7 @@
       const moduleBtn = event.target.closest('[data-module]');
       if (moduleBtn) { state.module = moduleBtn.dataset.module; render(); return; }
       const domainBtn = event.target.closest('[data-domain]');
-      if (domainBtn) { state.domain = domainBtn.dataset.domain; els.search.value = ''; render(); return; }
+      if (domainBtn) { state.domain = domainBtn.dataset.domain; els.search.value = ''; state.module = domains.find(d => d.id === state.domain && d.status === 'coming_soon') ? 'docs' : state.module; render(); return; }
       const stageBtn = event.target.closest('[data-stage]');
       if (stageBtn) { state.stage = stageBtn.dataset.stage; render(); return; }
       const apiBtn = event.target.closest('[data-api]');
@@ -1117,6 +1275,8 @@
       if (planBtn) { state.plan = planBtn.dataset.plan; render(); return; }
       const discoveryBtn = event.target.closest('[data-discovery]');
       if (discoveryBtn) { els.search.value = discoveryBtn.dataset.discovery; state.domain = 'all'; state.module = 'docs'; render(); return; }
+      const askDomainBtn = event.target.closest('[data-ask-domain]');
+      if (askDomainBtn) { state.module = 'ask'; state.chat.push({ role: 'You', text: `Explain roadmap and API plans for ${askDomainBtn.dataset.askDomain}` }); render(); return; }
     });
 
     els.search.addEventListener('input', () => { state.domain = 'all'; render(); });
@@ -1127,19 +1287,34 @@
       if (event.target.id === 'playMode') { state.playgroundMode = event.target.value; render(); }
     });
 
-    document.addEventListener('click', event => {
-      if (event.target.id === 'runPlayground') document.getElementById('playOutput').textContent = JSON.stringify(simulateExecution(selectedApi()), null, 2);
+    document.addEventListener('click', async event => {
+      if (event.target.id === 'runPlayground') {
+        const a = selectedApi();
+        try {
+          const input = document.getElementById('playRequest').value;
+          const parsed = JSON.parse(input);
+          const response = await fetch('/api/playground/execute', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ api_key: a.id, mode: state.playgroundMode, input: parsed.input || parsed, governanceContext: parsed.governanceContext || {} })
+          });
+          const payload = await response.json();
+          document.getElementById('playOutput').textContent = JSON.stringify(payload, null, 2);
+        } catch (error) {
+          document.getElementById('playOutput').textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
       if (event.target.id === 'generateIssue') {
-        const pkg = issuePackage();
-        pkg.severity = document.getElementById('issueSeverity').value;
-        pkg.executionId = document.getElementById('issueExecution').value;
-        pkg.summary = document.getElementById('issueSummary').value;
-        document.getElementById('issueOutput').textContent = JSON.stringify(pkg, null, 2);
-        const blob = new Blob([JSON.stringify(pkg, null, 2)], { type: 'application/json' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `${pkg.issueId}-diagnostic-package.json`;
-        link.click();
+        const pkg = { severity: document.getElementById('issueSeverity').value, executionId: document.getElementById('issueExecution').value, summary: document.getElementById('issueSummary').value };
+        const response = await fetch('/api/issues/report', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pkg)
+        });
+        const payload = await response.json();
+        document.getElementById('issueOutput').textContent = JSON.stringify(payload, null, 2);
       }
       if (event.target.id === 'supportEmail') {
         const subject = encodeURIComponent('CINTENT Enterprise Support Request');
@@ -1154,16 +1329,66 @@
         link.download = 'cintent-invoice-preview.json';
         link.click();
       }
-      if (event.target.id === 'subscribeBtn') alert('Sandbox subscription workflow created. Payment provider integration is future-ready for Stripe, Razorpay, and enterprise invoicing.');
+      if (event.target.id === 'subscribeBtn') {
+        const output = { status: 'coming-soon', workflow: 'payment-verification', providers: ['Stripe', 'phone-verification', 'enterprise-onboarding'], demoBypassStillEnabled: true };
+        alert(`Sandbox subscription workflow is future-ready.\n${JSON.stringify(output, null, 2)}`);
+      }
+      const sdkBtn = event.target.closest('[data-sdk-language]');
+      if (sdkBtn) {
+        const response = await fetch('/api/sdk/generate', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ api_key: selectedApi().id, language: sdkBtn.dataset.sdkLanguage })
+        });
+        const payload = await response.json();
+        const output = document.getElementById('sdkOutput');
+        if (output) output.textContent = JSON.stringify(payload, null, 2);
+      }
       if (event.target.id === 'askBtn') {
         const input = document.getElementById('askInput');
         state.chat.push({ role: 'You', text: input.value });
-        state.chat.push({ role: 'Ask COGNI', text: askCogni(input.value) });
+        try {
+          const response = await fetch('/api/ask', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: input.value })
+          });
+          const payload = await response.json();
+          const names = (payload.structuredResponse || []).map(item => `${item.name} (${item.lifecycle})`).join(', ');
+          const domainNames = (payload.domainResponse || []).map(item => `${item.title} [${item.status}]`).join(', ');
+          const performance = payload.performanceContext ? ` Performance: ${payload.performanceContext.api_usage} executions, ${payload.performanceContext.replay_activity} replay traces, ${payload.performanceContext.governance_events} governance events.` : '';
+          state.chat.push({ role: 'Ask COGNI', text: `${payload.answer}${names ? ` API matches: ${names}.` : ''}${domainNames ? ` Domain context: ${domainNames}.` : ''}${performance}` });
+        } catch (error) {
+          state.chat.push({ role: 'Ask COGNI', text: askCogni(input.value) });
+        }
         renderAsk();
       }
     });
 
-    render();
+    els.logout.addEventListener('click', async () => {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      location.href = '/login';
+    });
+
+    async function initializeSession() {
+      try {
+        const response = await fetch('/api/auth/session', { credentials: 'include' });
+        if (!response.ok) throw new Error('Authentication required');
+        state.session = await response.json();
+        if (state.session.user.demo) state.playgroundMode = 'sandbox';
+        await loadBackendMetadata();
+        await loadBackendBilling();
+        render();
+      } catch (error) {
+        location.href = '/login';
+      }
+    }
+
+    initializeSession();
   </script>
 </body>
 </html>
+
+

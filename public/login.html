@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CINTENT secure enterprise access for Cognivanta Labs cognitive infrastructure.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>CINTENT Secure Access</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #64748b;
+      --bg: #eef3f8;
+      --panel: #ffffff;
+      --line: #d8e0ea;
+      --blue: #1b63c9;
+      --teal: #087f8c;
+      --green: #16803c;
+      --red: #b42318;
+      --nav: #101827;
+      --shadow: 0 20px 55px rgba(17, 24, 39, 0.14);
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(16,24,39,0.94), rgba(27,99,201,0.82)),
+        radial-gradient(circle at top right, rgba(8,127,140,0.32), transparent 34%),
+        var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 28px;
+    }
+    .shell {
+      width: min(1120px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) 430px;
+      background: rgba(255,255,255,0.97);
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .identity {
+      background: var(--nav);
+      color: #eef6ff;
+      padding: 42px;
+      display: grid;
+      align-content: space-between;
+      min-height: 650px;
+    }
+    .logo-stack { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+    .logo-stack img { width: 70px; height: 70px; object-fit: contain; background: #fff; border-radius: 10px; padding: 8px; }
+    .eyebrow { color: #9ddfe6; font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 800; }
+    h1 { margin: 22px 0 14px; font-size: 46px; line-height: 1.02; letter-spacing: 0; max-width: 720px; }
+    .lead { color: #c8d4e4; font-size: 17px; line-height: 1.7; max-width: 720px; }
+    .trust-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 28px; }
+    .trust {
+      border: 1px solid #2d3a50;
+      background: #162235;
+      border-radius: 8px;
+      padding: 14px;
+      color: #d9e6f5;
+      min-height: 92px;
+    }
+    .trust strong { display: block; font-size: 13px; margin-bottom: 5px; color: #fff; }
+    .trust span { font-size: 12px; line-height: 1.45; color: #afbdcf; }
+    .access {
+      padding: 34px;
+      background: var(--panel);
+      display: grid;
+      align-content: center;
+      gap: 18px;
+    }
+    .tabs { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .tab {
+      border: 0;
+      background: #f8fafc;
+      padding: 12px 8px;
+      font-weight: 800;
+      color: #435268;
+      cursor: pointer;
+    }
+    .tab.active { background: var(--blue); color: #fff; }
+    .panel { display: none; gap: 12px; }
+    .panel.active { display: grid; }
+    label { display: grid; gap: 6px; color: #334155; font-size: 13px; font-weight: 750; }
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 13px;
+      font: inherit;
+      color: var(--ink);
+      background: #fbfdff;
+    }
+    button { font: inherit; }
+    .primary, .secondary, .demo {
+      width: 100%;
+      border: 0;
+      border-radius: 8px;
+      padding: 13px 14px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+    .primary { background: var(--blue); color: #fff; }
+    .secondary { background: #edf4ff; color: #174ea6; border: 1px solid #bcd1f2; }
+    .demo { background: #e4f7f8; color: #075f69; border: 1px solid #9bdde4; }
+    .status {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px 12px;
+      background: #f8fafc;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .status.ok { border-color: #bfe5cb; background: #effaf3; color: var(--green); }
+    .status.err { border-color: #f4c2bc; background: #fff5f3; color: var(--red); }
+    .fine-print { color: var(--muted); font-size: 12px; line-height: 1.6; }
+    @media (max-width: 900px) {
+      body { padding: 14px; }
+      .shell { grid-template-columns: 1fr; }
+      .identity { min-height: auto; padding: 28px; }
+      h1 { font-size: 34px; }
+      .trust-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="identity">
+      <div>
+        <div class="logo-stack">
+          <img src="/ui/assets/cognivanta_labs_logo.svg" alt="Cognivanta Labs logo">
+          <img src="/ui/assets/cintent_logo.svg" alt="CINTENT logo">
+        </div>
+        <p class="eyebrow">Secure enterprise access layer</p>
+        <h1>CINTENT Cognitive Infrastructure Gateway</h1>
+        <p class="lead">Login-first access for governed API documentation, semantic discovery, Ask COGNI intelligence, replay inspection, sandbox playgrounds, billing readiness, and tenant-aware operations.</p>
+        <div class="trust-grid">
+          <div class="trust"><strong>Protected platform</strong><span>Marketplace, documentation, dashboards, playground, Ask COGNI, replay, billing, and SDKs remain locked behind a validated session.</span></div>
+          <div class="trust"><strong>Future-ready identity</strong><span>Prepared for phone verification, OTP, MFA, payment verification, enterprise SSO, and onboarding workflows.</span></div>
+          <div class="trust"><strong>Demo isolation</strong><span>Demo Bypass creates a temporary guest session with sandbox-only access and enterprise export restrictions.</span></div>
+          <div class="trust"><strong>Cognitive assistant</strong><span>Ask COGNI searches API metadata, documentation, replay, governance, orchestration, SDK, lifecycle, and dependency context.</span></div>
+        </div>
+      </div>
+      <p class="fine-print">Cognivanta Labs CINTENT is enterprise cognitive infrastructure, not a public static website.</p>
+    </section>
+
+    <section class="access">
+      <div>
+        <p class="eyebrow" style="color:#087f8c;">Authentication required</p>
+        <h2 style="margin:8px 0 6px;">Secure access</h2>
+        <p class="fine-print">Use login, create a verified account, recover access, or enter Demo Mode for a limited sandbox walkthrough.</p>
+      </div>
+      <div class="tabs">
+        <button class="tab active" type="button" data-tab="login">Login</button>
+        <button class="tab" type="button" data-tab="signup">Signup</button>
+        <button class="tab" type="button" data-tab="forgot">Forgot</button>
+      </div>
+
+      <form class="panel active" id="loginPanel">
+        <label>Email <input id="loginEmail" type="email" autocomplete="email" required></label>
+        <label>Password <input id="loginPassword" type="password" autocomplete="current-password" required></label>
+        <button class="primary" type="submit">Enter CINTENT Platform</button>
+      </form>
+
+      <form class="panel" id="signupPanel">
+        <label>Name <input id="signupName" autocomplete="name" required></label>
+        <label>Email <input id="signupEmail" type="email" autocomplete="email" required></label>
+        <label>Password <input id="signupPassword" type="password" autocomplete="new-password" required></label>
+        <button class="primary" type="submit">Create Verified Account</button>
+        <button class="secondary" type="button" id="verifySignup" disabled>Complete Email Verification</button>
+      </form>
+
+      <form class="panel" id="forgotPanel">
+        <label>Email <input id="forgotEmail" type="email" autocomplete="email" required></label>
+        <button class="primary" type="submit">Generate Reset Token</button>
+        <label>Reset token <input id="resetToken" autocomplete="off"></label>
+        <label>New password <input id="resetPassword" type="password" autocomplete="new-password"></label>
+        <button class="secondary" type="button" id="resetPasswordBtn">Reset Password</button>
+      </form>
+
+      <button class="demo" type="button" id="demoBtn">Demo Bypass</button>
+      <div class="status" id="statusBox">Session required. Demo Mode is limited, isolated, and sandbox-only.</div>
+    </section>
+  </main>
+
+  <script>
+    const statusBox = document.getElementById('statusBox');
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPassword = document.getElementById('loginPassword');
+    const signupName = document.getElementById('signupName');
+    const signupEmail = document.getElementById('signupEmail');
+    const signupPassword = document.getElementById('signupPassword');
+    const verifySignup = document.getElementById('verifySignup');
+    const forgotEmail = document.getElementById('forgotEmail');
+    const resetToken = document.getElementById('resetToken');
+    const resetPassword = document.getElementById('resetPassword');
+    let verificationToken = '';
+    function setStatus(text, kind) {
+      statusBox.textContent = text;
+      statusBox.className = `status ${kind || ''}`.trim();
+    }
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        ...options
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || payload.message || `Request failed: ${response.status}`);
+      return payload;
+    }
+    document.querySelectorAll('[data-tab]').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === tab));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(`${tab.dataset.tab}Panel`).classList.add('active');
+      });
+    });
+    document.getElementById('loginPanel').addEventListener('submit', async event => {
+      event.preventDefault();
+      try {
+        await api('/api/auth/login', { method: 'POST', body: JSON.stringify({ email: loginEmail.value, password: loginPassword.value }) });
+        setStatus('Authenticated. Opening protected platform...', 'ok');
+        location.href = '/platform';
+      } catch (error) { setStatus(error.message, 'err'); }
+    });
+    document.getElementById('signupPanel').addEventListener('submit', async event => {
+      event.preventDefault();
+      try {
+        const payload = await api('/api/auth/signup', { method: 'POST', body: JSON.stringify({ name: signupName.value, email: signupEmail.value, password: signupPassword.value }) });
+        verificationToken = payload.verificationToken;
+        verifySignup.disabled = false;
+        setStatus(`Signup created. Email verification token generated for this demo environment: ${verificationToken}`, 'ok');
+      } catch (error) { setStatus(error.message, 'err'); }
+    });
+    document.getElementById('verifySignup').addEventListener('click', async () => {
+      try {
+        await api(`/api/auth/verify-email?token=${encodeURIComponent(verificationToken)}`);
+        setStatus('Email verified. You can now log in.', 'ok');
+      } catch (error) { setStatus(error.message, 'err'); }
+    });
+    document.getElementById('forgotPanel').addEventListener('submit', async event => {
+      event.preventDefault();
+      try {
+        const payload = await api('/api/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email: forgotEmail.value }) });
+        if (payload.resetToken) resetToken.value = payload.resetToken;
+        setStatus(payload.resetToken ? `Reset token generated: ${payload.resetToken}` : payload.message, 'ok');
+      } catch (error) { setStatus(error.message, 'err'); }
+    });
+    document.getElementById('resetPasswordBtn').addEventListener('click', async () => {
+      try {
+        const payload = await api('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ token: resetToken.value, password: resetPassword.value }) });
+        setStatus(payload.message, 'ok');
+      } catch (error) { setStatus(error.message, 'err'); }
+    });
+    document.getElementById('demoBtn').addEventListener('click', async () => {
+      try {
+        await api('/api/auth/demo', { method: 'POST', body: JSON.stringify({ purpose: 'platform-demo' }) });
+        setStatus('Demo Mode enabled. Opening sandbox platform...', 'ok');
+        location.href = '/platform';
+      } catch (error) { setStatus(error.message, 'err'); }
+    });
+  </script>
+</body>
+</html>

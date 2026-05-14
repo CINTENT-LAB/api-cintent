@@ -1,0 +1,2469 @@
+{
+    "version":  "backend-metadata-registry-v1",
+    "generated_from":  "CINTENT Platform API metadata definitions",
+    "source_of_truth":  "backend",
+    "domains":  [
+                    {
+                        "domain_key":  "travel",
+                        "title":  "Travel Cognitive Infrastructure",
+                        "nav_title":  "Travel",
+                        "mark":  "T",
+                        "status":  "operational",
+                        "vision":  "Cognitive orchestration for travel intent, decision graphs, emergency flows, accessibility, replay, and governed handoff into customer-owned booking or operations systems.",
+                        "planned_capabilities":  [
+                                                     "Travel intent cognition",
+                                                     "Decision graph generation",
+                                                     "Emergency orchestration",
+                                                     "Accessibility-aware routing",
+                                                     "Replayable itinerary reasoning"
+                                                 ],
+                        "future_api_categories":  [
+                                                      "Intent",
+                                                      "Decision",
+                                                      "Emergency",
+                                                      "Accessibility",
+                                                      "Replay"
+                                                  ],
+                        "orchestration_areas":  [
+                                                    "Trip planning",
+                                                    "Emergency travel",
+                                                    "Accessible mobility",
+                                                    "Provider handoff"
+                                                ],
+                        "enterprise_use_cases":  [
+                                                    "Travel platforms",
+                                                    "Airline operations",
+                                                    "Enterprise mobility",
+                                                    "Assistive travel"
+                                                ],
+                        "roadmap_visibility":  "Operational APIs available now with expanding provider handoff and replay depth."
+                    },
+                    {
+                        "domain_key":  "healthcare",
+                        "title":  "Healthcare Cognitive Infrastructure",
+                        "nav_title":  "Healthcare",
+                        "mark":  "H",
+                        "status":  "coming_soon",
+                        "vision":  "Governed cognitive infrastructure for care workflows, clinical operations, accessibility, compliance-aware orchestration, and explainable decision support without replacing clinical systems.",
+                        "planned_capabilities":  [
+                                                     "Care workflow cognition",
+                                                     "Clinical operations triage",
+                                                     "Patient-accessibility context",
+                                                     "Compliance-aware governance",
+                                                     "Explainable care pathways"
+                                                 ],
+                        "future_api_categories":  [
+                                                      "Care workflow",
+                                                      "Triage support",
+                                                      "Compliance governance",
+                                                      "Operational replay"
+                                                  ],
+                        "orchestration_areas":  [
+                                                    "Patient journey",
+                                                    "Care-team coordination",
+                                                    "Operational escalation",
+                                                    "Policy traceability"
+                                                ],
+                        "enterprise_use_cases":  [
+                                                    "Hospitals",
+                                                    "Care coordination platforms",
+                                                    "Health operations",
+                                                    "Accessibility services"
+                                                ],
+                        "roadmap_visibility":  "Coming Soon. Documentation, Ask COGNI roadmap context, and enterprise planning visibility are available."
+                    },
+                    {
+                        "domain_key":  "legal",
+                        "title":  "Legal Cognitive Infrastructure",
+                        "nav_title":  "Legal",
+                        "mark":  "L",
+                        "status":  "coming_soon",
+                        "vision":  "Explainable legal workflow cognition for document understanding, matter orchestration, compliance boundaries, and audit-ready reasoning.",
+                        "planned_capabilities":  [
+                                                     "Matter workflow cognition",
+                                                     "Document reasoning",
+                                                     "Policy-aware review",
+                                                     "Audit trails",
+                                                     "Explainability envelopes"
+                                                 ],
+                        "future_api_categories":  [
+                                                      "Matter workflows",
+                                                      "Document cognition",
+                                                      "Compliance checks",
+                                                      "Legal replay"
+                                                  ],
+                        "orchestration_areas":  [
+                                                    "Contract operations",
+                                                    "Matter intake",
+                                                    "Review routing",
+                                                    "Compliance evidence"
+                                                ],
+                        "enterprise_use_cases":  [
+                                                    "Legal operations",
+                                                    "Contract platforms",
+                                                    "Compliance teams",
+                                                    "Enterprise counsel"
+                                                ],
+                        "roadmap_visibility":  "Coming Soon. Domain roadmap is searchable and Ask COGNI-aware."
+                    },
+                    {
+                        "domain_key":  "drone",
+                        "title":  "Drone Cognitive Infrastructure",
+                        "nav_title":  "Drone",
+                        "mark":  "D",
+                        "status":  "operational",
+                        "vision":  "Cognitive infrastructure for drone fleet coordination, docking, drone-in-a-box operations, edge replay, safety governance, and operational traceability.",
+                        "planned_capabilities":  [
+                                                     "Fleet coordination",
+                                                     "Docking cognition",
+                                                     "Drone-in-a-box operations",
+                                                     "Edge replay",
+                                                     "Safety governance"
+                                                 ],
+                        "future_api_categories":  [
+                                                      "Fleet",
+                                                      "Docking",
+                                                      "Recovery",
+                                                      "Airspace governance",
+                                                      "Replay"
+                                                  ],
+                        "orchestration_areas":  [
+                                                    "Fleet operations",
+                                                    "Docking stations",
+                                                    "Launch and recovery",
+                                                    "Remote monitoring"
+                                                ],
+                        "enterprise_use_cases":  [
+                                                    "Industrial inspection",
+                                                    "Logistics",
+                                                    "Public safety",
+                                                    "Autonomous field operations"
+                                                ],
+                        "roadmap_visibility":  "Operational APIs available now across drone and drone operations metadata."
+                    },
+                    {
+                        "domain_key":  "robotics",
+                        "title":  "Robotics Cognitive Infrastructure",
+                        "nav_title":  "Robotics",
+                        "mark":  "R",
+                        "status":  "beta",
+                        "vision":  "Adaptive robotics cognition for intent overlays, workflow coordination, distributed synchronization, governance, and explainable orchestration.",
+                        "planned_capabilities":  [
+                                                     "Robotics intent overlays",
+                                                     "Workflow orchestration",
+                                                     "Distributed synchronization",
+                                                     "Governance traces",
+                                                     "Confidence evolution"
+                                                 ],
+                        "future_api_categories":  [
+                                                      "Intent",
+                                                      "Workflow",
+                                                      "Distributed coordination",
+                                                      "Replay"
+                                                  ],
+                        "orchestration_areas":  [
+                                                    "Inspection",
+                                                    "Warehouse workflows",
+                                                    "Manufacturing",
+                                                    "Service robotics"
+                                                ],
+                        "enterprise_use_cases":  [
+                                                    "Industrial automation",
+                                                    "Logistics",
+                                                    "Inspection platforms",
+                                                    "Robotics integrators"
+                                                ],
+                        "roadmap_visibility":  "Beta APIs are visible with sandbox execution and roadmap expansion."
+                    },
+                    {
+                        "domain_key":  "cobotics",
+                        "title":  "Cobotics Cognitive Infrastructure",
+                        "nav_title":  "Cobotics",
+                        "mark":  "C",
+                        "status":  "beta",
+                        "vision":  "Human-machine shared workspace cognition for collaboration, safety adaptation, accessibility, and explainable handoffs.",
+                        "planned_capabilities":  [
+                                                     "Shared workspace assessment",
+                                                     "Collaborative adaptation",
+                                                     "Safety margin cognition",
+                                                     "Human-machine handoff",
+                                                     "Accessibility-aware workflows"
+                                                 ],
+                        "future_api_categories":  [
+                                                      "Workspace",
+                                                      "Collaboration",
+                                                      "Safety",
+                                                      "Adaptation"
+                                                  ],
+                        "orchestration_areas":  [
+                                                    "Human-machine operations",
+                                                    "Factory collaboration",
+                                                    "Healthcare assistance",
+                                                    "Service workflows"
+                                                ],
+                        "enterprise_use_cases":  [
+                                                    "Cobotics platforms",
+                                                    "Manufacturing",
+                                                    "Assistive robotics",
+                                                    "Workplace safety"
+                                                ],
+                        "roadmap_visibility":  "Beta APIs are available with governance and replay visibility."
+                    },
+                    {
+                        "domain_key":  "multilingual",
+                        "title":  "Multilingual Cognitive Infrastructure",
+                        "nav_title":  "Multilingual",
+                        "mark":  "M",
+                        "status":  "coming_soon",
+                        "vision":  "Language, speech, translation, and multimodal cognition infrastructure for enterprise workflows and cross-domain orchestration.",
+                        "planned_capabilities":  [
+                                                     "Multilingual intent",
+                                                     "Speech cognition",
+                                                     "Translation-aware orchestration",
+                                                     "Cross-lingual replay",
+                                                     "Localization governance"
+                                                 ],
+                        "future_api_categories":  [
+                                                      "Speech",
+                                                      "Translation",
+                                                      "Language intent",
+                                                      "Multimodal cognition"
+                                                  ],
+                        "orchestration_areas":  [
+                                                    "Support workflows",
+                                                    "Travel communication",
+                                                    "Public services",
+                                                    "Enterprise knowledge"
+                                                ],
+                        "enterprise_use_cases":  [
+                                                    "Global support",
+                                                    "Travel platforms",
+                                                    "Knowledge operations",
+                                                    "Government services"
+                                                ],
+                        "roadmap_visibility":  "Coming Soon. Multimodal and multilingual roadmap is visible to search and Ask COGNI."
+                    },
+                    {
+                        "domain_key":  "enterprise-workflow",
+                        "title":  "Enterprise Workflow Cognitive Infrastructure",
+                        "nav_title":  "Enterprise Workflow",
+                        "mark":  "W",
+                        "status":  "operational",
+                        "vision":  "Core enterprise workflow cognition for platform phases, CEF components, tenant governance, API keys, billing, observability, SDKs, and lifecycle operations.",
+                        "planned_capabilities":  [
+                                                     "Platform phase cognition",
+                                                     "CEF lifecycle",
+                                                     "Tenant governance",
+                                                     "Billing readiness",
+                                                     "Operational observability"
+                                                 ],
+                        "future_api_categories":  [
+                                                      "Platform",
+                                                      "CEF",
+                                                      "Auth",
+                                                      "Billing",
+                                                      "Observability"
+                                                  ],
+                        "orchestration_areas":  [
+                                                    "Enterprise API operations",
+                                                    "Developer onboarding",
+                                                    "Billing and subscriptions",
+                                                    "Workspace governance"
+                                                ],
+                        "enterprise_use_cases":  [
+                                                    "Enterprise platform teams",
+                                                    "Developer platforms",
+                                                    "API marketplaces",
+                                                    "Governed cognitive operations"
+                                                ],
+                        "roadmap_visibility":  "Operational platform APIs are available now."
+                    },
+                    {
+                        "domain_key":  "iot-smart-infrastructure",
+                        "title":  "IoT & Smart Infrastructure Cognition",
+                        "nav_title":  "IoT & Smart Infra",
+                        "mark":  "I",
+                        "status":  "coming_soon",
+                        "vision":  "Cognitive infrastructure for smart buildings, sensor fusion, infrastructure health, edge operations, and replayable decisions.",
+                        "planned_capabilities":  [
+                                                     "Sensor fusion cognition",
+                                                     "Smart infrastructure health",
+                                                     "Edge orchestration",
+                                                     "Anomaly reasoning",
+                                                     "Replayable infrastructure decisions"
+                                                 ],
+                        "future_api_categories":  [
+                                                      "IoT telemetry",
+                                                      "Smart building",
+                                                      "Infrastructure health",
+                                                      "Edge replay"
+                                                  ],
+                        "orchestration_areas":  [
+                                                    "Smart buildings",
+                                                    "Infrastructure monitoring",
+                                                    "Edge operations",
+                                                    "Facilities governance"
+                                                ],
+                        "enterprise_use_cases":  [
+                                                    "Smart cities",
+                                                    "Facilities",
+                                                    "Industrial IoT",
+                                                    "Infrastructure operators"
+                                                ],
+                        "roadmap_visibility":  "Coming Soon. Roadmap panel provides capability and use-case visibility."
+                    },
+                    {
+                        "domain_key":  "autonomous-systems",
+                        "title":  "Autonomous Systems Cognitive Infrastructure",
+                        "nav_title":  "Autonomous Systems",
+                        "mark":  "A",
+                        "status":  "coming_soon",
+                        "vision":  "Cross-domain cognition for autonomous systems, safety governance, distributed coordination, replay, and explainable autonomy boundaries.",
+                        "planned_capabilities":  [
+                                                     "Autonomy orchestration",
+                                                     "Safety governance",
+                                                     "Distributed coordination",
+                                                     "Replay and explainability",
+                                                     "Mission lifecycle cognition"
+                                                 ],
+                        "future_api_categories":  [
+                                                      "Mission cognition",
+                                                      "Safety policy",
+                                                      "Distributed autonomy",
+                                                      "Replay"
+                                                  ],
+                        "orchestration_areas":  [
+                                                    "Autonomous operations",
+                                                    "Mission planning",
+                                                    "Fleet coordination",
+                                                    "Safety validation"
+                                                ],
+                        "enterprise_use_cases":  [
+                                                    "Autonomous mobility",
+                                                    "Field robotics",
+                                                    "Drone operations",
+                                                    "Industrial autonomy"
+                                                ],
+                        "roadmap_visibility":  "Coming Soon. Built to connect future autonomy APIs to replay and governance systems."
+                    },
+                    {
+                        "domain_key":  "education-learning",
+                        "title":  "Education & Learning Cognitive Infrastructure",
+                        "nav_title":  "Education & Learning",
+                        "mark":  "E",
+                        "status":  "coming_soon",
+                        "vision":  "Learning workflow cognition for education platforms, adaptive learning paths, assessment orchestration, and explainable learning support.",
+                        "planned_capabilities":  [
+                                                     "Learning path cognition",
+                                                     "Assessment orchestration",
+                                                     "Knowledge workflow replay",
+                                                     "Accessibility-aware learning",
+                                                     "Progress explainability"
+                                                 ],
+                        "future_api_categories":  [
+                                                      "Learning paths",
+                                                      "Assessment",
+                                                      "Tutoring workflows",
+                                                      "Education governance"
+                                                  ],
+                        "orchestration_areas":  [
+                                                    "Adaptive learning",
+                                                    "Enterprise training",
+                                                    "Education operations",
+                                                    "Learner support"
+                                                ],
+                        "enterprise_use_cases":  [
+                                                    "EdTech platforms",
+                                                    "Enterprise learning",
+                                                    "Accessibility education",
+                                                    "Assessment systems"
+                                                ],
+                        "roadmap_visibility":  "Coming Soon. Roadmap data is searchable and Ask COGNI-aware."
+                    },
+                    {
+                        "domain_key":  "smart-governance",
+                        "title":  "Smart Governance & Public Systems Cognition",
+                        "nav_title":  "Smart Governance",
+                        "mark":  "G",
+                        "status":  "operational",
+                        "vision":  "Governance cognition for policy propagation, public systems, tenant boundaries, audit evidence, replay, and explainable operational decisions.",
+                        "planned_capabilities":  [
+                                                     "Governance validation",
+                                                     "Policy propagation",
+                                                     "Public system workflows",
+                                                     "Audit evidence",
+                                                     "Replayable policy decisions"
+                                                 ],
+                        "future_api_categories":  [
+                                                      "Governance",
+                                                      "Policy",
+                                                      "Audit",
+                                                      "Public systems"
+                                                  ],
+                        "orchestration_areas":  [
+                                                    "Policy validation",
+                                                    "Public service workflows",
+                                                    "Audit exports",
+                                                    "Risk governance"
+                                                ],
+                        "enterprise_use_cases":  [
+                                                    "Public systems",
+                                                    "Enterprise governance",
+                                                    "Compliance operations",
+                                                    "Audit teams"
+                                                ],
+                        "roadmap_visibility":  "Operational governance APIs are available now with future public systems expansion."
+                    }
+                ],
+    "apis":  [
+                 {
+                     "api_key":  "phase-intent",
+                     "name":  "Phase Intent Engine API",
+                     "version":  "1.0",
+                     "phase":  "Phase-1-through-Phase-6",
+                     "category_name":  "phase-core",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Transforms raw user or system input into graph-native cognitive intent.",
+                     "full_description":  "Transforms raw user or system input into graph-native cognitive intent. Capability: Intent cognition. Billing: Usage based.",
+                     "capabilities":  [
+                                          "intent",
+                                          "workflow",
+                                          "multimodal"
+                                      ],
+                     "tags":  [
+                                  "intent",
+                                  "workflow",
+                                  "multimodal"
+                              ],
+                     "outputs":  [
+                                     "IntentGraph",
+                                     "confidenceEvolution",
+                                     "orchestrationHints"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/intent/parse",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "IntentGraph",
+                                                                                   "confidenceEvolution",
+                                                                                   "orchestrationHints"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Intent cognition",
+                                                  "domain":  "phase-core"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "phase-intent-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "phase-domain",
+                     "name":  "Domain Taxonomy API",
+                     "version":  "1.0",
+                     "phase":  "Phase-1-through-Phase-6",
+                     "category_name":  "phase-core",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Discovers supported domains, capabilities, inheritance, and composition constraints.",
+                     "full_description":  "Discovers supported domains, capabilities, inheritance, and composition constraints. Capability: Domain discovery. Billing: Included.",
+                     "capabilities":  [
+                                          "domain",
+                                          "taxonomy",
+                                          "composition"
+                                      ],
+                     "tags":  [
+                                  "domain",
+                                  "taxonomy",
+                                  "composition"
+                              ],
+                     "outputs":  [
+                                     "domainTree",
+                                     "capabilityMap",
+                                     "governanceDefaults"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "free",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "GET",
+                                           "path":  "/api/v1/platform/domains/taxonomy",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "domainTree",
+                                                                                   "capabilityMap",
+                                                                                   "governanceDefaults"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Domain discovery",
+                                                  "domain":  "phase-core"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "phase-domain-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "phase-routing",
+                     "name":  "Cognitive Routing API",
+                     "version":  "1.0",
+                     "phase":  "Phase-1-through-Phase-6",
+                     "category_name":  "phase-core",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Routes cognitive requests to the correct domain, model, policy, and orchestration substrate.",
+                     "full_description":  "Routes cognitive requests to the correct domain, model, policy, and orchestration substrate. Capability: Cognitive routing. Billing: Per orchestration.",
+                     "capabilities":  [
+                                          "routing",
+                                          "tenant",
+                                          "policy"
+                                      ],
+                     "tags":  [
+                                  "routing",
+                                  "tenant",
+                                  "policy"
+                              ],
+                     "outputs":  [
+                                     "routingDecision",
+                                     "policyTrace",
+                                     "latencyBudget"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/routing/decide",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "routingDecision",
+                                                                                   "policyTrace",
+                                                                                   "latencyBudget"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Cognitive routing",
+                                                  "domain":  "phase-core"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "phase-routing-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  true
+                 },
+                 {
+                     "api_key":  "cef-registry",
+                     "name":  "CEF Registry API",
+                     "version":  "1.0",
+                     "phase":  "CEF-1-through-CEF-14",
+                     "category_name":  "cef",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Lists CEF-1 through CEF-14 components and their operational readiness.",
+                     "full_description":  "Lists CEF-1 through CEF-14 components and their operational readiness. Capability: Framework registry. Billing: Included.",
+                     "capabilities":  [
+                                          "CEF",
+                                          "registry",
+                                          "contracts"
+                                      ],
+                     "tags":  [
+                                  "CEF",
+                                  "registry",
+                                  "contracts"
+                              ],
+                     "outputs":  [
+                                     "componentManifest",
+                                     "readinessState",
+                                     "dependencyGraph"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "free",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "GET",
+                                           "path":  "/api/v1/cef/registry/components",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "componentManifest",
+                                                                                   "readinessState",
+                                                                                   "dependencyGraph"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Framework registry",
+                                                  "domain":  "cef"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "cef-registry-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "cef-execution",
+                     "name":  "CEF Execution Lifecycle API",
+                     "version":  "1.0",
+                     "phase":  "CEF-1-through-CEF-14",
+                     "category_name":  "cef",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Creates cognitive execution contexts with state, lifecycle, validation, and audit tracking.",
+                     "full_description":  "Creates cognitive execution contexts with state, lifecycle, validation, and audit tracking. Capability: Execution lifecycle. Billing: Per execution.",
+                     "capabilities":  [
+                                          "execution",
+                                          "state",
+                                          "audit"
+                                      ],
+                     "tags":  [
+                                  "execution",
+                                  "state",
+                                  "audit"
+                              ],
+                     "outputs":  [
+                                     "executionContext",
+                                     "stateMachine",
+                                     "auditTrace"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cef/execution/lifecycle",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "executionContext",
+                                                                                   "stateMachine",
+                                                                                   "auditTrace"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Execution lifecycle",
+                                                  "domain":  "cef"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "cef-execution-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  true
+                 },
+                 {
+                     "api_key":  "cef-metadata",
+                     "name":  "Cognitive Metadata Contract API",
+                     "version":  "1.0",
+                     "phase":  "CEF-1-through-CEF-14",
+                     "category_name":  "cef",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Validates IDs, hashes, lineage, timestamps, distributed flags, and replay metadata.",
+                     "full_description":  "Validates IDs, hashes, lineage, timestamps, distributed flags, and replay metadata. Capability: Metadata validation. Billing: Included.",
+                     "capabilities":  [
+                                          "metadata",
+                                          "hash",
+                                          "lineage"
+                                      ],
+                     "tags":  [
+                                  "metadata",
+                                  "hash",
+                                  "lineage"
+                              ],
+                     "outputs":  [
+                                     "metadataReport",
+                                     "integrityHash",
+                                     "lineageStatus"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "free",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cef/metadata/validate",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "metadataReport",
+                                                                                   "integrityHash",
+                                                                                   "lineageStatus"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Metadata validation",
+                                                  "domain":  "cef"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "cef-metadata-simulation"
+                                             },
+                     "replay_support":  true,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "travel-intent",
+                     "name":  "Travel Intent Cognition API",
+                     "version":  "1.0",
+                     "phase":  "Phase-6",
+                     "category_name":  "travel",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Builds hierarchical travel intent graphs without booking or provider execution.",
+                     "full_description":  "Builds hierarchical travel intent graphs without booking or provider execution. Capability: Travel cognition. Billing: Usage based.",
+                     "capabilities":  [
+                                          "travel",
+                                          "accessibility",
+                                          "multimodal"
+                                      ],
+                     "tags":  [
+                                  "travel",
+                                  "accessibility",
+                                  "multimodal"
+                              ],
+                     "outputs":  [
+                                     "travelIntentGraph",
+                                     "modalityFusion",
+                                     "constraints"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/travel/intent/parse",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "travelIntentGraph",
+                                                                                   "modalityFusion",
+                                                                                   "constraints"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Travel cognition",
+                                                  "domain":  "travel"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "travel-intent-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "travel-decision",
+                     "name":  "Travel Decision Graph API",
+                     "version":  "1.0",
+                     "phase":  "Phase-6",
+                     "category_name":  "travel",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Generates all viable travel options and rankings without final selection.",
+                     "full_description":  "Generates all viable travel options and rankings without final selection. Capability: Travel decisions. Billing: Usage based.",
+                     "capabilities":  [
+                                          "travel",
+                                          "ranking",
+                                          "options"
+                                      ],
+                     "tags":  [
+                                  "travel",
+                                  "ranking",
+                                  "options"
+                              ],
+                     "outputs":  [
+                                     "decisionGraph",
+                                     "rankedOptions",
+                                     "rejectedAlternatives"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/travel/decision/generate-options",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "decisionGraph",
+                                                                                   "rankedOptions",
+                                                                                   "rejectedAlternatives"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Travel decisions",
+                                                  "domain":  "travel"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "travel-decision-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "travel-emergency",
+                     "name":  "Travel Emergency Orchestration API",
+                     "version":  "1.0",
+                     "phase":  "Phase-6",
+                     "category_name":  "travel",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Creates emergency travel cognition, checkpoints, and escalation handoff plans.",
+                     "full_description":  "Creates emergency travel cognition, checkpoints, and escalation handoff plans. Capability: Emergency orchestration. Billing: Orchestration billing.",
+                     "capabilities":  [
+                                          "emergency",
+                                          "travel",
+                                          "governance"
+                                      ],
+                     "tags":  [
+                                  "emergency",
+                                  "travel",
+                                  "governance"
+                              ],
+                     "outputs":  [
+                                     "emergencyPlan",
+                                     "riskSignals",
+                                     "handoffMap"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/travel/emergency/orchestrate",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "emergencyPlan",
+                                                                                   "riskSignals",
+                                                                                   "handoffMap"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Emergency orchestration",
+                                                  "domain":  "travel"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "travel-emergency-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  true
+                 },
+                 {
+                     "api_key":  "drone-fleet",
+                     "name":  "Drone Fleet Coordination API",
+                     "version":  "1.0",
+                     "phase":  "Phase-6",
+                     "category_name":  "drone",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Coordinates drone fleet cognition, edge autonomy, safety policies, and replay traces.",
+                     "full_description":  "Coordinates drone fleet cognition, edge autonomy, safety policies, and replay traces. Capability: Fleet cognition. Billing: Orchestration billing.",
+                     "capabilities":  [
+                                          "drone",
+                                          "fleet",
+                                          "edge"
+                                      ],
+                     "tags":  [
+                                  "drone",
+                                  "fleet",
+                                  "edge"
+                              ],
+                     "outputs":  [
+                                     "fleetGraph",
+                                     "coordinationPlan",
+                                     "edgeReplay"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/drone/fleet/coordinate",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "fleetGraph",
+                                                                                   "coordinationPlan",
+                                                                                   "edgeReplay"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Fleet cognition",
+                                                  "domain":  "drone"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "drone-fleet-simulation"
+                                             },
+                     "replay_support":  true,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "drone-docking",
+                     "name":  "Drone Docking Cognition API",
+                     "version":  "1.0",
+                     "phase":  "Phase-6",
+                     "category_name":  "drone-ops",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Plans docking station cognition, charging orchestration, and safety governance.",
+                     "full_description":  "Plans docking station cognition, charging orchestration, and safety governance. Capability: Docking operations. Billing: Per operation.",
+                     "capabilities":  [
+                                          "drone",
+                                          "docking",
+                                          "charging"
+                                      ],
+                     "tags":  [
+                                  "drone",
+                                  "docking",
+                                  "charging"
+                              ],
+                     "outputs":  [
+                                     "dockingPlan",
+                                     "chargingSignals",
+                                     "governanceTrace"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/drone/docking/orchestrate",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "dockingPlan",
+                                                                                   "chargingSignals",
+                                                                                   "governanceTrace"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Docking operations",
+                                                  "domain":  "drone-ops"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "drone-docking-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  true
+                 },
+                 {
+                     "api_key":  "drone-box",
+                     "name":  "Drone-in-a-Box Operations API",
+                     "version":  "1.0",
+                     "phase":  "Phase-6",
+                     "category_name":  "drone-ops",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Generates cognitive plans for box deployment, recovery, monitoring, and replay.",
+                     "full_description":  "Generates cognitive plans for box deployment, recovery, monitoring, and replay. Capability: Drone operational ecosystem. Billing: Per operation.",
+                     "capabilities":  [
+                                          "drone-in-a-box",
+                                          "recovery"
+                                      ],
+                     "tags":  [
+                                  "drone-in-a-box",
+                                  "recovery"
+                              ],
+                     "outputs":  [
+                                     "boxOperationPlan",
+                                     "healthTrace",
+                                     "replaySnapshot"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/drone/box/operate",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "boxOperationPlan",
+                                                                                   "healthTrace",
+                                                                                   "replaySnapshot"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Drone operational ecosystem",
+                                                  "domain":  "drone-ops"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "drone-box-simulation"
+                                             },
+                     "replay_support":  true,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "rbt-intent",
+                     "name":  "Robotics Intent Overlay API",
+                     "version":  "1.0",
+                     "phase":  "Phase-6",
+                     "category_name":  "robotics",
+                     "status_name":  "active",
+                     "lifecycle_state":  "active",
+                     "short_description":  "Builds hierarchical robotics cognition graphs for non-aerial robotics orchestration.",
+                     "full_description":  "Builds hierarchical robotics cognition graphs for non-aerial robotics orchestration. Capability: Robotics cognition. Billing: Usage based.",
+                     "capabilities":  [
+                                          "robotics",
+                                          "workflow",
+                                          "CRL"
+                                      ],
+                     "tags":  [
+                                  "robotics",
+                                  "workflow",
+                                  "CRL"
+                              ],
+                     "outputs":  [
+                                     "roboticsIntentGraph",
+                                     "adaptiveEvolution",
+                                     "modalityInfluence"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "1000 requests/hour",
+                     "rate_limit":  "1000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/robotics/intent/parse",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "roboticsIntentGraph",
+                                                                                   "adaptiveEvolution",
+                                                                                   "modalityInfluence"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Robotics cognition",
+                                                  "domain":  "robotics"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "rbt-intent-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "rbt-workflow",
+                     "name":  "Robotics Workflow Orchestration API",
+                     "version":  "1.0",
+                     "phase":  "Phase-6",
+                     "category_name":  "robotics",
+                     "status_name":  "active",
+                     "lifecycle_state":  "active",
+                     "short_description":  "Coordinates adaptive workflow cognition for logistics, inspection, manufacturing, and accessibility.",
+                     "full_description":  "Coordinates adaptive workflow cognition for logistics, inspection, manufacturing, and accessibility. Capability: Workflow orchestration. Billing: Orchestration billing.",
+                     "capabilities":  [
+                                          "robotics",
+                                          "workflow",
+                                          "Industry 4.0"
+                                      ],
+                     "tags":  [
+                                  "robotics",
+                                  "workflow",
+                                  "Industry 4.0"
+                              ],
+                     "outputs":  [
+                                     "workflowCoordination",
+                                     "orchestrationChange",
+                                     "explainabilityRequired"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "1000 requests/hour",
+                     "rate_limit":  "1000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/robotics/workflow/coordinate",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "workflowCoordination",
+                                                                                   "orchestrationChange",
+                                                                                   "explainabilityRequired"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Workflow orchestration",
+                                                  "domain":  "robotics"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "rbt-workflow-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "rbt-distributed",
+                     "name":  "Distributed Robotics Coordination API",
+                     "version":  "1.0",
+                     "phase":  "Phase-6",
+                     "category_name":  "robotics",
+                     "status_name":  "active",
+                     "lifecycle_state":  "active",
+                     "short_description":  "Synchronizes robotics cognition across distributed robots, regions, and edge contexts.",
+                     "full_description":  "Synchronizes robotics cognition across distributed robots, regions, and edge contexts. Capability: Distributed robotics. Billing: Distributed billing.",
+                     "capabilities":  [
+                                          "distributed",
+                                          "robotics",
+                                          "edge"
+                                      ],
+                     "tags":  [
+                                  "distributed",
+                                  "robotics",
+                                  "edge"
+                              ],
+                     "outputs":  [
+                                     "synchronizationTrace",
+                                     "arbitrationDecision",
+                                     "vectorClocks"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "1000 requests/hour",
+                     "rate_limit":  "1000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/robotics/distributed/synchronize",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "synchronizationTrace",
+                                                                                   "arbitrationDecision",
+                                                                                   "vectorClocks"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Distributed robotics",
+                                                  "domain":  "robotics"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "rbt-distributed-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "cbt-workspace",
+                     "name":  "Shared Workspace Cognition API",
+                     "version":  "1.0",
+                     "phase":  "Phase-6",
+                     "category_name":  "cobotics",
+                     "status_name":  "active",
+                     "lifecycle_state":  "active",
+                     "short_description":  "Assesses human-machine shared workspace state, safety margin, accessibility, and cooperation signals.",
+                     "full_description":  "Assesses human-machine shared workspace state, safety margin, accessibility, and cooperation signals. Capability: Cobotics cognition. Billing: Usage based.",
+                     "capabilities":  [
+                                          "cobotics",
+                                          "human-machine",
+                                          "safety"
+                                      ],
+                     "tags":  [
+                                  "cobotics",
+                                  "human-machine",
+                                  "safety"
+                              ],
+                     "outputs":  [
+                                     "sharedWorkspaceGraph",
+                                     "collaborationRisk",
+                                     "adaptationSignals"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "1000 requests/hour",
+                     "rate_limit":  "1000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/cobotics/workspace/assess",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "sharedWorkspaceGraph",
+                                                                                   "collaborationRisk",
+                                                                                   "adaptationSignals"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Cobotics cognition",
+                                                  "domain":  "cobotics"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "cbt-workspace-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "cbt-adapt",
+                     "name":  "Collaborative Adaptation API",
+                     "version":  "1.0",
+                     "phase":  "Phase-6",
+                     "category_name":  "cobotics",
+                     "status_name":  "active",
+                     "lifecycle_state":  "active",
+                     "short_description":  "Explains and plans collaboration shifts based on human state, workflow, and safety context.",
+                     "full_description":  "Explains and plans collaboration shifts based on human state, workflow, and safety context. Capability: Collaborative orchestration. Billing: Orchestration billing.",
+                     "capabilities":  [
+                                          "cobotics",
+                                          "adaptive interaction"
+                                      ],
+                     "tags":  [
+                                  "cobotics",
+                                  "adaptive interaction"
+                              ],
+                     "outputs":  [
+                                     "collaborationDecisionGraph",
+                                     "handoffPlan",
+                                     "safetyInterventions"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "1000 requests/hour",
+                     "rate_limit":  "1000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/cobotics/collaboration/adapt",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "collaborationDecisionGraph",
+                                                                                   "handoffPlan",
+                                                                                   "safetyInterventions"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Collaborative orchestration",
+                                                  "domain":  "cobotics"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "cbt-adapt-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "replay-execute",
+                     "name":  "Deterministic Replay API",
+                     "version":  "1.0",
+                     "phase":  "Platform-Operations",
+                     "category_name":  "replay",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Reconstructs cognitive executions, orchestration lineage, confidence evolution, and governance propagation.",
+                     "full_description":  "Reconstructs cognitive executions, orchestration lineage, confidence evolution, and governance propagation. Capability: Replay reconstruction. Billing: Replay billing.",
+                     "capabilities":  [
+                                          "replay",
+                                          "lineage",
+                                          "audit"
+                                      ],
+                     "tags":  [
+                                  "replay",
+                                  "lineage",
+                                  "audit"
+                              ],
+                     "outputs":  [
+                                     "replayTrace",
+                                     "lineageGraph",
+                                     "integrityReport"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/replay/execute",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "replayTrace",
+                                                                                   "lineageGraph",
+                                                                                   "integrityReport"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Replay reconstruction",
+                                                  "domain":  "replay"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "replay-execute-simulation"
+                                             },
+                     "replay_support":  true,
+                     "governance_support":  true
+                 },
+                 {
+                     "api_key":  "replay-visualize",
+                     "name":  "Replay Visualization API",
+                     "version":  "1.0",
+                     "phase":  "Platform-Operations",
+                     "category_name":  "replay",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Returns visualizable replay nodes, edges, decisions, governance checkpoints, and confidence deltas.",
+                     "full_description":  "Returns visualizable replay nodes, edges, decisions, governance checkpoints, and confidence deltas. Capability: Replay explorer. Billing: Replay billing.",
+                     "capabilities":  [
+                                          "replay",
+                                          "visualization"
+                                      ],
+                     "tags":  [
+                                  "replay",
+                                  "visualization"
+                              ],
+                     "outputs":  [
+                                     "nodes",
+                                     "edges",
+                                     "confidenceTimeline"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "GET",
+                                           "path":  "/api/v1/cognitive/replay/{replayId}/visualize",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "nodes",
+                                                                                   "edges",
+                                                                                   "confidenceTimeline"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Replay explorer",
+                                                  "domain":  "replay"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "replay-visualize-simulation"
+                                             },
+                     "replay_support":  true,
+                     "governance_support":  true
+                 },
+                 {
+                     "api_key":  "gov-validate",
+                     "name":  "Governance Validation API",
+                     "version":  "1.0",
+                     "phase":  "Platform-Operations",
+                     "category_name":  "governance",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Validates cognitive artifacts against tenant, safety, industrial, healthcare, privacy, and workflow policies.",
+                     "full_description":  "Validates cognitive artifacts against tenant, safety, industrial, healthcare, privacy, and workflow policies. Capability: Governance enforcement. Billing: Governance billing.",
+                     "capabilities":  [
+                                          "governance",
+                                          "policy",
+                                          "audit"
+                                      ],
+                     "tags":  [
+                                  "governance",
+                                  "policy",
+                                  "audit"
+                              ],
+                     "outputs":  [
+                                     "governanceSignal",
+                                     "policyEvidence",
+                                     "blockedActions"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/governance/validate",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "governanceSignal",
+                                                                                   "policyEvidence",
+                                                                                   "blockedActions"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Governance enforcement",
+                                                  "domain":  "governance"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "gov-validate-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  true
+                 },
+                 {
+                     "api_key":  "gov-propagate",
+                     "name":  "Governance Propagation API",
+                     "version":  "1.0",
+                     "phase":  "Platform-Operations",
+                     "category_name":  "governance",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Propagates governance constraints across composed graphs, distributed cognition, and orchestration stages.",
+                     "full_description":  "Propagates governance constraints across composed graphs, distributed cognition, and orchestration stages. Capability: Governance propagation. Billing: Governance billing.",
+                     "capabilities":  [
+                                          "governance",
+                                          "composition"
+                                      ],
+                     "tags":  [
+                                  "governance",
+                                  "composition"
+                              ],
+                     "outputs":  [
+                                     "propagationTrace",
+                                     "policyMerge",
+                                     "riskMap"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/cognitive/governance/propagate",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "propagationTrace",
+                                                                                   "policyMerge",
+                                                                                   "riskMap"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Governance propagation",
+                                                  "domain":  "governance"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "gov-propagate-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  true
+                 },
+                 {
+                     "api_key":  "obs-health",
+                     "name":  "Cognitive Observability API",
+                     "version":  "1.0",
+                     "phase":  "Platform-Operations",
+                     "category_name":  "observability",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Reports API health, latency, success rate, governance activity, replay integrity, and tenant operations.",
+                     "full_description":  "Reports API health, latency, success rate, governance activity, replay integrity, and tenant operations. Capability: Operational observability. Billing: Observability billing.",
+                     "capabilities":  [
+                                          "observability",
+                                          "latency",
+                                          "health"
+                                      ],
+                     "tags":  [
+                                  "observability",
+                                  "latency",
+                                  "health"
+                              ],
+                     "outputs":  [
+                                     "healthScore",
+                                     "latencyMetrics",
+                                     "governancePassRate"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "GET",
+                                           "path":  "/api/v1/platform/observability/cognitive-health",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "healthScore",
+                                                                                   "latencyMetrics",
+                                                                                   "governancePassRate"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Operational observability",
+                                                  "domain":  "observability"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "obs-health-simulation"
+                                             },
+                     "replay_support":  true,
+                     "governance_support":  true
+                 },
+                 {
+                     "api_key":  "obs-traces",
+                     "name":  "Orchestration Trace API",
+                     "version":  "1.0",
+                     "phase":  "Platform-Operations",
+                     "category_name":  "observability",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Lists orchestration traces, distributed sync events, anomalies, edge visibility, and confidence drift.",
+                     "full_description":  "Lists orchestration traces, distributed sync events, anomalies, edge visibility, and confidence drift. Capability: Trace inspection. Billing: Observability billing.",
+                     "capabilities":  [
+                                          "trace",
+                                          "edge",
+                                          "anomaly"
+                                      ],
+                     "tags":  [
+                                  "trace",
+                                  "edge",
+                                  "anomaly"
+                              ],
+                     "outputs":  [
+                                     "traceList",
+                                     "anomalySignals",
+                                     "syncHealth"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "GET",
+                                           "path":  "/api/v1/platform/observability/traces",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "traceList",
+                                                                                   "anomalySignals",
+                                                                                   "syncHealth"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Trace inspection",
+                                                  "domain":  "observability"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "obs-traces-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "platform-tenant",
+                     "name":  "Tenant Governance API",
+                     "version":  "1.0",
+                     "phase":  "Platform-Operations",
+                     "category_name":  "platform",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Validates tenant isolation, workspace policy, API entitlements, quota, and replay access boundaries.",
+                     "full_description":  "Validates tenant isolation, workspace policy, API entitlements, quota, and replay access boundaries. Capability: Tenant governance. Billing: Enterprise plan.",
+                     "capabilities":  [
+                                          "tenant",
+                                          "workspace",
+                                          "quota"
+                                      ],
+                     "tags":  [
+                                  "tenant",
+                                  "workspace",
+                                  "quota"
+                              ],
+                     "outputs":  [
+                                     "tenantDecision",
+                                     "quotaState",
+                                     "policyTrace"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "enterprise",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/platform/tenants/governance/validate",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "tenantDecision",
+                                                                                   "quotaState",
+                                                                                   "policyTrace"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Tenant governance",
+                                                  "domain":  "platform"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "platform-tenant-simulation"
+                                             },
+                     "replay_support":  true,
+                     "governance_support":  true
+                 },
+                 {
+                     "api_key":  "platform-keys",
+                     "name":  "API Key Management API",
+                     "version":  "1.0",
+                     "phase":  "Platform-Operations",
+                     "category_name":  "platform",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Creates, rotates, scopes, and revokes tenant-safe API keys for domains and environments.",
+                     "full_description":  "Creates, rotates, scopes, and revokes tenant-safe API keys for domains and environments. Capability: API key management. Billing: Included.",
+                     "capabilities":  [
+                                          "auth",
+                                          "keys",
+                                          "tenant"
+                                      ],
+                     "tags":  [
+                                  "auth",
+                                  "keys",
+                                  "tenant"
+                              ],
+                     "outputs":  [
+                                     "apiKeyRef",
+                                     "scope",
+                                     "rotationPolicy"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "free",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/platform/api-keys",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "apiKeyRef",
+                                                                                   "scope",
+                                                                                   "rotationPolicy"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "API key management",
+                                                  "domain":  "platform"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "platform-keys-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "billing-cart",
+                     "name":  "API Cart API",
+                     "version":  "1.0",
+                     "phase":  "Platform-Operations",
+                     "category_name":  "billing",
+                     "status_name":  "active",
+                     "lifecycle_state":  "active",
+                     "short_description":  "Adds APIs, bundles, plans, and orchestration units to a commercial subscription cart.",
+                     "full_description":  "Adds APIs, bundles, plans, and orchestration units to a commercial subscription cart. Capability: API commerce. Billing: Free operation.",
+                     "capabilities":  [
+                                          "billing",
+                                          "cart",
+                                          "plans"
+                                      ],
+                     "tags":  [
+                                  "billing",
+                                  "cart",
+                                  "plans"
+                              ],
+                     "outputs":  [
+                                     "cartState",
+                                     "estimatedMonthly",
+                                     "quotaPreview"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "free",
+                     "quota_limit":  "1000 requests/hour",
+                     "rate_limit":  "1000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/billing/cart/items",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "cartState",
+                                                                                   "estimatedMonthly",
+                                                                                   "quotaPreview"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "API commerce",
+                                                  "domain":  "billing"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "billing-cart-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "billing-subscribe",
+                     "name":  "Subscription Management API",
+                     "version":  "1.0",
+                     "phase":  "Platform-Operations",
+                     "category_name":  "billing",
+                     "status_name":  "active",
+                     "lifecycle_state":  "active",
+                     "short_description":  "Creates and manages free, developer, startup, enterprise, orchestration, replay, governance, and observability subscriptions.",
+                     "full_description":  "Creates and manages free, developer, startup, enterprise, orchestration, replay, governance, and observability subscriptions. Capability: Subscription management. Billing: Plan based.",
+                     "capabilities":  [
+                                          "billing",
+                                          "subscription"
+                                      ],
+                     "tags":  [
+                                  "billing",
+                                  "subscription"
+                              ],
+                     "outputs":  [
+                                     "subscriptionId",
+                                     "invoicePreview",
+                                     "paymentProviderReady"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "developer",
+                     "quota_limit":  "1000 requests/hour",
+                     "rate_limit":  "1000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/billing/subscriptions",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "subscriptionId",
+                                                                                   "invoicePreview",
+                                                                                   "paymentProviderReady"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Subscription management",
+                                                  "domain":  "billing"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "billing-subscribe-simulation"
+                                             },
+                     "replay_support":  true,
+                     "governance_support":  true
+                 },
+                 {
+                     "api_key":  "auth-token",
+                     "name":  "Authentication Token API",
+                     "version":  "1.0",
+                     "phase":  "Platform-Operations",
+                     "category_name":  "auth",
+                     "status_name":  "production",
+                     "lifecycle_state":  "production",
+                     "short_description":  "Issues tenant-scoped access tokens for sandbox, production, and simulated environment modes.",
+                     "full_description":  "Issues tenant-scoped access tokens for sandbox, production, and simulated environment modes. Capability: Authentication. Billing: Included.",
+                     "capabilities":  [
+                                          "auth",
+                                          "tenant",
+                                          "mode"
+                                      ],
+                     "tags":  [
+                                  "auth",
+                                  "tenant",
+                                  "mode"
+                              ],
+                     "outputs":  [
+                                     "accessToken",
+                                     "expiresAt",
+                                     "allowedScopes"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "free",
+                     "quota_limit":  "10000 requests/hour",
+                     "rate_limit":  "10000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/auth/token",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "accessToken",
+                                                                                   "expiresAt",
+                                                                                   "allowedScopes"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Authentication",
+                                                  "domain":  "auth"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "auth-token-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  false
+                 },
+                 {
+                     "api_key":  "auth-sso",
+                     "name":  "Enterprise SSO API",
+                     "version":  "1.0",
+                     "phase":  "Platform-Operations",
+                     "category_name":  "auth",
+                     "status_name":  "active",
+                     "lifecycle_state":  "active",
+                     "short_description":  "Configures enterprise SSO metadata, workspace roles, audit policy, and governance isolation.",
+                     "full_description":  "Configures enterprise SSO metadata, workspace roles, audit policy, and governance isolation. Capability: Enterprise authentication. Billing: Enterprise plan.",
+                     "capabilities":  [
+                                          "SSO",
+                                          "enterprise",
+                                          "RBAC"
+                                      ],
+                     "tags":  [
+                                  "SSO",
+                                  "enterprise",
+                                  "RBAC"
+                              ],
+                     "outputs":  [
+                                     "ssoConfigId",
+                                     "roleMap",
+                                     "auditPolicy"
+                                 ],
+                     "sdk_available":  true,
+                     "sdk_languages":  [
+                                           "ts",
+                                           "py",
+                                           "rest",
+                                           "edge"
+                                       ],
+                     "requires_authentication":  true,
+                     "min_tier":  "enterprise",
+                     "quota_limit":  "1000 requests/hour",
+                     "rate_limit":  "1000 requests/hour",
+                     "endpoints":  [
+                                       {
+                                           "method":  "POST",
+                                           "path":  "/api/v1/auth/enterprise/sso/configure",
+                                           "request_schema":  {
+                                                                  "input":  "object",
+                                                                  "tenantId":  "string",
+                                                                  "replayRequested":  "boolean",
+                                                                  "mode":  "sandbox | production | simulated",
+                                                                  "governanceContext":  "object"
+                                                              },
+                                           "response_schema":  {
+                                                                   "confidenceEvolution":  "array",
+                                                                   "outputs":  [
+                                                                                   "ssoConfigId",
+                                                                                   "roleMap",
+                                                                                   "auditPolicy"
+                                                                               ],
+                                                                   "cognitiveArtifact":  "object",
+                                                                   "governanceTrace":  "array",
+                                                                   "replayRef":  "string",
+                                                                   "status":  "ok | rejected | needs_review"
+                                                               }
+                                       }
+                                   ],
+                     "cognitive_dimensions":  {
+                                                  "capability":  "Enterprise authentication",
+                                                  "domain":  "auth"
+                                              },
+                     "simulation_behavior":  {
+                                                 "primitive":  "auth-sso-simulation"
+                                             },
+                     "replay_support":  false,
+                     "governance_support":  true
+                 }
+             ]
+}
