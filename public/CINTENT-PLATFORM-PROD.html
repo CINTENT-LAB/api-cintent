@@ -739,7 +739,45 @@
     .trace-card strong { display: block; font-size: 12px; }
     .trace-card span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.4; }
     .trace-step[data-state="completed"] .trace-num { background: var(--green); color: #fff; }
-    .trace-step[data-state="running"] .trace-num { background: var(--blue); color: #fff; box-shadow: 0 0 0 5px rgba(27, 99, 201, 0.12); }
+    .trace-step[data-state="running"] .trace-num,
+    .trace-step[data-state="initializing"] .trace-num,
+    .trace-step[data-state="validating"] .trace-num,
+    .trace-step[data-state="coordinating"] .trace-num,
+    .trace-step[data-state="orchestrating"] .trace-num,
+    .trace-step[data-state="governance-check"] .trace-num,
+    .trace-step[data-state="governance-validation"] .trace-num,
+    .trace-step[data-state="replay-capturing"] .trace-num,
+    .trace-step[data-state="synchronizing"] .trace-num,
+    .trace-step[data-state="detecting-human"] .trace-num,
+    .trace-step[data-state="synchronizing-intent"] .trace-num,
+    .trace-step[data-state="collaborative-planning"] .trace-num,
+    .trace-step[data-state="adaptive-balancing"] .trace-num,
+    .trace-step[data-state="intent-recognition"] .trace-num,
+    .trace-step[data-state="contextual-interpretation"] .trace-num,
+    .trace-step[data-state="ambiguity-resolution"] .trace-num,
+    .trace-step[data-state="multimodal-capture"] .trace-num,
+    .trace-step[data-state="interaction-interpretation"] .trace-num,
+    .trace-step[data-state="contextual-adaptation"] .trace-num,
+    .trace-step[data-state="adaptive-collaboration"] .trace-num,
+    .trace-step[data-state="override-governance"] .trace-num,
+    .trace-step[data-state="safety-validation"] .trace-num,
+    .trace-step[data-state="trust-scoring"] .trace-num,
+    .trace-step[data-state="confidence-propagation"] .trace-num,
+    .trace-step[data-state="behavioral-signal-analysis"] .trace-num,
+    .trace-step[data-state="presence-synchronization"] .trace-num,
+    .trace-step[data-state="explainability-reconstruction"] .trace-num,
+    .trace-step[data-state="escalation-propagation"] .trace-num,
+    .trace-step[data-state="initializing-production"] .trace-num,
+    .trace-step[data-state="synchronizing-factory"] .trace-num,
+    .trace-step[data-state="coordinating-workflow"] .trace-num,
+    .trace-step[data-state="balancing-production"] .trace-num,
+    .trace-step[data-state="anomaly-detecting"] .trace-num,
+    .trace-step[data-state="governance-validating"] .trace-num,
+    .trace-step[data-state="executing"] .trace-num { background: var(--blue); color: #fff; box-shadow: 0 0 0 5px rgba(27, 99, 201, 0.12); }
+    .trace-step[data-state="degraded"] .trace-num,
+    .trace-step[data-state="recovered"] .trace-num,
+    .trace-step[data-state="safety-paused"] .trace-num,
+    .trace-step[data-state="paused"] .trace-num { background: var(--amber); color: #fff; }
     .trace-step[data-state="failed"] .trace-num { background: var(--red); color: #fff; }
     .trace-step[data-state="pending"] { opacity: .62; }
     .state-chip {
@@ -1029,6 +1067,9 @@
       introHidden: false,
       plan: 'startup',
       playgroundMode: 'sandbox',
+      roboticsEcosystem: 'ros2',
+      uavStandard: 'mavlink',
+      uavEcosystem: 'px4',
       session: null,
       billing: null,
       invoice: null,
@@ -1036,6 +1077,9 @@
       simulations: [],
       selectedSimulationId: 'travel-orchestration',
       simulationRuntime: null,
+      executionRuntime: null,
+      executionStream: null,
+      executionPoller: null,
       apiKeys: [],
       domainDetails: {},
       selectedApplicationId: '',
@@ -1368,6 +1412,38 @@
       const output = { status: 'waiting-for-backend-execution', api: a.name, source: 'playground-execution-engine' };
       const demo = state.session && state.session.user && state.session.user.demo;
       const locked = isLockedApi(a);
+      const ecosystemOptions = [
+        ['ros2', 'ROS 2 (Kilted / Jazzy LTS)'],
+        ['gemini-robotics', 'Gemini Robotics VLA'],
+        ['nvidia-isaac', 'NVIDIA Isaac / Isaac Sim'],
+        ['abb-rws', 'ABB Robot Web Services'],
+        ['kuka', 'KUKA Robotics APIs'],
+        ['hebi', 'HEBI Robotics APIs'],
+        ['fairino', 'Fairino APIs'],
+        ['lynxmotion-lss', 'Lynxmotion LSS'],
+        ['flask-iot', 'Flask IoT / Embedded Gateway']
+      ];
+      const uavStandardOptions = [
+        ['mavlink', 'MAVLink'],
+        ['astm-f3411', 'ASTM F3411 Remote ID'],
+        ['dgca-india-2021', 'DGCA India / DigitalSky'],
+        ['icao-utm', 'ICAO UTM'],
+        ['iso-21384-3', 'ISO 21384-3'],
+        ['3gpp-uav-rel17', '3GPP UAV Rel 17+'],
+        ['easa-drone-framework', 'EASA Framework'],
+        ['nato-stanag-4671', 'NATO STANAG 4671 readiness'],
+        ['ansi-uassc', 'ANSI UASSC']
+      ];
+      const uavEcosystemOptions = [
+        ['px4', 'PX4'],
+        ['ardupilot', 'ArduPilot'],
+        ['dronekit', 'DroneKit'],
+        ['mavsdk', 'MAVSDK'],
+        ['dji-sdk', 'DJI SDKs'],
+        ['ros2-uav', 'ROS/ROS2 UAV'],
+        ['qgroundcontrol', 'QGroundControl'],
+        ['edge-uav-runtime', 'Edge UAV Runtime']
+      ];
       const modeOptions = demo
         ? '<option value="sandbox">Sandbox</option>'
         : '<option value="sandbox">Sandbox</option><option value="production">Production preview</option><option value="simulated">Simulated environment</option>';
@@ -1379,14 +1455,17 @@
               <div class="form-grid">
                 <div class="field"><label>API</label><select class="select" id="playApi">${apiCatalog.map(x => `<option value="${x.id}" ${x.id === a.id ? 'selected' : ''}>${x.name}</option>`).join('')}</select></div>
                 <div class="field"><label>Mode</label><select class="select" id="playMode">${modeOptions}</select></div>
+                <div class="field"><label>Robotics ecosystem</label><select class="select" id="playEcosystem">${ecosystemOptions.map(x => `<option value="${x[0]}" ${x[0] === state.roboticsEcosystem ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div>
+                <div class="field"><label>UAV standard</label><select class="select" id="playUavStandard">${uavStandardOptions.map(x => `<option value="${x[0]}" ${x[0] === state.uavStandard ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div>
+                <div class="field"><label>UAV ecosystem</label><select class="select" id="playUavEcosystem">${uavEcosystemOptions.map(x => `<option value="${x[0]}" ${x[0] === state.uavEcosystem ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div>
               </div>
-              <div class="field" style="margin-top:12px;"><label>Request body</label><textarea class="textarea" id="playRequest">${pretty({ tenantId: 'tenant-enterprise-demo', mode: state.playgroundMode, input: { workflow: a.tags[0], replayRequested: true }, governanceContext: { policy: 'enterprise-default' } })}</textarea></div>
+              <div class="field" style="margin-top:12px;"><label>Request body</label><textarea class="textarea" id="playRequest">${pretty({ tenantId: 'tenant-enterprise-demo', mode: state.playgroundMode, input: { workflow: a.tags[0], roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem, replayRequested: true }, governanceContext: { policy: 'enterprise-default', roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem } })}</textarea></div>
               <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runPlayground" ${locked ? 'disabled' : ''}>Run simulated execution</button><button class="secondary-btn" type="button" data-add-cart="${a.id}">Add to cart</button>${demo ? '<span class="tag warn">Demo Mode: sandbox-only</span>' : ''}</div>
             </div>
           </div>
           <div class="detail"><h2>Execution result</h2><p class="detail-desc">Inspect orchestration lineage, replay trace, confidence evolution, governance intervention, multimodal fusion, and distributed synchronization.</p><pre id="playOutput">${pretty(output)}</pre></div>
         </div>
-        <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Live orchestration lineage</h2><div class="sub">Execution-aware cognitive visibility layer generated by backend orchestration, governance, replay, dependency, and simulation engines.</div></div><span class="tag blue" id="lineageState">ready</span></div><div class="panel-body"><div class="lineage-grid"><div class="trace" id="orchestrationLineage">${a.lineage.map((s, i) => traceStep(i + 1, s, `${s} is defined by backend metadata contract`, 'pending')).join('')}</div><div><div class="mini-metrics" id="lineageMetrics">${renderLineageMetrics(null)}</div><pre id="lineageDetails">${pretty({ status: 'ready', selectedApi: a.id, source: 'backend execution plan will populate after run' })}</pre></div></div></div></div>`;
+        <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Live orchestration lineage</h2><div class="sub">Backend execution session with SSE updates, polling fallback, replay capture, governance propagation, dependency graph, and confidence evolution.</div></div><span class="tag blue" id="lineageState">${state.executionRuntime ? state.executionRuntime.status : 'ready'}</span></div><div class="panel-body"><div class="lineage-grid"><div class="trace" id="orchestrationLineage">${state.executionRuntime ? renderRuntimeStages(state.executionRuntime) : traceStep(1, `${a.name} runtime ready`, 'Press Run simulated execution to create a backend execution session and stream orchestration state.', 'pending')}</div><div><div class="mini-metrics" id="lineageMetrics">${renderRuntimeMetrics(state.executionRuntime)}</div><pre id="lineageDetails">${pretty(state.executionRuntime ? runtimeDetails(state.executionRuntime) : { status: 'ready', selectedApi: a.id, selectedDomain: a.domain, source: 'waiting-for-backend-runtime-session' })}</pre></div></div></div></div>`;
     }
     function traceStep(num, title, detail, state = 'pending') { return `<div class="trace-step" data-state="${state}"><div class="trace-num">${num}</div><div class="trace-card"><strong>${title}</strong><span>${detail}</span><span class="state-chip">${state}</span></div></div>`; }
     function renderLineageMetrics(plan) {
@@ -1401,6 +1480,92 @@
         ['Dependencies', dependencies || 'pending'],
         ['Replay events', replay || 'pending']
       ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('');
+    }
+
+    function renderRuntimeStages(runtime) {
+      if (!runtime || !Array.isArray(runtime.stages)) return traceStep(1, 'Runtime not started', 'Create an execution session to stream lineage updates.', 'pending');
+      return runtime.stages.map(stage => {
+        const stateName = stage.liveState || stage.state || 'pending';
+        const signals = [
+          `${stage.runtimeState}`,
+          `${stage.elapsedMs || 0}/${stage.durationMs || 0}ms`,
+          stage.confidenceAfter ? `${Math.round(stage.confidenceAfter * 100)}% confidence` : '',
+          stage.governanceEvents && stage.governanceEvents.length ? 'governance' : '',
+          stage.replayEvents && stage.replayEvents.length ? 'replay' : '',
+          stage.distributedEvents && stage.distributedEvents.length ? 'sync' : ''
+        ].filter(Boolean).join(' | ');
+        return traceStep(stage.order, stage.label, signals, stateName);
+      }).join('');
+    }
+
+    function renderRuntimeMetrics(runtime) {
+      const stages = runtime && runtime.stages ? runtime.stages : [];
+      const completed = stages.filter(stage => stage.liveState === 'completed').length;
+      const latestConfidence = runtime && runtime.confidenceTimeline && runtime.confidenceTimeline.length ? runtime.confidenceTimeline[runtime.confidenceTimeline.length - 1].after : 0;
+      return [
+        ['Runtime', runtime ? runtime.status : 'ready'],
+        ['Stages', stages.length ? `${completed}/${stages.length}` : 'pending'],
+        ['Confidence', latestConfidence ? `${Math.round(latestConfidence * 100)}%` : 'pending'],
+        ['Replay', runtime && runtime.replayPackage ? runtime.replayPackage.status || runtime.replayPackage.replayId : 'pending'],
+        ['Governance', runtime ? runtime.governancePropagation.length : 'pending'],
+        ['Dependencies', runtime ? runtime.dependencyGraph.length : 'pending'],
+        ['Robotics sync', runtime && runtime.roboticsTelemetry ? runtime.roboticsTelemetry.synchronization_events : 'n/a'],
+        ['Confidence drift', runtime && runtime.roboticsTelemetry ? runtime.roboticsTelemetry.confidence_drift : 'n/a'],
+        ['Cobotics human events', runtime && runtime.coboticsTelemetry ? runtime.coboticsTelemetry.human_interaction_events : 'n/a'],
+        ['Safety interventions', runtime && runtime.coboticsTelemetry ? runtime.coboticsTelemetry.safety_interventions : 'n/a'],
+        ['HRI intent events', runtime && runtime.hriTelemetry ? runtime.hriTelemetry.intent_events : 'n/a'],
+        ['HRI trust', runtime && runtime.hriTelemetry ? runtime.hriTelemetry.final_human_trust_confidence : 'n/a'],
+        ['Factory sync', runtime && runtime.industrialTelemetry ? runtime.industrialTelemetry.factory_synchronization_events : 'n/a'],
+        ['Industrial anomalies', runtime && runtime.industrialTelemetry ? runtime.industrialTelemetry.anomaly_events : 'n/a']
+      ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('');
+    }
+
+    function runtimeDetails(runtime) {
+      return {
+        executionId: runtime.executionId,
+        status: runtime.status,
+        currentStage: runtime.currentStage,
+        progress: runtime.progress,
+        graph: runtime.graph,
+        dependencies: runtime.dependencyGraph,
+        governance: runtime.governancePropagation,
+        replay: runtime.replayPropagation,
+        replayPackage: runtime.replayPackage,
+        confidence: runtime.confidenceTimeline,
+        distributedSynchronization: runtime.distributedSynchronization,
+        ecosystemCompatibility: runtime.ecosystemCompatibility,
+        uavStandards: runtime.uavStandards,
+        uavEcosystems: runtime.uavEcosystems,
+        uavTelemetry: runtime.uavTelemetry,
+        telemetry: runtime.telemetry,
+        roboticsTelemetry: runtime.roboticsTelemetry,
+        coboticsTelemetry: runtime.coboticsTelemetry,
+        hriTelemetry: runtime.hriTelemetry,
+        industrialTelemetry: runtime.industrialTelemetry
+      };
+    }
+
+    function renderExecutionRuntime(runtime) {
+      state.executionRuntime = runtime;
+      const lineage = document.getElementById('orchestrationLineage');
+      const metrics = document.getElementById('lineageMetrics');
+      const details = document.getElementById('lineageDetails');
+      const status = document.getElementById('lineageState');
+      if (lineage) lineage.innerHTML = renderRuntimeStages(runtime);
+      if (metrics) metrics.innerHTML = renderRuntimeMetrics(runtime);
+      if (details) details.textContent = JSON.stringify(runtimeDetails(runtime), null, 2);
+      if (status) status.textContent = runtime.status;
+    }
+
+    function stopExecutionSubscription() {
+      if (state.executionStream) {
+        state.executionStream.close();
+        state.executionStream = null;
+      }
+      if (state.executionPoller) {
+        clearInterval(state.executionPoller);
+        state.executionPoller = null;
+      }
     }
 
     function renderEnvironments() {
@@ -1536,6 +1701,30 @@
             ['Replay activity', data.replay_activity, 'amber'],
             ['Governance events', data.governance_events, 'green'],
             ['Synchronization activity', data.synchronization_activity, 'blue'],
+            ['Robotics APIs', data.robotics_metrics ? data.robotics_metrics.api_count : 0, 'blue'],
+            ['Robotics orchestration', data.robotics_metrics ? data.robotics_metrics.orchestration_events : 0, 'green'],
+            ['Robotics simulations', data.robotics_metrics ? data.robotics_metrics.simulation_events : 0, 'green'],
+            ['Robotics latency', data.robotics_metrics ? data.robotics_metrics.orchestration_latency_ms : 0, 'blue'],
+            ['Robotics coordination', data.robotics_metrics ? data.robotics_metrics.coordination_activity : 0, 'green'],
+            ['Confidence drift', data.robotics_metrics ? data.robotics_metrics.confidence_drift : 0, 'amber'],
+            ['Cobotics APIs', data.cobotics_metrics ? data.cobotics_metrics.api_count : 0, 'blue'],
+            ['Cobotics collaboration', data.cobotics_metrics ? data.cobotics_metrics.collaboration_events : 0, 'green'],
+            ['Human interactions', data.cobotics_metrics ? data.cobotics_metrics.human_interaction_events : 0, 'green'],
+            ['Safety interventions', data.cobotics_metrics ? data.cobotics_metrics.safety_interventions : 0, 'amber'],
+            ['HRI APIs', data.hri_metrics ? data.hri_metrics.api_count : 0, 'blue'],
+            ['HRI intent events', data.hri_metrics ? data.hri_metrics.intent_events : 0, 'green'],
+            ['HRI multimodal', data.hri_metrics ? data.hri_metrics.multimodal_events : 0, 'green'],
+            ['HRI overrides', data.hri_metrics ? data.hri_metrics.override_events : 0, 'amber'],
+            ['Industrial APIs', data.industrial_robotics_metrics ? data.industrial_robotics_metrics.api_count : 0, 'blue'],
+            ['Production executions', data.industrial_robotics_metrics ? data.industrial_robotics_metrics.production_executions : 0, 'green'],
+            ['Factory sync', data.industrial_robotics_metrics ? data.industrial_robotics_metrics.factory_synchronization_events : 0, 'green'],
+            ['Industrial anomalies', data.industrial_robotics_metrics ? data.industrial_robotics_metrics.anomaly_events : 0, 'amber'],
+            ['Ecosystems', data.robotics_ecosystem_metrics ? data.robotics_ecosystem_metrics.ecosystem_count : 0, 'blue'],
+            ['VLA ready', data.robotics_ecosystem_metrics && data.robotics_ecosystem_metrics.vla_ready ? 'yes' : 'no', 'green'],
+            ['UAV standards', data.uav_standards_metrics ? data.uav_standards_metrics.standards_count : 0, 'blue'],
+            ['MAVLink events', data.uav_standards_metrics ? data.uav_standards_metrics.mavlink_events : 0, 'green'],
+            ['UTM events', data.uav_standards_metrics ? data.uav_standards_metrics.utm_events : 0, 'green'],
+            ['DGCA events', data.uav_standards_metrics ? data.uav_standards_metrics.dgca_events : 0, 'amber'],
             ['Simulation activity', data.simulation_activity || 0, 'green'],
             ['Simulation anomalies', data.simulation_anomalies || 0, 'amber'],
             ['Operational anomalies', data.operational_anomalies, 'red'],
@@ -1555,6 +1744,12 @@
           } : null;
           target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Enterprise operational dashboards</h2><div class="sub">Metrics pulled from backend operational state for tenant ${data.tenant_activity.tenant}.</div></div></div><div class="panel-body"><div class="three-col">${rows.map(r => `<div class="tile"><h3>${r[0]}</h3><p>${r[1]} current window</p><div class="progress"><div class="bar ${r[2]}" style="width:${Math.min(100, Number(r[1]) * 10 || 8)}%"></div></div></div>`).join('')}</div></div></div>
           <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Recent executions</h2><pre>${pretty(data.recent_executions || [])}</pre></div><div class="detail"><h2>Latest execution plan</h2><pre>${pretty(livePlan || { status: 'No execution plan captured yet. Run the playground to generate live lineage.' })}</pre></div></div>
+          <div class="detail" style="margin-top:18px;"><h2>Robotics cognitive observability</h2><pre>${pretty(data.robotics_metrics || { status: 'Robotics telemetry will appear after entitled robotics executions or simulations.' })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Human-robot collaborative observability</h2><pre>${pretty(data.cobotics_metrics || { status: 'Cobotics telemetry will appear after entitled collaborative executions or simulations.' })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>HRI cognitive collaboration observability</h2><pre>${pretty(data.hri_metrics || { status: 'HRI telemetry will appear after human-robot interaction executions or simulations.' })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Industrial robotics observability</h2><pre>${pretty(data.industrial_robotics_metrics || { status: 'Industrial robotics telemetry will appear after entitled production executions or simulations.' })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Robotics ecosystem compatibility</h2><pre>${pretty(data.robotics_ecosystem_metrics || { status: 'Ecosystem compatibility telemetry will appear after robotics executions.' })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Autonomous air systems standards</h2><pre>${pretty(data.uav_standards_metrics || { status: 'UAV standards telemetry will appear after drone executions.' })}</pre></div>
           <div class="detail" style="margin-top:18px;"><h2>Lifecycle, quota, and audit</h2><pre>${pretty({ lifecycle: data.lifecycle, billingUsage: data.billing_usage, executionHealth: data.execution_health, audit: data.audit_events })}</pre></div>`;
         })
         .catch(() => {
@@ -1633,6 +1828,55 @@
       });
     }
 
+    function subscribeExecutionRuntime(payload) {
+      stopExecutionSubscription();
+      const initialRuntime = payload.runtime || null;
+      if (initialRuntime) renderExecutionRuntime(initialRuntime);
+      const stream = payload.stream || {};
+      const pollUrl = stream.polling || (payload.executionId ? `/api/executions/${payload.executionId}/status` : '');
+      const sseUrl = stream.sse || (payload.executionId ? `/api/executions/${payload.executionId}/events` : '');
+      let streamOpened = false;
+      if (window.EventSource && sseUrl) {
+        const source = new EventSource(sseUrl, { withCredentials: true });
+        state.executionStream = source;
+        source.addEventListener('open', () => { streamOpened = true; });
+        source.addEventListener('execution-update', event => {
+          const runtime = JSON.parse(event.data);
+          renderExecutionRuntime(runtime);
+          if (runtime.status === 'completed' || runtime.status === 'failed') stopExecutionSubscription();
+        });
+        source.addEventListener('execution-complete', event => {
+          renderExecutionRuntime(JSON.parse(event.data));
+          stopExecutionSubscription();
+        });
+        source.addEventListener('error', () => {
+          if (!streamOpened) startExecutionPolling(pollUrl, stream.intervalMs || 350);
+          if (source.readyState === EventSource.CLOSED) stopExecutionSubscription();
+        });
+      } else {
+        startExecutionPolling(pollUrl, stream.intervalMs || 350);
+      }
+    }
+
+    function startExecutionPolling(pollUrl, intervalMs) {
+      if (!pollUrl || state.executionPoller) return;
+      state.executionPoller = setInterval(async () => {
+        try {
+          const response = await fetch(pollUrl, { credentials: 'include' });
+          const runtime = await response.json();
+          if (!response.ok) throw new Error(runtime.error || 'Runtime polling failed');
+          renderExecutionRuntime(runtime);
+          if (runtime.status === 'completed' || runtime.status === 'failed') stopExecutionSubscription();
+        } catch (error) {
+          stopExecutionSubscription();
+          const details = document.getElementById('lineageDetails');
+          const status = document.getElementById('lineageState');
+          if (status) status.textContent = 'failed';
+          if (details) details.textContent = JSON.stringify({ error: error.message, source: 'execution-runtime-polling' }, null, 2);
+        }
+      }, intervalMs || 350);
+    }
+
     function renderWorkspace() {
       const keyRows = state.apiKeys.length ? state.apiKeys.map(key => `<div class="cart-row"><div><strong>${key.label}</strong><div class="sub">${key.prefix}... | ${key.scopes.join(', ')}</div></div><span>${key.createdAt.slice(0, 10)}</span></div>`).join('') : empty('No API keys generated for this session.');
       document.getElementById('view-workspace').innerHTML = `<div class="three-col"><div class="workspace-card tile"><h3>Enterprise workspaces</h3><p>Workspace: ${state.session.user.tenant}<br>Isolation: strict<br>Replay access: role scoped</p></div><div class="workspace-card tile"><h3>Subscription</h3><p>Tier: ${currentEntitlement().tier}<br>Status: ${currentEntitlement().status}<br>Quota: ${currentEntitlement().quota}</p></div><div class="workspace-card tile"><h3>API keys</h3><p>Keys: ${state.apiKeys.length}<br>Generation: developer tier or higher<br>Rotation: 30 days recommended</p></div></div><div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>API key management</h2><div class="sub">Persistent API keys require a Developer subscription or higher.</div></div><button class="action-btn" id="generateApiKey" type="button" ${hasTier('developer') && !state.session.user.demo ? '' : 'disabled'}>Generate API key</button></div><div class="panel-body">${!hasTier('developer') || state.session.user.demo ? lockBanner('API key generation is locked until Developer subscription activation. Demo Mode cannot create persistent keys.') : ''}${keyRows}<pre id="apiKeyOutput"></pre></div></div><div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Tenant governance boundaries</h2><div class="sub">Isolation across APIs, replay traces, governance policy, and observability visibility.</div></div></div><div class="panel-body">${infoList('Controls', ['Enterprise workspace isolation', 'Team role management', 'API key management', 'Governance isolation', 'Replay access control', 'Operational visibility boundaries'])}</div></div>`;
@@ -1678,14 +1922,77 @@
     }
 
     function renderVisualizer() {
-      fetch('/api/visualizer/data')
-        .then(r => r.json())
-        .then(data => {
+      Promise.all([
+        fetch('/api/visualizer/data').then(r => r.json()),
+        fetch('/api/replay/traces').then(r => r.json()),
+        fetch('/api/robotics/runtime/telemetry').then(r => r.json()),
+        fetch('/api/cobotics/runtime/telemetry').then(r => r.json()),
+        fetch('/api/hri/runtime/telemetry').then(r => r.json()),
+        fetch('/api/industrial-robotics/runtime/telemetry').then(r => r.json()),
+        fetch('/api/robotics/ecosystems').then(r => r.json()),
+        fetch('/api/uav/standards').then(r => r.json()),
+        fetch('/api/uav/runtime/telemetry').then(r => r.json())
+      ])
+        .then(([data, replay, roboticsRuntime, coboticsRuntime, hriRuntime, industrialRuntime, ecosystems, uavStandards, uavRuntime]) => {
           const graph = data.orchestration_graph || { nodes: [], edges: [] };
           const nodes = graph.nodes || [];
           const edges = graph.edges || [];
+          const replayTraces = replay.traces || [];
+          const robotics = roboticsRuntime.aggregate || {};
+          const cobotics = coboticsRuntime.aggregate || {};
+          const hri = hriRuntime.aggregate || {};
+          const industrial = industrialRuntime.aggregate || {};
+          const uav = uavRuntime.aggregate || {};
           const graphHtml = nodes.map((node, index) => `<div class="graph-node"><strong>${node.label}</strong><span>${node.group || 'cognition'} ${edges[index] ? `-> ${edges[index].to}` : ''}</span></div>${edges[index] ? `<div class="graph-edge">${edges[index].from} -> ${edges[index].to} (${edges[index].label})</div>` : ''}`).join('');
-          document.getElementById('view-visualizer').innerHTML = `<div class="two-col"><div class="panel"><div class="panel-head"><div><h2>Cognitive Execution Visualizer</h2><div class="sub">Backend-driven orchestration graph, replay timeline, governance propagation, confidence evolution, and dependencies.</div></div></div><div class="panel-body"><div class="graph-board">${graphHtml || empty('Run the playground to populate an execution graph.')}</div></div></div><div class="detail"><h2>Execution intelligence</h2><pre>${pretty({ replayTimeline: data.replay_timeline, governance: data.governance_propagation, confidence: data.confidence_evolution, synchronization: data.distributed_synchronization, dependencies: data.dependency_relationships })}</pre></div></div>`;
+          document.getElementById('view-visualizer').innerHTML = `<div class="two-col"><div class="panel"><div class="panel-head"><div><h2>Cognitive Execution Visualizer</h2><div class="sub">Backend-driven orchestration graph, replay timeline, governance propagation, confidence evolution, and dependencies.</div></div></div><div class="panel-body"><div class="graph-board">${graphHtml || empty('Run the playground to populate an execution graph.')}</div></div></div><div class="detail"><h2>Robotics runtime telemetry</h2><div class="mini-metrics">${[
+            ['Services', (roboticsRuntime.runtime_services || []).length],
+            ['Latency ms', robotics.orchestration_latency_ms || 0],
+            ['Sync health', robotics.synchronization_health || 'healthy'],
+            ['Replay events', robotics.replay_events || 0],
+            ['Governance', robotics.governance_interventions || 0],
+            ['Avg confidence', robotics.average_confidence || 0]
+          ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('')}</div><pre>${pretty({ activeSessions: roboticsRuntime.active_sessions, completedExecutions: roboticsRuntime.completed_executions, simulations: roboticsRuntime.simulations })}</pre></div></div>
+          <div class="detail" style="margin-top:18px;"><h2>Human-robot collaboration telemetry</h2><div class="mini-metrics">${[
+            ['Services', (coboticsRuntime.runtime_services || []).length],
+            ['Human events', cobotics.human_interaction_events || 0],
+            ['Safety interventions', cobotics.safety_interventions || 0],
+            ['Adaptive reassignment', cobotics.adaptive_reassignment_events || 0],
+            ['Replay events', cobotics.replay_events || 0],
+            ['Avg confidence', cobotics.average_collaborative_confidence || 0]
+          ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('')}</div><pre>${pretty({ activeSessions: coboticsRuntime.active_sessions, completedExecutions: coboticsRuntime.completed_executions, simulations: coboticsRuntime.simulations })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>HRI cognitive collaboration telemetry</h2><div class="mini-metrics">${[
+            ['Services', (hriRuntime.runtime_services || []).length],
+            ['Intent events', hri.intent_events || 0],
+            ['Multimodal events', hri.multimodal_events || 0],
+            ['Overrides', hri.override_events || 0],
+            ['Safety events', hri.safety_events || 0],
+            ['Trust confidence', hri.average_human_trust_confidence || 0]
+          ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('')}</div><pre>${pretty({ activeSessions: hriRuntime.active_sessions, completedExecutions: hriRuntime.completed_executions, simulations: hriRuntime.simulations, shunyaAiAlignment: hriRuntime.shunya_ai_alignment })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Industrial robotics telemetry</h2><div class="mini-metrics">${[
+            ['Services', (industrialRuntime.runtime_services || []).length],
+            ['Production latency', industrial.production_latency_ms || 0],
+            ['Factory sync', industrial.factory_synchronization_events || 0],
+            ['Anomalies', industrial.anomaly_events || 0],
+            ['Predictive events', industrial.predictive_coordination_events || 0],
+            ['Avg confidence', industrial.average_production_confidence || 0]
+          ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('')}</div><pre>${pretty({ activeSessions: industrialRuntime.active_sessions, completedExecutions: industrialRuntime.completed_executions, simulations: industrialRuntime.simulations, digitalTwinReady: industrial.digital_twin_ready })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Robotics ecosystem compatibility</h2><div class="mini-metrics">${[
+            ['Stacks', (ecosystems.compatibility || []).length],
+            ['ROS 2', ecosystems.ros2_baseline ? ecosystems.ros2_baseline.latestStable : 'ready'],
+            ['Latest LTS', ecosystems.ros2_baseline ? ecosystems.ros2_baseline.latestLts : 'ready'],
+            ['VLA stacks', (ecosystems.compatibility || []).filter(item => item.vla).length],
+            ['Replay-ready', (ecosystems.compatibility || []).filter(item => item.replay).length],
+            ['Governed', (ecosystems.compatibility || []).filter(item => item.governance).length]
+          ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('')}</div><pre>${pretty({ positioning: ecosystems.positioning, compatibility: ecosystems.compatibility, multiStackExamples: ecosystems.multi_stack_examples })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Autonomous air systems standards</h2><div class="mini-metrics">${[
+            ['Standards', (uavStandards.standards || []).length],
+            ['Ecosystems', (uavStandards.ecosystems || []).length],
+            ['MAVLink', uav.mavlink_events || 0],
+            ['Remote ID', uav.remote_id_events || 0],
+            ['UTM', uav.utm_events || 0],
+            ['Swarm', uav.swarm_events || 0]
+          ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('')}</div><pre>${pretty({ positioning: uavStandards.positioning, standards: uavStandards.standards, ecosystems: uavStandards.ecosystems, dgcaCategories: uavStandards.dgca_categories, multiStackExamples: uavStandards.multi_stack_examples })}</pre></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Replay Explorer</h2><pre>${pretty(replayTraces.slice(0, 6))}</pre></div><div class="detail"><h2>Execution intelligence</h2><pre>${pretty({ replayTimeline: data.replay_timeline, governance: data.governance_propagation, confidence: data.confidence_evolution, synchronization: data.distributed_synchronization, dependencies: data.dependency_relationships })}</pre></div></div>`;
         })
         .catch(() => {
           document.getElementById('view-visualizer').innerHTML = '<div class="panel"><div class="panel-head"><h2>Cognitive Execution Visualizer</h2></div><div class="panel-body">Unable to load visualization data.</div></div>';
@@ -1776,7 +2083,7 @@
       const stageBtn = event.target.closest('[data-stage]');
       if (stageBtn) { state.stage = stageBtn.dataset.stage; state.module = 'docs'; render(); return; }
       const apiBtn = event.target.closest('[data-api]');
-      if (apiBtn) { state.selectedApiId = apiBtn.dataset.api; render(); return; }
+      if (apiBtn) { state.selectedApiId = apiBtn.dataset.api; state.executionRuntime = null; stopExecutionSubscription(); render(); return; }
       const addBtn = event.target.closest('[data-add-cart]');
       if (addBtn) { if (!state.cart.includes(addBtn.dataset.addCart)) state.cart.push(addBtn.dataset.addCart); state.cartOpen = true; state.module = 'billing'; render(); return; }
       const removeBtn = event.target.closest('[data-remove-cart]');
@@ -1784,7 +2091,7 @@
       const openCartBtn = event.target.closest('[data-open-cart]');
       if (openCartBtn) { state.cartOpen = true; state.module = 'billing'; render(); return; }
       const playBtn = event.target.closest('[data-play-api]');
-      if (playBtn) { state.selectedApiId = playBtn.dataset.playApi; state.module = 'playground'; render(); return; }
+      if (playBtn) { state.selectedApiId = playBtn.dataset.playApi; state.executionRuntime = null; stopExecutionSubscription(); state.module = 'playground'; render(); return; }
       const planBtn = event.target.closest('[data-plan]');
       if (planBtn) { state.plan = planBtn.dataset.plan; render(); return; }
       const simulationBtn = event.target.closest('[data-simulation]');
@@ -1840,8 +2147,11 @@
     els.reset.addEventListener('click', () => { state.module = 'docs'; state.domain = 'all'; state.stage = 'all'; state.introHidden = false; state.selectedApiId = apiCatalog.some(api => api.id === 'rbt-workflow') ? 'rbt-workflow' : (apiCatalog[0] && apiCatalog[0].id); state.cartOpen = false; state.cart = ['rbt-workflow', 'gov-validate'].filter(id => apiCatalog.some(api => api.id === id)); els.search.value = ''; render(); });
 
     document.addEventListener('change', event => {
-      if (event.target.id === 'playApi') { state.selectedApiId = event.target.value; render(); }
+      if (event.target.id === 'playApi') { state.selectedApiId = event.target.value; state.executionRuntime = null; stopExecutionSubscription(); render(); }
       if (event.target.id === 'playMode') { state.playgroundMode = event.target.value; render(); }
+      if (event.target.id === 'playEcosystem') { state.roboticsEcosystem = event.target.value; render(); }
+      if (event.target.id === 'playUavStandard') { state.uavStandard = event.target.value; render(); }
+      if (event.target.id === 'playUavEcosystem') { state.uavEcosystem = event.target.value; render(); }
     });
 
     document.addEventListener('click', async event => {
@@ -1854,13 +2164,16 @@
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ api_key: a.id, mode: state.playgroundMode, input: parsed.input || parsed, governanceContext: parsed.governanceContext || {} })
+            body: JSON.stringify({ api_key: a.id, mode: state.playgroundMode, input: { ...(parsed.input || parsed), roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem }, governanceContext: { ...(parsed.governanceContext || {}), roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem } })
           });
           const payload = await response.json();
           document.getElementById('playOutput').textContent = JSON.stringify(payload, null, 2);
-          animateExecutionPlan(payload);
+          if (!response.ok) throw new Error(payload.error || 'Execution session failed');
+          subscribeExecutionRuntime(payload);
         } catch (error) {
           document.getElementById('playOutput').textContent = JSON.stringify({ error: error.message }, null, 2);
+          const status = document.getElementById('lineageState');
+          if (status) status.textContent = 'failed';
         }
       }
       if (event.target.id === 'runSimulation') {
@@ -1870,7 +2183,7 @@
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ simulationId: state.selectedSimulationId, mode: 'sandbox', input: { requestedFrom: 'simulations-module', replay: true, governance: true } })
+            body: JSON.stringify({ simulationId: state.selectedSimulationId, mode: 'sandbox', input: { requestedFrom: 'simulations-module', roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem, replay: true, governance: true } })
           });
           const payload = await response.json();
           if (!response.ok) throw new Error(payload.error || 'Simulation execution failed');
@@ -2061,12 +2374,18 @@
           const names = (payload.structuredResponse || []).map(item => `${item.name} (${item.lifecycle})`).join(', ');
           const domainNames = (payload.domainResponse || []).map(item => `${item.title} [${item.status}]`).join(', ');
           const appNames = (payload.applicationResponse || []).map(item => `${item.name} [${item.status}] -> ${(item.relatedApis || []).join(', ')}`).join('; ');
+          const robotics = payload.roboticsContext ? ` Robotics Core: ${payload.roboticsContext.apiCount} metadata-backed Robotics/Cobotics APIs are registered for ${payload.roboticsContext.phase}. Runtime services: ${(payload.roboticsContext.runtimeServices || []).slice(0, 5).map(item => item.name).join(', ')}. ${(payload.roboticsContext.APIs || []).slice(0, 4).map(item => `${item.name} (${item.lifecycle})`).join(', ')}. Positioning: ${payload.roboticsContext.positioning}` : '';
+          const cobotics = payload.coboticsContext ? ` Cobotics: ${payload.coboticsContext.apiCount} collaborative APIs are registered for ${payload.coboticsContext.phase}. Runtime services: ${(payload.coboticsContext.runtimeServices || []).slice(0, 5).map(item => item.name).join(', ')}. Capabilities: ${(payload.coboticsContext.coreCapabilities || []).slice(0, 5).join(', ')}. Positioning: ${payload.coboticsContext.positioning}` : '';
+          const hri = payload.hriContext ? ` HRI: ${payload.hriContext.apiCount} human-robot interaction APIs are registered for ${payload.hriContext.phase}. Runtime services: ${(payload.hriContext.runtimeServices || []).slice(0, 5).map(item => item.name).join(', ')}. Capabilities: ${(payload.hriContext.coreCapabilities || []).slice(0, 6).join(', ')}. ${payload.hriContext.shunyaAiAlignment} Positioning: ${payload.hriContext.positioning}` : '';
+          const industrial = payload.industrialRoboticsContext ? ` Industrial Robotics: ${payload.industrialRoboticsContext.apiCount} industrial APIs are registered for ${payload.industrialRoboticsContext.phase}. Runtime services: ${(payload.industrialRoboticsContext.runtimeServices || []).slice(0, 5).map(item => item.name).join(', ')}. Capabilities: ${(payload.industrialRoboticsContext.coreCapabilities || []).slice(0, 5).join(', ')}. Positioning: ${payload.industrialRoboticsContext.positioning}` : '';
+          const ecosystems = payload.roboticsContext && payload.roboticsContext.ecosystemCompatibility ? ` Ecosystem compatibility: ${(payload.roboticsContext.ecosystemCompatibility || []).map(item => item.name).join(', ')}. CINTENT remains above these stacks as cognitive orchestration infrastructure.` : '';
+          const uav = payload.uavContext ? ` UAV Standards: ${(payload.uavContext.standards || []).map(item => item.name).join(', ')}. UAV ecosystems: ${(payload.uavContext.ecosystems || []).map(item => item.name).join(', ')}. Positioning: ${payload.uavContext.positioning}` : '';
           const performance = payload.performanceContext ? ` Performance: ${payload.performanceContext.api_usage} executions, ${payload.performanceContext.replay_activity} replay traces, ${payload.performanceContext.governance_events} governance events.` : '';
           const latest = payload.latestExecutionContext;
           const executionContext = latest ? ` Latest execution context: ${latest.executionId} ran ${latest.api} in ${latest.mode} mode with ${(latest.stages || []).length} live stages, ${(latest.governance || []).length} governance events, ${(latest.replay || []).length} replay events, and ${(latest.dependencies || []).length} dependency links. Confidence moved through ${(latest.confidenceTimeline || []).map(point => `${point.stage}:${Math.round(point.confidence * 100)}%`).join(' -> ')}.` : '';
           const sim = payload.latestSimulationContext;
           const simulationContext = sim ? ` Latest simulation context: ${sim.simulationId} used ${sim.api} in ${sim.domain} with ${(sim.nodes || []).length} orchestration nodes, ${(sim.agents || []).length} coordinating agents, replay ${sim.replayPackage && sim.replayPackage.replayId}, anomaly=${sim.telemetry && sim.telemetry.anomalyDetected}. ${(sim.explainability || []).join(' ')}` : '';
-          state.chat.push({ role: 'Ask COGNI', text: `${payload.answer}${names ? ` API matches: ${names}.` : ''}${domainNames ? ` Domain context: ${domainNames}.` : ''}${appNames ? ` Application context: ${appNames}.` : ''}${executionContext}${simulationContext}${performance}` });
+          state.chat.push({ role: 'Ask COGNI', text: `${payload.answer}${names ? ` API matches: ${names}.` : ''}${domainNames ? ` Domain context: ${domainNames}.` : ''}${appNames ? ` Application context: ${appNames}.` : ''}${robotics}${cobotics}${hri}${industrial}${ecosystems}${uav}${executionContext}${simulationContext}${performance}` });
         } catch (error) {
           state.chat.push({ role: 'Ask COGNI', text: askCogni(input.value) });
         }
