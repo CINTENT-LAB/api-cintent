@@ -767,15 +767,62 @@
     .trace-step[data-state="presence-synchronization"] .trace-num,
     .trace-step[data-state="explainability-reconstruction"] .trace-num,
     .trace-step[data-state="escalation-propagation"] .trace-num,
+    .trace-step[data-state="twin-provisioning"] .trace-num,
+    .trace-step[data-state="telemetry-ingestion"] .trace-num,
+    .trace-step[data-state="twin-synchronizing"] .trace-num,
+    .trace-step[data-state="environment-coordination"] .trace-num,
+    .trace-step[data-state="predictive-evolution"] .trace-num,
+    .trace-step[data-state="anomaly-forecasting"] .trace-num,
+    .trace-step[data-state="distributed-twin-sync"] .trace-num,
+    .trace-step[data-state="swarm-twin-sync"] .trace-num,
+    .trace-step[data-state="edge-twin-sync"] .trace-num,
+    .trace-step[data-state="multimodal-twin-telemetry"] .trace-num,
+    .trace-step[data-state="twin-governance-check"] .trace-num,
+    .trace-step[data-state="twin-lifecycle-update"] .trace-num,
+    .trace-step[data-state="twin-archival"] .trace-num,
+    .trace-step[data-state="twin-explainability"] .trace-num,
+    .trace-step[data-state="twin-simulation"] .trace-num,
+    .trace-step[data-state="autonomous-environment-orchestration"] .trace-num,
     .trace-step[data-state="initializing-production"] .trace-num,
     .trace-step[data-state="synchronizing-factory"] .trace-num,
     .trace-step[data-state="coordinating-workflow"] .trace-num,
     .trace-step[data-state="balancing-production"] .trace-num,
     .trace-step[data-state="anomaly-detecting"] .trace-num,
     .trace-step[data-state="governance-validating"] .trace-num,
+    .trace-step[data-state="edge-initializing"] .trace-num,
+    .trace-step[data-state="edge-propagating"] .trace-num,
+    .trace-step[data-state="edge-synchronizing"] .trace-num,
+    .trace-step[data-state="edge-reconciling"] .trace-num,
+    .trace-step[data-state="offline-continuity"] .trace-num,
+    .trace-step[data-state="local-persistence"] .trace-num,
+    .trace-step[data-state="edge-replay-capturing"] .trace-num,
+    .trace-step[data-state="edge-governance-check"] .trace-num,
+    .trace-step[data-state="policy-synchronizing"] .trace-num,
+    .trace-step[data-state="edge-confidence-propagation"] .trace-num,
+    .trace-step[data-state="edge-telemetry-streaming"] .trace-num,
+    .trace-step[data-state="edge-swarm-consensus"] .trace-num,
+    .trace-step[data-state="edge-explainability"] .trace-num,
+    .trace-step[data-state="edge-balancing"] .trace-num,
+    .trace-step[data-state="edge-simulation"] .trace-num,
+    .trace-step[data-state="multi-region-edge-sync"] .trace-num,
+    .trace-step[data-state="telemetry-streaming"] .trace-num,
+    .trace-step[data-state="lineage-correlating"] .trace-num,
+    .trace-step[data-state="replay-reconstructing"] .trace-num,
+    .trace-step[data-state="governance-tracing"] .trace-num,
+    .trace-step[data-state="confidence-analyzing"] .trace-num,
+    .trace-step[data-state="telemetry-aggregating"] .trace-num,
+    .trace-step[data-state="sync-diagnostics"] .trace-num,
+    .trace-step[data-state="runtime-correlating"] .trace-num,
+    .trace-step[data-state="forensic-reconstruction"] .trace-num,
+    .trace-step[data-state="replay-indexing"] .trace-num,
+    .trace-step[data-state="retention-policy-applying"] .trace-num,
+    .trace-step[data-state="tenant-observability"] .trace-num,
+    .trace-step[data-state="metrics-aggregating"] .trace-num,
+    .trace-step[data-state="observability-correlating"] .trace-num,
     .trace-step[data-state="executing"] .trace-num { background: var(--blue); color: #fff; box-shadow: 0 0 0 5px rgba(27, 99, 201, 0.12); }
     .trace-step[data-state="degraded"] .trace-num,
     .trace-step[data-state="recovered"] .trace-num,
+    .trace-step[data-state="edge-recovery"] .trace-num,
     .trace-step[data-state="safety-paused"] .trace-num,
     .trace-step[data-state="paused"] .trace-num { background: var(--amber); color: #fff; }
     .trace-step[data-state="failed"] .trace-num { background: var(--red); color: #fff; }
@@ -808,6 +855,29 @@
       padding: 10px 12px;
       min-height: 54px;
     }
+    .graph-node.draggable { cursor: grab; }
+    .graph-node.drop-ready { border-style: dashed; border-color: var(--blue); background: var(--blue-soft); }
+    .studio-canvas {
+      min-height: 420px;
+      border: 1px dashed #b7c7df;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+      padding: 12px;
+    }
+    .studio-node-row { display: grid; gap: 8px; }
+    .studio-node-row .graph-node { position: relative; }
+    .studio-node-row .graph-node::after {
+      content: attr(data-order);
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      border-radius: 999px;
+      padding: 2px 7px;
+      background: var(--blue-soft);
+      color: #174ea6;
+      font-size: 11px;
+      font-weight: 900;
+    }
     .graph-node strong { display: block; font-size: 12px; }
     .graph-node span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
     .graph-edge {
@@ -820,6 +890,13 @@
     .msg.user { background: var(--blue-soft); border-color: #b8cef9; }
     .msg strong { display: block; font-size: 12px; margin-bottom: 5px; }
     .msg span { color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .cogni-response { display: grid; gap: 10px; }
+    .cogni-response h4 { margin: 0; font-size: 13px; color: var(--ink); }
+    .cogni-response p, .cogni-response li { color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .cogni-response ul { margin: 6px 0 0; padding-left: 18px; }
+    .cogni-section { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; background: #fff; }
+    .cogni-mode { display: flex; flex-wrap: wrap; gap: 6px; }
+    details.cogni-section summary { cursor: pointer; font-weight: 900; font-size: 12px; }
     .admin-table { width: 100%; border-collapse: collapse; font-size: 12px; }
     .admin-table th, .admin-table td { border-bottom: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; }
     .admin-table th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -889,6 +966,7 @@
             <img src="ui/assets/cintent_logo.svg" alt="CINTENT">
           </span>
           <span class="session-chip demo" id="sessionChip"><span class="session-avatar">D</span><span class="session-name">Demo</span></span>
+          <button class="header-link primary" type="button" data-module="learn">Learn CINTENT</button>
           <button class="cart-button" type="button" id="cartBtn" aria-label="Open API cart">Cart <span class="cart-count" id="cartCount">0</span></button>
           <a class="header-link" href="https://cognivantalabs.com">Cognivanta Labs</a>
           <a class="header-link" href="https://cintent.cognivantalabs.com">CINTENT</a>
@@ -907,6 +985,7 @@
         </div>
         <div class="top-actions">
           <button class="pill status" type="button" id="sandboxBtn">Enterprise sandbox</button>
+          <button class="pill" type="button" data-context-learn>Ask COGNI About This Page</button>
           <button class="pill active" type="button" data-stage="all">All</button>
           <button class="pill" type="button" data-stage="production">Production</button>
           <button class="pill" type="button" data-stage="beta">Beta</button>
@@ -923,6 +1002,7 @@
           <p class="lead">Build intelligent systems using governed APIs for orchestration, replay, explainability, multimodal cognition, distributed coordination, and enterprise execution across multiple domains.</p>
           <div class="hero-actions">
             <button class="action-btn" type="button" data-module="docs">Explore APIs</button>
+            <button class="secondary-btn" type="button" data-module="learn">Learn CINTENT</button>
             <button class="secondary-btn" type="button" data-module="playground">Launch Playground</button>
             <button class="secondary-btn" type="button" data-module="ask">Ask COGNI</button>
             <button class="secondary-btn" type="button" data-module="usecase">Enterprise Access</button>
@@ -945,9 +1025,11 @@
       </section>
 
       <section class="content">
+        <div id="view-learn" class="view"></div>
         <div id="view-docs" class="view active"></div>
         <div id="view-discovery" class="view"></div>
         <div id="view-playground" class="view"></div>
+        <div id="view-studio" class="view"></div>
         <div id="view-environments" class="view"></div>
         <div id="view-billing" class="view"></div>
         <div id="view-observability" class="view"></div>
@@ -957,8 +1039,15 @@
         <div id="view-sdk" class="view"></div>
         <div id="view-admin" class="view"></div>
         <div id="view-readiness" class="view"></div>
+        <div id="view-standards" class="view"></div>
         <div id="view-dependencies" class="view"></div>
         <div id="view-visualizer" class="view"></div>
+        <div id="view-memory" class="view"></div>
+        <div id="view-agents" class="view"></div>
+        <div id="view-governance" class="view"></div>
+        <div id="view-marketplace" class="view"></div>
+        <div id="view-enterprise-os" class="view"></div>
+        <div id="view-healthcare" class="view"></div>
         <div id="view-audit" class="view"></div>
         <div id="view-usecase" class="view"></div>
       </section>
@@ -1006,8 +1095,17 @@
         </div>
         <div class="footer-col">
           <strong>Documentation</strong>
+          <button type="button" data-module="learn">Learn CINTENT</button>
           <button type="button" data-module="sdk">SDKs</button>
+          <button type="button" data-module="studio">Orchestration Studio</button>
           <button type="button" data-module="visualizer">Replay & Governance</button>
+          <button type="button" data-module="memory">Memory Fabric</button>
+          <button type="button" data-module="agents">Multi-Agent Runtime</button>
+          <button type="button" data-module="governance">Governance Fabric</button>
+          <button type="button" data-module="marketplace">Marketplace</button>
+          <button type="button" data-module="enterprise-os">Enterprise OS</button>
+          <button type="button" data-module="healthcare">Healthcare Economy</button>
+          <button type="button" data-module="standards">Standards & Compliance</button>
           <button type="button" data-module="readiness">Readiness</button>
         </div>
       </footer>
@@ -1016,9 +1114,11 @@
 
   <script>
     const modules = [
+      { id: 'learn', mark: 'L', title: 'Learn CINTENT', sub: 'Guided platform mentor' },
       { id: 'docs', mark: 'D', title: 'API Documentation', sub: 'Complete API reference' },
       { id: 'discovery', mark: 'F', title: 'Discovery', sub: 'Find by problem' },
       { id: 'playground', mark: 'P', title: 'Playground', sub: 'Live sandbox simulation' },
+      { id: 'studio', mark: 'O', title: 'Orchestration Studio', sub: 'Workflow brain' },
       { id: 'environments', mark: 'S', title: 'Simulations', sub: 'Orchestration environments' },
       { id: 'billing', mark: 'B', title: 'Billing & Subscriptions', sub: 'Plans and invoices' },
       { id: 'observability', mark: 'O', title: 'Observability', sub: 'Traces and health' },
@@ -1028,8 +1128,15 @@
       { id: 'sdk', mark: 'K', title: 'SDKs', sub: 'Developer onboarding' },
       { id: 'admin', mark: 'M', title: 'Admin', sub: 'Internal operations' },
       { id: 'readiness', mark: 'R', title: 'Readiness', sub: 'Production assessment' },
+      { id: 'standards', mark: 'C', title: 'Standards & Compliance', sub: 'Interop assurance' },
       { id: 'dependencies', mark: 'G', title: 'Dependency Graph', sub: 'API relationships' },
       { id: 'visualizer', mark: 'V', title: 'Cognitive Visualizer', sub: 'Execution insights' },
+      { id: 'memory', mark: 'Y', title: 'Memory Fabric', sub: 'Replayable cognition' },
+      { id: 'agents', mark: 'N', title: 'Multi-Agent', sub: 'Distributed cognition' },
+      { id: 'governance', mark: 'Q', title: 'Governance Fabric', sub: 'Policy and trust' },
+      { id: 'marketplace', mark: 'X', title: 'Marketplace', sub: 'Package exchange' },
+      { id: 'enterprise-os', mark: 'Z', title: 'Enterprise OS', sub: 'Operations command' },
+      { id: 'healthcare', mark: 'H', title: 'Healthcare Economy', sub: 'Medical ecosystem' },
       { id: 'audit', mark: 'E', title: 'Audit Exports', sub: 'Enterprise exports' },
       { id: 'usecase', mark: 'U', title: 'Use Case Request', sub: 'Enterprise solutions' }
     ];
@@ -1070,14 +1177,80 @@
       roboticsEcosystem: 'ros2',
       uavStandard: 'mavlink',
       uavEcosystem: 'px4',
+      protocolMode: 'metadata-default',
       session: null,
       billing: null,
       invoice: null,
       invoiceHtml: '',
       simulations: [],
       selectedSimulationId: 'travel-orchestration',
+      sdkDomain: 'robotics-cobotics',
+      sdkDeploymentMode: 'edge',
+      sdkProblem: 'I want to build autonomous warehouse robotics with multilingual human interaction.',
+      sdkIntelligence: null,
       simulationRuntime: null,
       executionRuntime: null,
+      studioNodes: [],
+      studioRegistry: [],
+      studioCompiled: null,
+      studioExecution: null,
+      studioWorkflowTitle: 'Autonomous warehouse robotics orchestration',
+      studioDescription: 'Governed replayable workflow for robotics, HRI, simulation, observability, and edge coordination.',
+      memorySearch: 'show replay where confidence dropped',
+      memorySummary: null,
+      memorySearchResults: null,
+      memoryReconstruction: null,
+      agentRegistry: null,
+      agentObjective: 'Coordinate warehouse robotics with governance escalation, replayable delegation, edge synchronization, and observability.',
+      agentDomain: 'robotics',
+      agentExecution: null,
+      agentReplay: null,
+      agentMetrics: null,
+      governanceRegistry: null,
+      governanceObjective: 'Validate drone swarm orchestration with DGCA-aware governance, replay authorization, tenant restrictions, and edge policy continuity.',
+      governanceDomain: 'drone',
+      governanceExecution: null,
+      governanceReplay: null,
+      governanceMetrics: null,
+      marketplaceRegistry: null,
+      marketplaceSearch: 'Find warehouse robotics orchestration',
+      selectedMarketplacePackageId: 'warehouse-robotics-pack',
+      marketplaceExecution: null,
+      marketplaceReplay: null,
+      marketplaceMetrics: null,
+      enterpriseOsSummary: null,
+      enterpriseCommandObjective: 'Coordinate enterprise cognitive operations across robotics, UAV, edge, governance, replay, deployment readiness, and executive intelligence.',
+      enterpriseCommandDomain: 'enterprise-workflows',
+      enterpriseCommand: null,
+      enterpriseReplay: null,
+      enterpriseMetrics: null,
+      healthcareSummary: null,
+      healthcareWorkflowObjective: 'Coordinate a patient journey with ICU/device telemetry, medical governance, replay, pharma logistics, insurance authorization, and enterprise healthcare visibility.',
+      healthcareWorkflow: 'patient-journey-orchestration',
+      healthcareBranch: 'medical-services',
+      healthcareExecution: null,
+      healthcareReplay: null,
+      healthcareMetrics: null,
+      advancedHealthcareWorkflow: 'surgical-robotics-orchestration',
+      advancedHealthcareObjective: 'Coordinate surgical robotics, AI diagnostics, biomedical telemetry, emergency escalation, population health, precision medicine, and national healthcare observability.',
+      advancedHealthcareExecution: null,
+      advancedHealthcareReplay: null,
+      healthcareIntegrationWorkflow: 'fhir-hospital-federation',
+      healthcareIntegrationObjective: 'Coordinate FHIR and HL7 workflow federation with DICOM imaging, biomedical device gateways, hospital federation, insurance propagation, identity governance, and cross-system replay.',
+      healthcareIntegrationExecution: null,
+      healthcareIntegrationReplay: null,
+      healthcareCommercialWorkflow: 'procurement-pharma-revenue',
+      healthcareCommercialObjective: 'Coordinate MedTech lifecycle, pharmaceutical intelligence, procurement, supply chains, insurance revenue, financing, medical manufacturing, vendor ecosystems, and healthcare economy analytics.',
+      healthcareCommercialExecution: null,
+      healthcareCommercialReplay: null,
+      healthcareGlobalWorkflow: 'pandemic-public-health-coordination',
+      healthcareGlobalObjective: 'Coordinate sovereign healthcare, public health systems, pandemic intelligence, humanitarian operations, global healthcare federation, healthcare resilience, crisis response, and strategic healthcare analytics.',
+      healthcareGlobalExecution: null,
+      healthcareGlobalReplay: null,
+      healthcareComplianceWorkflow: 'regulatory-audit-ai-consent',
+      healthcareComplianceObjective: 'Validate healthcare compliance propagation across regulatory governance, consent, AI inference, audit lineage, manufacturing quality, cybersecurity, privacy, replay, and sovereign healthcare regulatory intelligence.',
+      healthcareComplianceExecution: null,
+      healthcareComplianceReplay: null,
       executionStream: null,
       executionPoller: null,
       apiKeys: [],
@@ -1120,7 +1293,7 @@
     function lockBanner(message) { return `<div class="lock-banner">${message}</div>`; }
     function queryTokens() { return els.search.value.trim().toLowerCase().split(/\s+/).filter(Boolean); }
     function apiHaystack(a) {
-      return [a.name, a.domain, a.originalCategory, a.domainStatus, a.endpoint, a.overview, a.capability, a.billing, a.tags.join(' '), a.outputs.join(' '), a.governance.join(' '), a.workflow.join(' ')].join(' ').toLowerCase();
+      return [a.name, a.domain, a.originalCategory, a.domainStatus, a.endpoint, a.overview, a.capability, a.billing, a.tags.join(' '), a.outputs.join(' '), a.governance.join(' '), a.workflow.join(' '), JSON.stringify(a.compliance || {})].join(' ').toLowerCase();
     }
     function filteredApis() {
       const tokens = queryTokens();
@@ -1153,6 +1326,21 @@
       const replayExamples = Array.isArray(entry.replay_examples) ? entry.replay_examples : [];
       const explainabilityExamples = Array.isArray(entry.explainability_examples) ? entry.explainability_examples : [];
       const orchestrationExamples = Array.isArray(entry.orchestration_examples) ? entry.orchestration_examples : [];
+      const compliance = entry.compliance_metadata || {
+        standards_supported: entry.standards_supported || [],
+        protocols_supported: entry.protocols_supported || [],
+        ecosystem_compatibility: entry.ecosystem_compatibility || [],
+        regulatory_alignment: entry.regulatory_alignment || [],
+        replay_compliance: Boolean(entry.replay_compliance),
+        governance_compliance: Boolean(entry.governance_compliance),
+        edge_compatibility: Boolean(entry.edge_compatibility),
+        simulation_compatibility: Boolean(entry.simulation_compatibility),
+        VLA_compatibility: Boolean(entry.VLA_compatibility),
+        ROS2_compatibility: Boolean(entry.ROS2_compatibility),
+        MAVLink_compatibility: Boolean(entry.MAVLink_compatibility),
+        DigitalTwin_compatibility: Boolean(entry.DigitalTwin_compatibility),
+        UTM_compatibility: Boolean(entry.UTM_compatibility)
+      };
       return {
         id: entry.api_key,
         name: entry.name,
@@ -1188,6 +1376,7 @@
         confidence: [0.64, 0.73, 0.84, 0.91],
         distributed: dependencies.length ? dependencies : ['metadata-registry', 'policy-engine', 'replay-runtime'],
         dependencies,
+        compliance,
         accessPolicy: entry.access_policy || {},
         backendSource: entry.documentation_source || 'api-metadata-registry'
       };
@@ -1272,7 +1461,7 @@
       const visibleCount = filteredApis().length;
       const stageLabel = state.stage === 'all' ? 'All APIs' : `${state.stage.charAt(0).toUpperCase()}${state.stage.slice(1)} APIs`;
       els.filterStatus.textContent = `${stageLabel}: ${visibleCount}`;
-      const introModules = new Set(['docs', 'discovery', 'readiness']);
+      const introModules = new Set(['learn', 'docs', 'discovery', 'readiness']);
       els.heroSection.classList.toggle('hidden', state.introHidden || !introModules.has(state.module));
       renderApplicationShowcase();
     }
@@ -1294,6 +1483,35 @@
       const value = String(nameOrEmail || 'Demo').trim();
       const parts = value.includes('@') ? value.split('@')[0].split(/[._-]+/) : value.split(/\s+/);
       return parts.filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'D';
+    }
+
+    function renderLearn() {
+      const target = document.getElementById('view-learn');
+      target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Learn CINTENT</h2><div class="sub">Loading Cognitive Developer Experience from backend metadata.</div></div></div><div class="panel-body">${empty('Loading guided learning center...')}</div></div>`;
+      fetch(`/api/learning/center?q=${encodeURIComponent(els.search.value || '')}`, { credentials: 'include' })
+        .then(r => r.json())
+        .then(data => {
+          const sections = data.sections || [];
+          const services = data.runtime_services || [];
+          const cdxApis = data.cdx_apis || [];
+          const pathCards = sections.map(section => `<article class="api-card">
+            <div class="api-card-head"><div><h3>${section.title}</h3><p>${section.summary}</p></div><span class="tag blue">${section.id}</span></div>
+            <div class="tags">${(section.walkthroughs || []).slice(0, 5).map(item => `<span class="tag">${item}</span>`).join('')}</div>
+            <div class="toolbar"><button class="secondary-btn" type="button" data-learning-query="${section.title} ${section.summary}">Ask COGNI</button><button class="secondary-btn" type="button" data-learning-section="${section.id}">Use this path</button></div>
+          </article>`).join('');
+          const serviceRows = services.map(service => `<tr><td><strong>${service.name}</strong><div class="sub">${service.apiKey}</div></td><td>${service.responsibility}</td><td>${(service.sections || []).join(', ')}</td></tr>`).join('');
+          target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Learn CINTENT</h2><div class="sub">Cognitive Operational Learning Infrastructure. Metadata-driven, Ask COGNI-integrated, and available across the platform.</div></div><button class="action-btn" type="button" data-ask-prompt="Start a guided CINTENT onboarding walkthrough for orchestration, replay, governance, simulations, SDKs, and enterprise adoption.">Start Here</button></div><div class="panel-body">
+            <div class="stat-grid"><div class="stat"><div class="stat-label">CDX APIs</div><div class="stat-value">${cdxApis.length}</div></div><div class="stat"><div class="stat-label">Learning runtimes</div><div class="stat-value">${services.length}</div></div><div class="stat"><div class="stat-label">Learning sections</div><div class="stat-value">${sections.length}</div></div><div class="stat"><div class="stat-label">Generic docs</div><div class="stat-value">${data.genericDocs ? 'yes' : 'no'}</div></div></div>
+            <div class="toolbar"><button class="action-btn" type="button" data-learning-query="Build Your First Cognitive Workflow">Build First Workflow</button><button class="secondary-btn" type="button" data-learning-query="Understand Replayability and Explainability">Understand Replay</button><button class="secondary-btn" type="button" data-learning-query="How Governance Works in CINTENT">Governance Guide</button><button class="secondary-btn" type="button" data-learning-query="Architecture Explorer runtime layers metadata registry orchestration replay governance">Architecture Explorer</button></div>
+          </div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="panel"><div class="panel-head"><div><h2>Interactive learning paths</h2><div class="sub">Derived from API metadata, simulation templates, runtime components, standards registry, replay examples, governance examples, and SDK examples.</div></div></div><div class="panel-body"><div class="api-list">${pathCards || empty('No learning paths matched this search.')}</div></div></div>
+          <div class="detail"><h2>Contextual learning access</h2>${infoList('Available anywhere', data.global_access || [])}${infoList('Ask COGNI About This Page can explain', data.contextual_actions || [])}</div></div>
+          <div class="detail" style="margin-top:18px;"><h2>CDX runtime services</h2><table class="admin-table"><thead><tr><th>Service</th><th>Responsibility</th><th>Sections</th></tr></thead><tbody>${serviceRows}</tbody></table></div>
+          <div class="detail" style="margin-top:18px;"><h2>Metadata-backed CDX APIs</h2><pre>${pretty(cdxApis.map(api => ({ api_key: api.api_key, name: api.name, lifecycle: api.lifecycle_state, min_tier: api.min_tier, replay: api.replay_support, governance: api.governance_support })))}</pre></div>`;
+        })
+        .catch(error => {
+          target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Learn CINTENT</h2></div></div><div class="panel-body">${empty(`Learning center unavailable: ${error.message}`)}</div></div>`;
+        });
     }
 
     function renderSessionChip() {
@@ -1378,6 +1596,17 @@
           ${infoList('Example workflow', a.workflow)}
           ${infoList('Distributed coordination examples', a.distributed)}
         </div>
+        <div class="panel" style="margin-top:14px;">
+          <div class="panel-head"><div><h2>Standards & Compliance</h2><div class="sub">Compatibility is integration-ready, orchestration-ready, and standards-aware. No formal certification is claimed unless separately certified.</div></div><button class="secondary-btn" type="button" data-module="standards">Open explorer</button></div>
+          <div class="panel-body"><div class="info-grid">
+            ${infoList('Compatible standards', a.compliance.standards_supported)}
+            ${infoList('Protocols supported', a.compliance.protocols_supported)}
+            ${infoList('Ecosystem compatibility', a.compliance.ecosystem_compatibility)}
+            ${infoList('Regulatory readiness', a.compliance.regulatory_alignment)}
+            ${infoList('Governance and runtime compatibility', complianceFlags(a.compliance))}
+            ${infoList('Enterprise assurance', ['Tenant-isolated access policy', 'Replay and audit visibility', 'Metadata-driven API documentation', 'Ask COGNI standards context'])}
+          </div></div>
+        </div>
         <div class="info-grid" style="margin-top:14px;">
           <div><h3>SDK examples</h3><pre>${pretty(a.sdk)}</pre></div>
           <div><h3>Simulated execution output</h3><pre>${pretty(a.simulatedOutput)}</pre></div>
@@ -1390,7 +1619,21 @@
     }
 
     function infoList(title, items) {
-      return `<div class="info"><h3>${title}</h3><ul class="clean-list">${items.map(i => `<li><span class="check">+</span><span>${i}</span></li>`).join('')}</ul></div>`;
+      const safeItems = (Array.isArray(items) && items.length ? items : ['Not declared in metadata contract']).map(i => typeof i === 'string' ? i : JSON.stringify(i));
+      return `<div class="info"><h3>${title}</h3><ul class="clean-list">${safeItems.map(i => `<li><span class="check">+</span><span>${escapeHtml(i)}</span></li>`).join('')}</ul></div>`;
+    }
+    function complianceFlags(c) {
+      return [
+        `Replay compliance: ${c.replay_compliance ? 'enabled' : 'not declared'}`,
+        `Governance compliance: ${c.governance_compliance ? 'enabled' : 'not declared'}`,
+        `Edge compatibility: ${c.edge_compatibility ? 'ready' : 'not declared'}`,
+        `Simulation compatibility: ${c.simulation_compatibility ? 'ready' : 'not declared'}`,
+        `VLA compatibility: ${c.VLA_compatibility ? 'ready' : 'not declared'}`,
+        `ROS2 compatibility: ${c.ROS2_compatibility ? 'ready' : 'not declared'}`,
+        `MAVLink compatibility: ${c.MAVLink_compatibility ? 'ready' : 'not declared'}`,
+        `Digital Twin compatibility: ${c.DigitalTwin_compatibility ? 'ready' : 'not declared'}`,
+        `UTM compatibility: ${c.UTM_compatibility ? 'ready' : 'not declared'}`
+      ];
     }
     function empty(text) { return `<div class="tile"><h3>No results</h3><p>${text}</p></div>`; }
 
@@ -1444,6 +1687,17 @@
         ['qgroundcontrol', 'QGroundControl'],
         ['edge-uav-runtime', 'Edge UAV Runtime']
       ];
+      const protocolModeOptions = [
+        ['metadata-default', 'Metadata default'],
+        ['ros2', 'ROS 2 execution mode'],
+        ['mavlink', 'MAVLink orchestration mode'],
+        ['nvidia-isaac', 'NVIDIA Isaac orchestration mode'],
+        ['drone-governance', 'Drone governance mode'],
+        ['digital-twin-sync', 'Digital Twin synchronization mode'],
+        ['vla', 'VLA orchestration mode'],
+        ['edge-swarm', 'Edge swarm orchestration mode'],
+        ['enterprise-governance', 'Enterprise governance mode']
+      ];
       const modeOptions = demo
         ? '<option value="sandbox">Sandbox</option>'
         : '<option value="sandbox">Sandbox</option><option value="production">Production preview</option><option value="simulated">Simulated environment</option>';
@@ -1458,8 +1712,9 @@
                 <div class="field"><label>Robotics ecosystem</label><select class="select" id="playEcosystem">${ecosystemOptions.map(x => `<option value="${x[0]}" ${x[0] === state.roboticsEcosystem ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div>
                 <div class="field"><label>UAV standard</label><select class="select" id="playUavStandard">${uavStandardOptions.map(x => `<option value="${x[0]}" ${x[0] === state.uavStandard ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div>
                 <div class="field"><label>UAV ecosystem</label><select class="select" id="playUavEcosystem">${uavEcosystemOptions.map(x => `<option value="${x[0]}" ${x[0] === state.uavEcosystem ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div>
+                <div class="field"><label>Protocol mode</label><select class="select" id="playProtocolMode">${protocolModeOptions.map(x => `<option value="${x[0]}" ${x[0] === state.protocolMode ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div>
               </div>
-              <div class="field" style="margin-top:12px;"><label>Request body</label><textarea class="textarea" id="playRequest">${pretty({ tenantId: 'tenant-enterprise-demo', mode: state.playgroundMode, input: { workflow: a.tags[0], roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem, replayRequested: true }, governanceContext: { policy: 'enterprise-default', roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem } })}</textarea></div>
+              <div class="field" style="margin-top:12px;"><label>Request body</label><textarea class="textarea" id="playRequest">${pretty({ tenantId: 'tenant-enterprise-demo', mode: state.playgroundMode, input: { workflow: a.tags[0], roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem, protocolMode: state.protocolMode, replayRequested: true }, governanceContext: { policy: 'enterprise-default', roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem, protocolMode: state.protocolMode } })}</textarea></div>
               <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runPlayground" ${locked ? 'disabled' : ''}>Run simulated execution</button><button class="secondary-btn" type="button" data-add-cart="${a.id}">Add to cart</button>${demo ? '<span class="tag warn">Demo Mode: sandbox-only</span>' : ''}</div>
             </div>
           </div>
@@ -1515,6 +1770,8 @@
         ['Safety interventions', runtime && runtime.coboticsTelemetry ? runtime.coboticsTelemetry.safety_interventions : 'n/a'],
         ['HRI intent events', runtime && runtime.hriTelemetry ? runtime.hriTelemetry.intent_events : 'n/a'],
         ['HRI trust', runtime && runtime.hriTelemetry ? runtime.hriTelemetry.final_human_trust_confidence : 'n/a'],
+        ['Twin sync', runtime && runtime.digitalTwinTelemetry ? runtime.digitalTwinTelemetry.synchronization_events : 'n/a'],
+        ['Twin prediction', runtime && runtime.digitalTwinTelemetry ? runtime.digitalTwinTelemetry.predictive_evolution_events : 'n/a'],
         ['Factory sync', runtime && runtime.industrialTelemetry ? runtime.industrialTelemetry.factory_synchronization_events : 'n/a'],
         ['Industrial anomalies', runtime && runtime.industrialTelemetry ? runtime.industrialTelemetry.anomaly_events : 'n/a']
       ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('');
@@ -1541,6 +1798,7 @@
         roboticsTelemetry: runtime.roboticsTelemetry,
         coboticsTelemetry: runtime.coboticsTelemetry,
         hriTelemetry: runtime.hriTelemetry,
+        digitalTwinTelemetry: runtime.digitalTwinTelemetry,
         industrialTelemetry: runtime.industrialTelemetry
       };
     }
@@ -1715,16 +1973,39 @@
             ['HRI intent events', data.hri_metrics ? data.hri_metrics.intent_events : 0, 'green'],
             ['HRI multimodal', data.hri_metrics ? data.hri_metrics.multimodal_events : 0, 'green'],
             ['HRI overrides', data.hri_metrics ? data.hri_metrics.override_events : 0, 'amber'],
+            ['Twin APIs', data.digital_twin_metrics ? data.digital_twin_metrics.api_count : 0, 'blue'],
+            ['Twin sync', data.digital_twin_metrics ? data.digital_twin_metrics.synchronization_events : 0, 'green'],
+            ['Twin prediction', data.digital_twin_metrics ? data.digital_twin_metrics.predictive_evolution_events : 0, 'green'],
+            ['Twin anomalies', data.digital_twin_metrics ? data.digital_twin_metrics.anomaly_forecast_events : 0, 'amber'],
             ['Industrial APIs', data.industrial_robotics_metrics ? data.industrial_robotics_metrics.api_count : 0, 'blue'],
             ['Production executions', data.industrial_robotics_metrics ? data.industrial_robotics_metrics.production_executions : 0, 'green'],
             ['Factory sync', data.industrial_robotics_metrics ? data.industrial_robotics_metrics.factory_synchronization_events : 0, 'green'],
             ['Industrial anomalies', data.industrial_robotics_metrics ? data.industrial_robotics_metrics.anomaly_events : 0, 'amber'],
+            ['Edge APIs', data.edge_metrics ? data.edge_metrics.api_count : 0, 'blue'],
+            ['Edge sync', data.edge_metrics ? data.edge_metrics.synchronization_events : 0, 'green'],
+            ['Offline continuity', data.edge_metrics ? data.edge_metrics.offline_continuity_events : 0, 'green'],
+            ['Edge recovery', data.edge_metrics ? data.edge_metrics.recovery_events : 0, 'amber'],
+            ['Edge swarm', data.edge_metrics ? data.edge_metrics.edge_swarm_events : 0, 'green'],
+            ['Observe APIs', data.observability_metrics ? data.observability_metrics.api_count : 0, 'blue'],
+            ['Telemetry events', data.observability_metrics ? data.observability_metrics.telemetry_events : 0, 'green'],
+            ['Lineage events', data.observability_metrics ? data.observability_metrics.lineage_events : 0, 'green'],
+            ['Replay reconstruction', data.observability_metrics ? data.observability_metrics.replay_activity : 0, 'amber'],
+            ['Governance traceability', data.observability_metrics ? data.observability_metrics.governance_trace_events : 0, 'green'],
+            ['Cognitive anomalies', data.observability_metrics ? data.observability_metrics.anomaly_events : 0, 'red'],
+            ['Forensics', data.observability_metrics ? data.observability_metrics.forensic_events : 0, 'amber'],
+            ['Replay retention', data.observability_metrics ? data.observability_metrics.retention_events : 0, 'green'],
             ['Ecosystems', data.robotics_ecosystem_metrics ? data.robotics_ecosystem_metrics.ecosystem_count : 0, 'blue'],
             ['VLA ready', data.robotics_ecosystem_metrics && data.robotics_ecosystem_metrics.vla_ready ? 'yes' : 'no', 'green'],
             ['UAV standards', data.uav_standards_metrics ? data.uav_standards_metrics.standards_count : 0, 'blue'],
             ['MAVLink events', data.uav_standards_metrics ? data.uav_standards_metrics.mavlink_events : 0, 'green'],
             ['UTM events', data.uav_standards_metrics ? data.uav_standards_metrics.utm_events : 0, 'green'],
             ['DGCA events', data.uav_standards_metrics ? data.uav_standards_metrics.dgca_events : 0, 'amber'],
+            ['Standards mapped APIs', data.standards_compliance_metrics ? data.standards_compliance_metrics.mapped_api_count : 0, 'blue'],
+            ['Protocol profiles', data.standards_compliance_metrics ? data.standards_compliance_metrics.protocols_count : 0, 'green'],
+            ['ROS2 compatible', data.standards_compliance_metrics ? data.standards_compliance_metrics.ros2_api_count : 0, 'green'],
+            ['MAVLink compatible', data.standards_compliance_metrics ? data.standards_compliance_metrics.mavlink_api_count : 0, 'green'],
+            ['DGCA ready', data.standards_compliance_metrics ? data.standards_compliance_metrics.dgca_ready_count : 0, 'amber'],
+            ['VLA ready APIs', data.standards_compliance_metrics ? data.standards_compliance_metrics.vla_ready_count : 0, 'green'],
             ['Simulation activity', data.simulation_activity || 0, 'green'],
             ['Simulation anomalies', data.simulation_anomalies || 0, 'amber'],
             ['Operational anomalies', data.operational_anomalies, 'red'],
@@ -1747,9 +2028,13 @@
           <div class="detail" style="margin-top:18px;"><h2>Robotics cognitive observability</h2><pre>${pretty(data.robotics_metrics || { status: 'Robotics telemetry will appear after entitled robotics executions or simulations.' })}</pre></div>
           <div class="detail" style="margin-top:18px;"><h2>Human-robot collaborative observability</h2><pre>${pretty(data.cobotics_metrics || { status: 'Cobotics telemetry will appear after entitled collaborative executions or simulations.' })}</pre></div>
           <div class="detail" style="margin-top:18px;"><h2>HRI cognitive collaboration observability</h2><pre>${pretty(data.hri_metrics || { status: 'HRI telemetry will appear after human-robot interaction executions or simulations.' })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Cognitive digital twin observability</h2><pre>${pretty(data.digital_twin_metrics || { status: 'Digital twin telemetry will appear after twin executions or simulations.' })}</pre></div>
           <div class="detail" style="margin-top:18px;"><h2>Industrial robotics observability</h2><pre>${pretty(data.industrial_robotics_metrics || { status: 'Industrial robotics telemetry will appear after entitled production executions or simulations.' })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Distributed edge observability</h2><pre>${pretty(data.edge_metrics || { status: 'Edge telemetry will appear after edge executions or simulations.' })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Cognitive observability runtime</h2><pre>${pretty(data.observability_metrics || { status: 'Cognitive telemetry, replay reconstruction, lineage, anomaly, retention, and forensic metrics will appear after OBSERVE executions or simulations.' })}</pre></div>
           <div class="detail" style="margin-top:18px;"><h2>Robotics ecosystem compatibility</h2><pre>${pretty(data.robotics_ecosystem_metrics || { status: 'Ecosystem compatibility telemetry will appear after robotics executions.' })}</pre></div>
           <div class="detail" style="margin-top:18px;"><h2>Autonomous air systems standards</h2><pre>${pretty(data.uav_standards_metrics || { status: 'UAV standards telemetry will appear after drone executions.' })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Standards and compliance observability</h2><pre>${pretty(data.standards_compliance_metrics || { status: 'Standards compatibility metrics are provided by the backend metadata registry.' })}</pre></div>
           <div class="detail" style="margin-top:18px;"><h2>Lifecycle, quota, and audit</h2><pre>${pretty({ lifecycle: data.lifecycle, billingUsage: data.billing_usage, executionHealth: data.execution_health, audit: data.audit_events })}</pre></div>`;
         })
         .catch(() => {
@@ -1766,8 +2051,27 @@
     }
     function issuePackage() { return { issueId: 'cintent-issue-demo', executionId: 'orch-rbt-workflow-demo', replayTrace: 'attached', orchestrationLineage: selectedApi().lineage, logs: ['governance pass', 'replay capture', 'response emitted'], supportRoute: 'enterprise-support@cognivantalabs.example' }; }
 
+    function renderCogniResponse(response) {
+      if (!response) return '';
+      return `<div class="cogni-response">
+        <div class="cogni-mode"><span class="tag prod">${escapeHtml(response.mode || 'adaptive')} mode</span><span class="tag blue">${escapeHtml(response.intent || 'general')}</span><span class="tag">${escapeHtml(response.domain || 'platform')}</span></div>
+        <div class="cogni-section"><h4>Direct Answer</h4><p>${escapeHtml(response.directAnswer || '')}</p></div>
+        ${(response.contextualCards || []).length ? `<div class="cogni-section"><h4>Context Cards</h4><div class="three-col">${response.contextualCards.map(card => `<div class="tile"><h3>${escapeHtml(card.title)}</h3><p>${escapeHtml(card.body)}</p><span class="tag">${escapeHtml(card.action)}</span></div>`).join('')}</div></div>` : ''}
+        <div class="cogni-section"><h4>Key Recommendations</h4><ul>${(response.keyRecommendations || []).map(item => `<li>${escapeHtml(item)}</li>`).join('') || '<li>Run a sandbox workflow to generate current runtime context.</li>'}</ul></div>
+        <div class="cogni-section"><h4>Suggested Next Steps</h4><ul>${(response.suggestedNextSteps || []).map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>
+        <div class="cogni-section"><h4>Relevant APIs / SDKs</h4><p>${(response.relevantApis || []).slice(0, 4).map(api => `${escapeHtml(api.name)} (${escapeHtml(api.reason || api.lifecycle || 'recommended')})`).join(', ') || 'No exact API match yet.'}${(response.relevantSdks || []).length ? `<br>SDKs: ${(response.relevantSdks || []).map(escapeHtml).join(', ')}` : ''}</p></div>
+        <div class="cogni-section"><h4>Replay, Governance & Confidence</h4><p>${escapeHtml(response.replayInsight || '')}<br>${escapeHtml(response.governanceInsight || '')}<br>${escapeHtml(response.confidenceInsight || '')}</p></div>
+        <details class="cogni-section"><summary>Optional Diagnostics</summary><pre>${pretty(response.optionalDiagnostics || {})}</pre></details>
+      </div>`;
+    }
+
+    function renderChatMessage(m) {
+      if (m.response) return `<div class="msg ${m.role === 'You' ? 'user' : ''}"><strong>${m.role}</strong>${renderCogniResponse(m.response)}</div>`;
+      return `<div class="msg ${m.role === 'You' ? 'user' : ''}"><strong>${m.role}</strong><span>${escapeHtml(m.text || '')}</span></div>`;
+    }
+
     function renderAsk() {
-      document.getElementById('view-ask').innerHTML = `<div class="two-col"><div class="panel"><div class="panel-head"><div><h2>Ask COGNI Navigator</h2><div class="sub">Operational cognitive navigator for discovery, orchestration, replay, governance, SDKs, billing, and onboarding.</div></div></div><div class="panel-body"><div class="chat" id="chatBox">${state.chat.map(m => `<div class="msg ${m.role === 'You' ? 'user' : ''}"><strong>${m.role}</strong><span>${m.text}</span></div>`).join('')}</div><div class="three-col" style="margin-top:12px;">${discoveryProblems.slice(0, 3).map(item => `<button class="tile" type="button" data-ask-prompt="${item.query}"><h3>${item.label}</h3><p>Recommend domains, APIs, orchestration flow, and replay path.</p></button>`).join('')}</div><div class="field" style="margin-top:12px;"><label>Ask about APIs, workflows, replay, governance, billing, SDKs, lifecycle, metrics, dependencies, or onboarding</label><textarea class="textarea" id="askInput">Recommend APIs for distributed robotics with governance and replay.</textarea></div><div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="askBtn">Ask COGNI</button></div></div></div><div class="detail"><h2>Navigator responsibilities</h2>${infoList('Ask COGNI can guide', ['Business-problem API discovery', 'Domain and capability selection', 'Workflow and orchestration explanation', 'Replay trace interpretation', 'Governance event explanation', 'Confidence evolution explanation', 'SDK and integration guidance', 'Troubleshooting and onboarding'])}</div></div>`;
+      document.getElementById('view-ask').innerHTML = `<div class="two-col"><div class="panel"><div class="panel-head"><div><h2>Ask COGNI Navigator</h2><div class="sub">Adaptive cognitive architect for discovery, orchestration, replay, governance, SDKs, billing, standards, onboarding, diagnostics, and learning.</div></div><span class="tag blue">Adaptive Intelligence</span></div><div class="panel-body"><div class="chat" id="chatBox">${state.chat.map(renderChatMessage).join('')}</div><div class="three-col" style="margin-top:12px;">${['Executive: What should I do next?', 'Developer: Generate ROS2 integration guidance', 'Operations: Explain latest replay and governance health'].map(item => `<button class="tile" type="button" data-ask-prompt="${item}"><h3>${item}</h3><p>Ask COGNI adapts response mode, depth, recommendations, and diagnostics.</p></button>`).join('')}</div><div class="field" style="margin-top:12px;"><label>Ask about APIs, workflows, replay, governance, standards, protocols, billing, SDKs, lifecycle, metrics, dependencies, onboarding, or diagnostics</label><textarea class="textarea" id="askInput">Which APIs support drone swarms?</textarea></div><div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="askBtn">Ask COGNI</button><button class="secondary-btn" type="button" data-module="learn">Open Learn CINTENT</button><button class="secondary-btn" type="button" data-module="studio">Open Studio</button></div></div></div><div class="detail"><h2>Adaptive response intelligence</h2>${infoList('Ask COGNI now adapts by', ['Intent: discovery, replay, governance, SDK, deployment, simulation, diagnostics, learning', 'Role: executive, developer, architect, operations', 'Context: active APIs, runtime history, replay, governance, simulations, Studio workflows, SDKs, standards', 'Sanitization: broken runtime values and internal database fields are removed from customer-facing answers', 'Progressive disclosure: simple answer first, optional diagnostics only when needed'])}</div></div>`;
     }
 
     function askCogni(text) {
@@ -1882,8 +2186,123 @@
       document.getElementById('view-workspace').innerHTML = `<div class="three-col"><div class="workspace-card tile"><h3>Enterprise workspaces</h3><p>Workspace: ${state.session.user.tenant}<br>Isolation: strict<br>Replay access: role scoped</p></div><div class="workspace-card tile"><h3>Subscription</h3><p>Tier: ${currentEntitlement().tier}<br>Status: ${currentEntitlement().status}<br>Quota: ${currentEntitlement().quota}</p></div><div class="workspace-card tile"><h3>API keys</h3><p>Keys: ${state.apiKeys.length}<br>Generation: developer tier or higher<br>Rotation: 30 days recommended</p></div></div><div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>API key management</h2><div class="sub">Persistent API keys require a Developer subscription or higher.</div></div><button class="action-btn" id="generateApiKey" type="button" ${hasTier('developer') && !state.session.user.demo ? '' : 'disabled'}>Generate API key</button></div><div class="panel-body">${!hasTier('developer') || state.session.user.demo ? lockBanner('API key generation is locked until Developer subscription activation. Demo Mode cannot create persistent keys.') : ''}${keyRows}<pre id="apiKeyOutput"></pre></div></div><div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Tenant governance boundaries</h2><div class="sub">Isolation across APIs, replay traces, governance policy, and observability visibility.</div></div></div><div class="panel-body">${infoList('Controls', ['Enterprise workspace isolation', 'Team role management', 'API key management', 'Governance isolation', 'Replay access control', 'Operational visibility boundaries'])}</div></div>`;
     }
 
+    function sdkContextPayload() {
+      return {
+        apiKeys: [selectedApi().id],
+        cart: state.cart,
+        domain: state.sdkDomain,
+        problem: state.sdkProblem,
+        simulationId: state.selectedSimulationId,
+        ecosystem: state.roboticsEcosystem,
+        standard: state.uavStandard,
+        deploymentMode: state.sdkDeploymentMode
+      };
+    }
+
     function renderSdk() {
-      document.getElementById('view-sdk').innerHTML = `<div class="two-col"><div class="panel"><div class="panel-head"><div><h2>SDK distribution ecosystem</h2><div class="sub">TypeScript, Python, REST, and Edge runtime quickstarts.</div></div></div><div class="panel-body">${!hasTier('developer') ? lockBanner('Premium SDK generation and persistent credentials require Developer subscription or higher. Static examples remain visible.') : ''}<div class="three-col">${['ts', 'py', 'rest', 'edge'].map(s => `<div class="tile"><h3>${s.toUpperCase()}</h3><p>Backend-generated SDK starter for ${selectedApi().name}, including orchestration, replay, and governance examples.</p><button class="secondary-btn" type="button" data-sdk-language="${s}" ${s === 'edge' && !hasTier('developer') ? 'disabled' : ''}>Generate ${s.toUpperCase()} SDK</button></div>`).join('')}</div></div></div><div class="detail"><h2>SDK starter</h2><pre id="sdkOutput">${pretty(selectedApi().sdk)}</pre></div></div>`;
+      const target = document.getElementById('view-sdk');
+      const intel = state.sdkIntelligence;
+      const domainOptions = [
+        ['robotics-cobotics', 'Robotics & Cobotics'], ['uav-drones', 'UAV & Drones'], ['airports', 'Airports'], ['smart-manufacturing', 'Smart Manufacturing'], ['multilingual-ai', 'Multilingual AI'], ['logistics', 'Logistics'], ['healthcare', 'Healthcare'], ['digital-twins', 'Digital Twins'], ['enterprise-ai', 'Enterprise AI'], ['edge-intelligence', 'Edge Intelligence'], ['swarm-coordination', 'Swarm Coordination'], ['mobility-systems', 'Mobility Systems']
+      ];
+      const deploymentOptions = ['cloud', 'edge', 'hybrid', 'industrial', 'embedded', 'swarm', 'distributed', 'gpu', 'airport'];
+      const starterCards = ['Python SDK', 'TypeScript SDK', 'REST SDK', 'Edge Runtime SDK'].map(name => `<div class="tile"><h3>${name}</h3><p>Standard starter with authentication, API keys, sandbox execution, replay starter, governance starter, and runtime validation.</p></div>`).join('');
+      const recommendations = intel ? (intel.recommended_sdks || []).map(sdk => `<div class="tile"><h3>${sdk.name}</h3><p>${sdk.starter}<br><span class="sub">${sdk.runtime}</span></p><button class="secondary-btn" type="button" data-sdk-language="${sdk.id === 'typescript' ? 'ts' : sdk.id === 'python' ? 'py' : sdk.id === 'rest' ? 'rest' : 'edge'}">Generate</button></div>`).join('') : empty('Run SDK intelligence to generate contextual runtime recommendations.');
+      target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Cognitive Integration & SDK Intelligence Center</h2><div class="sub">Context-aware SDK generation based on APIs, cart, domain, tier, ecosystem, standards, deployment, simulations, and orchestration dependencies.</div></div><button class="action-btn" type="button" id="runSdkIntelligence">Generate SDK Intelligence</button></div><div class="panel-body">${!hasTier('developer') ? lockBanner('Premium SDK generation and persistent credentials require Developer subscription or higher. Demo and free sessions can inspect sample recommendations.') : ''}
+        <h3>Standard Starter SDKs</h3><div class="three-col">${starterCards}</div>
+        <div class="form-grid" style="margin-top:14px;">
+          <div class="field"><label>Select Domain</label><select class="select" id="sdkDomain">${domainOptions.map(x => `<option value="${x[0]}" ${state.sdkDomain === x[0] ? 'selected' : ''}>${x[1]}</option>`).join('')}</select></div>
+          <div class="field"><label>Deployment mode</label><select class="select" id="sdkDeploymentMode">${deploymentOptions.map(x => `<option value="${x}" ${state.sdkDeploymentMode === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div>
+          <div class="field"><label>Runtime ecosystem</label><select class="select" id="sdkEcosystem"><option value="${state.roboticsEcosystem}">${state.roboticsEcosystem}</option><option value="nvidia-isaac">nvidia-isaac</option><option value="abb-rws">abb-rws</option><option value="px4">px4</option></select></div>
+          <div class="field"><label>Standards profile</label><select class="select" id="sdkStandard"><option value="${state.uavStandard}">${state.uavStandard}</option><option value="ros2">ros2</option><option value="mavlink">mavlink</option><option value="dgca-india-2021">dgca-india-2021</option><option value="icao-utm">icao-utm</option></select></div>
+        </div>
+        <div class="field" style="margin-top:12px;"><label>Problem statement</label><textarea class="textarea" id="sdkProblem">${state.sdkProblem}</textarea></div>
+        <div class="toolbar" style="margin-top:12px;"><button class="secondary-btn" type="button" data-open-cart>Review API Cart (${state.cart.length})</button><button class="secondary-btn" type="button" data-module="playground">Validate in Playground</button><button class="secondary-btn" type="button" data-ask-prompt="Recommend SDKs for ${state.sdkProblem}">Ask COGNI SDK Help</button></div>
+      </div></div>
+      <div class="two-col" style="margin-top:18px;"><div class="panel"><div class="panel-head"><div><h2>Contextual SDK recommendations</h2><div class="sub">Generated from backend SDK intelligence, not a static SDK list.</div></div></div><div class="panel-body"><div class="three-col">${recommendations}</div></div></div><div class="detail"><h2>Integration intelligence</h2><pre id="sdkOutput">${pretty(intel || { selectedApi: selectedApi().name, cart: state.cart, domain: state.sdkDomain, problem: state.sdkProblem, instruction: 'Press Generate SDK Intelligence.' })}</pre></div></div>
+      <div class="detail" style="margin-top:18px;"><h2>Replay, governance, standards, and deployment guidance</h2><pre>${pretty(intel ? { standards: intel.standards_recommendations, replayHooks: intel.replay_hooks, governanceHooks: intel.governance_hooks, dependencies: intel.orchestration_dependencies, deployment: intel.deployment_guidance, simulationRuntime: intel.simulation_runtime } : { onboarding: ['Quick Start', 'Authentication', 'API Keys', 'Sandbox Execution', 'First Orchestration Flow', 'Runtime Validation', 'Replay Starter', 'Governance Starter'] })}</pre></div>`;
+    }
+
+    function defaultStudioNodes() {
+      const chosen = [selectedApi(), ...state.cart.map(apiById).filter(Boolean)]
+        .filter((api, index, list) => api && list.findIndex(item => item.id === api.id) === index)
+        .slice(0, 3)
+        .map(api => ({ id: `api-${api.id}`, type: 'api-execution', label: api.name, apiKey: api.id, domain: api.domain, replay: true, governance: true }));
+      return [
+        ...chosen,
+        { id: 'governance-policy-validation', type: 'governance', label: 'Policy validation', replay: true, governance: true },
+        { id: 'replay-capture-node', type: 'replay', label: 'Replay capture', replay: true, governance: true },
+        { id: 'multi-agent-coordination', type: 'multi-agent', label: 'Multi-agent coordination', replay: true, governance: true },
+        { id: 'simulation-execution-node', type: 'simulation', label: 'Simulation execution', replay: true, governance: true },
+        { id: 'observability-telemetry-node', type: 'observability', label: 'Telemetry propagation', replay: true, governance: true },
+        { id: 'edge-distributed-node', type: 'edge-orchestration', label: 'Edge distributed execution', replay: true, governance: true }
+      ].slice(0, 9);
+    }
+
+    function studioEdges(nodes) {
+      return nodes.slice(1).map((node, index) => ({
+        from: nodes[index].id,
+        to: node.id,
+        label: index % 3 === 0 ? 'governance-aware-flow' : index % 3 === 1 ? 'replay-aware-flow' : 'distributed-propagation'
+      }));
+    }
+
+    function addStudioNode(node) {
+      if (!node) return;
+      if (!state.studioNodes.length) state.studioNodes = defaultStudioNodes();
+      const exists = state.studioNodes.some(item => item.id === node.id);
+      const id = exists ? `${node.id}-${Date.now().toString(36)}` : node.id;
+      state.studioNodes.push({ ...node, id });
+      state.studioCompiled = null;
+      state.studioExecution = null;
+      renderStudio();
+    }
+
+    async function loadStudioRegistry() {
+      if (state.studioRegistry.length) return state.studioRegistry;
+      const response = await fetch('/api/studio/nodes', { credentials: 'include' });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || 'Studio node registry unavailable');
+      state.studioRegistry = payload.nodes || [];
+      if (!state.studioNodes.length) state.studioNodes = defaultStudioNodes();
+      return state.studioRegistry;
+    }
+
+    function renderStudio() {
+      const target = document.getElementById('view-studio');
+      if (!state.studioNodes.length) state.studioNodes = defaultStudioNodes();
+      const workflowNodes = state.studioNodes;
+      const edges = studioEdges(workflowNodes);
+      const registry = state.studioRegistry;
+      if (!registry.length) {
+        target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Cognitive Orchestration Studio</h2><div class="sub">Loading metadata-driven node registry from backend orchestration infrastructure.</div></div></div><div class="panel-body">${empty('Loading Studio runtime...')}</div></div>`;
+        loadStudioRegistry().then(renderStudio).catch(error => {
+          target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Cognitive Orchestration Studio</h2><div class="sub">Metadata-driven Studio runtime could not load.</div></div></div><div class="panel-body">${empty(error.message)}</div></div>`;
+        });
+        return;
+      }
+      const registryHtml = registry.slice(0, 18).map(node => `<div class="graph-node draggable" draggable="true" data-studio-node="${escapeHtml(node.id)}"><strong>${node.label}</strong><span>${node.type} | ${node.domain || 'platform'} | ${node.apiKey || node.id}</span><div class="toolbar" style="margin-top:8px;"><button class="secondary-btn" type="button" data-studio-add-node="${escapeHtml(node.id)}">Add node</button></div></div>`).join('');
+      const canvasHtml = workflowNodes.map((node, index) => `<div class="graph-node" data-order="${index + 1}"><strong>${node.label}</strong><span>${node.type} | ${node.domain || 'studio'} | ${node.apiKey || node.id}</span></div>${edges[index] ? `<div class="graph-edge">${edges[index].from} -> ${edges[index].to} (${edges[index].label})</div>` : ''}`).join('');
+      const compiled = state.studioCompiled;
+      const execution = state.studioExecution;
+      const metrics = [
+        ['Workflow nodes', workflowNodes.length],
+        ['Registry nodes', registry.length],
+        ['Compiled edges', compiled ? compiled.edges.length : edges.length],
+        ['Runtime state', execution ? execution.status : compiled ? 'compiled' : 'draft']
+      ].map(item => `<div class="stat"><div class="stat-label">${item[0]}</div><div class="stat-value">${item[1]}</div></div>`).join('');
+      target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Cognitive Orchestration Studio</h2><div class="sub">Visual cognitive workflow builder for API flows, governance chains, replay pipelines, multi-agent orchestration, simulations, digital twins, edge execution, and enterprise workflows.</div></div><span class="tag prod">PHASE-6E-ORCH-STUDIO</span></div><div class="panel-body">
+        ${!hasTier('professional') ? lockBanner('Studio authoring is visible in Demo/Developer preview. Production execution, collaboration, approvals, and edge deployment require Professional or Enterprise subscription.') : ''}
+        <div class="stat-grid">${metrics}</div>
+        <div class="form-grid">
+          <div class="field"><label>Workflow title</label><input class="input" id="studioWorkflowTitle" value="${escapeHtml(state.studioWorkflowTitle)}"></div>
+          <div class="field"><label>Runtime mode</label><select class="select" id="studioMode"><option value="sandbox">sandbox</option><option value="simulation">simulation</option><option value="edge">edge</option></select></div>
+        </div>
+        <div class="field" style="margin-top:12px;"><label>Workflow objective</label><textarea class="textarea" id="studioDescription">${escapeHtml(state.studioDescription)}</textarea></div>
+        <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="compileStudioWorkflow">Compile Workflow</button><button class="secondary-btn" type="button" id="executeStudioWorkflow" ${compiled ? '' : 'disabled'}>Execute Workflow</button><button class="secondary-btn" type="button" id="exportStudioWorkflow" ${execution ? '' : 'disabled'}>Export Workflow</button><button class="secondary-btn" type="button" data-ask-prompt="Generate and optimize a governance-aware replayable orchestration workflow for ${escapeHtml(state.studioWorkflowTitle)}">Ask COGNI Optimize</button></div>
+      </div></div>
+      <div class="two-col" style="margin-top:18px;"><div class="panel"><div class="panel-head"><div><h2>Metadata-Driven Node Registry</h2><div class="sub">Drag nodes into the canvas or add them directly. Nodes derive from backend API metadata and Studio runtime contracts.</div></div></div><div class="panel-body"><div class="graph-board">${registryHtml}</div></div></div><div class="panel"><div class="panel-head"><div><h2>Workflow Canvas</h2><div class="sub">Compiled into runtime orchestration graphs with dependency resolution, governance injection, replay propagation, confidence evolution, and distributed synchronization.</div></div></div><div class="panel-body"><div id="studioCanvas" class="studio-canvas"><div class="studio-node-row">${canvasHtml}</div></div></div></div></div>
+      <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Compilation / Runtime Output</h2><pre id="studioOutput">${pretty(execution || compiled || { status: 'draft', source: 'metadata-driven-orchestration-studio', nodes: workflowNodes.map(n => n.label), edges })}</pre></div><div class="detail"><h2>Replay, Governance, Confidence & SDK Integration</h2><pre>${pretty(execution ? { replay: execution.replay, governance: execution.governance, confidence: execution.confidenceEvolution, sdkIntegrationReady: execution.studioRuntime && execution.studioRuntime.sdkIntegrationReady } : compiled ? { replayPropagation: compiled.replayPropagation, governanceInjection: compiled.governanceInjection, confidenceTimeline: compiled.confidenceTimeline, distributedSynchronization: compiled.distributedSynchronization, validation: compiled.validation } : { instruction: 'Compile and execute this workflow to generate replay, governance, confidence, dashboard, and SDK integration context.' })}</pre></div></div>`;
     }
 
     function renderAdmin() {
@@ -1909,6 +2328,66 @@
       <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Production readiness assessment</h2><div class="sub">The maturity benchmark is one coherent path: login, subscribe, discover, execute, replay, audit, troubleshoot, and upgrade.</div></div></div><div class="panel-body"><div class="three-col">${['Metadata standard frozen','Ask COGNI navigator integrated','Backend orchestration and replay visualizer','Login-first and subscription-aware access','End-to-end operational workflow'].map(item => `<div class="tile"><h3>${item}</h3><p>Status: operational foundation in place.</p><span class="tag prod">ready</span></div>`).join('')}</div></div></div>`;
     }
 
+    function renderStandards() {
+      const target = document.getElementById('view-standards');
+      target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Standards & Compliance Explorer</h2><div class="sub">Loading standards, protocol, ecosystem, regulatory, governance, and interoperability metadata.</div></div></div><div class="panel-body">${empty('Loading compliance registry...')}</div></div>`;
+      fetch('/api/standards/compliance', { credentials: 'include' })
+        .then(r => r.json())
+        .then(data => {
+          const metrics = data.metrics || {};
+          const ecosystem = (data.matrices && data.matrices.ecosystemCompatibility) || [];
+          const protocolRows = ((data.matrices && data.matrices.protocolCompatibility) || []).filter(row => (row.protocols || []).length || (row.standards || []).length || (row.ecosystems || []).length).slice(0, 18);
+          const governanceRows = ((data.matrices && data.matrices.governanceCompatibility) || []).slice(0, 12);
+          const regulatoryRows = ((data.matrices && data.matrices.regulatoryReadiness) || []).slice(0, 12);
+          target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Standards & Compliance Explorer</h2><div class="sub">${data.positioning}</div></div><span class="tag prod">No certification claim</span></div><div class="panel-body">
+            <div class="form-grid"><div class="field"><label>Search standards, protocols, ecosystems, or regulatory readiness</label><input class="input" id="standardsSearch" value="ROS2 MAVLink DGCA VLA Digital Twin"></div><div class="field"><label>Explorer action</label><button class="action-btn" type="button" id="standardsSearchBtn">Search compatibility</button></div></div>
+            <div class="toolbar" style="margin-top:12px;">${['ROS2','DGCA','MAVLink','NVIDIA Isaac','VLA','Digital Twin','UTM','RBAC'].map(q => `<button class="secondary-btn" type="button" data-standards-query="${q}">${q}</button>`).join('')}</div>
+            <div class="stat-grid" style="margin-top:14px;">${[
+              ['Mapped APIs', metrics.mapped_api_count || 0],
+              ['Standards / profiles', metrics.standards_count || 0],
+              ['Protocols', metrics.protocols_count || 0],
+              ['Ecosystems', metrics.ecosystem_count || 0],
+              ['ROS2 APIs', metrics.ros2_api_count || 0],
+              ['MAVLink APIs', metrics.mavlink_api_count || 0],
+              ['DGCA-ready APIs', metrics.dgca_ready_count || 0],
+              ['VLA-ready APIs', metrics.vla_ready_count || 0],
+              ['Digital Twin APIs', metrics.digital_twin_ready_count || 0],
+              ['UTM-ready APIs', metrics.utm_ready_count || 0],
+              ['Replay compliant', metrics.replay_compliant_count || 0],
+              ['Governance compliant', metrics.governance_compliant_count || 0]
+            ].map(item => `<div class="stat"><div class="stat-label">${item[0]}</div><div class="stat-value">${item[1]}</div></div>`).join('')}</div>
+          </div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="panel"><div class="panel-head"><div><h2>Ecosystem Compatibility Matrix</h2><div class="sub">Robotics and UAV ecosystem interoperability readiness mapped from backend metadata.</div></div></div><div class="panel-body"><div class="api-list">${ecosystem.slice(0, 14).map(item => `<button class="api-card" type="button" data-standards-query="${item.name}"><span class="api-top"><span class="api-name">${item.name}</span><span class="stage active">${item.apiCount} APIs</span></span><span class="api-desc">${(item.readiness || []).slice(0, 4).join(', ')}</span><span class="tags"><span class="tag">${item.registryDomain}</span><span class="tag prod">${item.compatibilityClaim}</span></span></button>`).join('')}</div></div></div><div class="detail"><h2>Explorer results</h2><pre id="standardsResults">${pretty({ status: 'ready', examples: ['Show APIs compatible with ROS2', 'Show DGCA-ready APIs', 'Show MAVLink orchestration APIs', 'Show VLA-compatible APIs'] })}</pre></div></div>
+          <div class="detail" style="margin-top:18px;"><h2>Protocol Compatibility Matrix</h2><pre>${pretty(protocolRows)}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Governance Compatibility Matrix</h2><pre>${pretty(governanceRows)}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Regulatory Readiness Visibility</h2><pre>${pretty(regulatoryRows)}</pre></div>`;
+        })
+        .catch(error => {
+          target.innerHTML = `<div class="panel"><div class="panel-head"><h2>Standards & Compliance Explorer</h2></div><div class="panel-body">${empty(`Compliance registry unavailable: ${error.message}`)}</div></div>`;
+        });
+    }
+
+    async function runStandardsSearch(query) {
+      const output = document.getElementById('standardsResults');
+      if (output) output.textContent = JSON.stringify({ status: 'searching', query }, null, 2);
+      const response = await fetch(`/api/standards/explorer?q=${encodeURIComponent(query)}`, { credentials: 'include' });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || 'Standards search failed');
+      if (output) output.textContent = JSON.stringify({
+        query,
+        metrics: payload.metrics,
+        standardsMatches: (payload.standardsMatches || []).slice(0, 8),
+        apiMatches: (payload.apiMatches || []).slice(0, 8).map(api => ({
+          api_key: api.api_key,
+          name: api.name,
+          standards: api.standards_supported,
+          protocols: api.protocols_supported,
+          ecosystems: api.ecosystem_compatibility,
+          regulatory_alignment: api.regulatory_alignment
+        }))
+      }, null, 2);
+    }
+
     function renderDependencies() {
       fetch('/api/dependencies')
         .then(r => r.json())
@@ -1928,12 +2407,15 @@
         fetch('/api/robotics/runtime/telemetry').then(r => r.json()),
         fetch('/api/cobotics/runtime/telemetry').then(r => r.json()),
         fetch('/api/hri/runtime/telemetry').then(r => r.json()),
+        fetch('/api/digital-twin/runtime/telemetry').then(r => r.json()),
         fetch('/api/industrial-robotics/runtime/telemetry').then(r => r.json()),
+        fetch('/api/edge/runtime/telemetry').then(r => r.json()),
+        fetch('/api/observability/runtime/telemetry').then(r => r.json()),
         fetch('/api/robotics/ecosystems').then(r => r.json()),
         fetch('/api/uav/standards').then(r => r.json()),
         fetch('/api/uav/runtime/telemetry').then(r => r.json())
       ])
-        .then(([data, replay, roboticsRuntime, coboticsRuntime, hriRuntime, industrialRuntime, ecosystems, uavStandards, uavRuntime]) => {
+        .then(([data, replay, roboticsRuntime, coboticsRuntime, hriRuntime, digitalTwinRuntime, industrialRuntime, edgeRuntime, observabilityRuntime, ecosystems, uavStandards, uavRuntime]) => {
           const graph = data.orchestration_graph || { nodes: [], edges: [] };
           const nodes = graph.nodes || [];
           const edges = graph.edges || [];
@@ -1941,7 +2423,10 @@
           const robotics = roboticsRuntime.aggregate || {};
           const cobotics = coboticsRuntime.aggregate || {};
           const hri = hriRuntime.aggregate || {};
+          const twin = digitalTwinRuntime.aggregate || {};
           const industrial = industrialRuntime.aggregate || {};
+          const edge = edgeRuntime.aggregate || {};
+          const observe = observabilityRuntime.aggregate || {};
           const uav = uavRuntime.aggregate || {};
           const graphHtml = nodes.map((node, index) => `<div class="graph-node"><strong>${node.label}</strong><span>${node.group || 'cognition'} ${edges[index] ? `-> ${edges[index].to}` : ''}</span></div>${edges[index] ? `<div class="graph-edge">${edges[index].from} -> ${edges[index].to} (${edges[index].label})</div>` : ''}`).join('');
           document.getElementById('view-visualizer').innerHTML = `<div class="two-col"><div class="panel"><div class="panel-head"><div><h2>Cognitive Execution Visualizer</h2><div class="sub">Backend-driven orchestration graph, replay timeline, governance propagation, confidence evolution, and dependencies.</div></div></div><div class="panel-body"><div class="graph-board">${graphHtml || empty('Run the playground to populate an execution graph.')}</div></div></div><div class="detail"><h2>Robotics runtime telemetry</h2><div class="mini-metrics">${[
@@ -1968,6 +2453,14 @@
             ['Safety events', hri.safety_events || 0],
             ['Trust confidence', hri.average_human_trust_confidence || 0]
           ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('')}</div><pre>${pretty({ activeSessions: hriRuntime.active_sessions, completedExecutions: hriRuntime.completed_executions, simulations: hriRuntime.simulations, shunyaAiAlignment: hriRuntime.shunya_ai_alignment })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Cognitive digital twin telemetry</h2><div class="mini-metrics">${[
+            ['Services', (digitalTwinRuntime.runtime_services || []).length],
+            ['Synchronization', twin.synchronization_events || 0],
+            ['Prediction', twin.predictive_evolution_events || 0],
+            ['Anomaly forecast', twin.anomaly_forecast_events || 0],
+            ['Edge twin', twin.edge_twin_events || 0],
+            ['Avg confidence', twin.average_twin_confidence || 0]
+          ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('')}</div><pre>${pretty({ activeSessions: digitalTwinRuntime.active_sessions, completedExecutions: digitalTwinRuntime.completed_executions, simulations: digitalTwinRuntime.simulations })}</pre></div>
           <div class="detail" style="margin-top:18px;"><h2>Industrial robotics telemetry</h2><div class="mini-metrics">${[
             ['Services', (industrialRuntime.runtime_services || []).length],
             ['Production latency', industrial.production_latency_ms || 0],
@@ -1976,6 +2469,23 @@
             ['Predictive events', industrial.predictive_coordination_events || 0],
             ['Avg confidence', industrial.average_production_confidence || 0]
           ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('')}</div><pre>${pretty({ activeSessions: industrialRuntime.active_sessions, completedExecutions: industrialRuntime.completed_executions, simulations: industrialRuntime.simulations, digitalTwinReady: industrial.digital_twin_ready })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Distributed edge telemetry</h2><div class="mini-metrics">${[
+            ['Services', (edgeRuntime.runtime_services || []).length],
+            ['Edge latency', edge.edge_latency_ms || 0],
+            ['Synchronization', edge.synchronization_events || 0],
+            ['Offline continuity', edge.offline_continuity_events || 0],
+            ['Recovery', edge.recovery_events || 0],
+            ['Avg confidence', edge.average_edge_confidence || 0]
+          ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('')}</div><pre>${pretty({ activeSessions: edgeRuntime.active_sessions, completedExecutions: edgeRuntime.completed_executions, simulations: edgeRuntime.simulations, standardsReadiness: edge.standards_readiness })}</pre></div>
+          <div class="detail" style="margin-top:18px;"><h2>Cognitive observability telemetry</h2><div class="mini-metrics">${[
+            ['Services', (observabilityRuntime.runtime_services || []).length],
+            ['Telemetry', observe.telemetry_events || 0],
+            ['Lineage', observe.lineage_events || 0],
+            ['Replay', observe.replay_events || 0],
+            ['Anomalies', observe.anomaly_events || 0],
+            ['Forensics', observe.forensic_events || 0],
+            ['Avg confidence', observe.average_observability_confidence || 0]
+          ].map(item => `<div class="mini-metric"><strong>${item[0]}</strong><span>${item[1]}</span></div>`).join('')}</div><pre>${pretty({ activeSessions: observabilityRuntime.active_sessions, completedExecutions: observabilityRuntime.completed_executions, simulations: observabilityRuntime.simulations })}</pre></div>
           <div class="detail" style="margin-top:18px;"><h2>Robotics ecosystem compatibility</h2><div class="mini-metrics">${[
             ['Stacks', (ecosystems.compatibility || []).length],
             ['ROS 2', ecosystems.ros2_baseline ? ecosystems.ros2_baseline.latestStable : 'ready'],
@@ -1996,6 +2506,307 @@
         })
         .catch(() => {
           document.getElementById('view-visualizer').innerHTML = '<div class="panel"><div class="panel-head"><h2>Cognitive Execution Visualizer</h2></div><div class="panel-body">Unable to load visualization data.</div></div>';
+        });
+    }
+
+    function renderMemory() {
+      const target = document.getElementById('view-memory');
+      target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Cognitive Memory & Replay Fabric</h2><div class="sub">Loading persistent orchestration memory, replay lineage, confidence history, governance memory, and semantic replay search.</div></div></div><div class="panel-body">${empty('Loading memory fabric...')}</div></div>`;
+      fetch('/api/memory/summary', { credentials: 'include' })
+        .then(r => r.json())
+        .then(summary => {
+          state.memorySummary = summary;
+          const metrics = summary.metrics || {};
+          const episodes = summary.latestEpisodes || [];
+          const timeline = summary.cognitiveTimeline || [];
+          const searchResults = state.memorySearchResults;
+          const reconstruction = state.memoryReconstruction;
+          target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Cognitive Memory & Replay Fabric</h2><div class="sub">${summary.positioning}</div></div><span class="tag prod">PHASE-6E-MEMORY-FABRIC</span></div><div class="panel-body">
+            <div class="stat-grid">${[
+              ['Episodes', metrics.episode_count || 0],
+              ['Replay memory', metrics.replay_memory || 0],
+              ['Governance memory', metrics.governance_memory || 0],
+              ['Confidence points', metrics.confidence_points || 0],
+              ['Multi-agent memory', metrics.multi_agent_memory || 0],
+              ['Distributed lineage', metrics.distributed_lineage || 0],
+              ['Anomaly memory', metrics.anomaly_memory || 0],
+              ['Runtime services', (summary.runtime_services || []).length]
+            ].map(item => `<div class="stat"><div class="stat-label">${item[0]}</div><div class="stat-value">${item[1]}</div></div>`).join('')}</div>
+            <div class="form-grid" style="margin-top:12px;"><div class="field"><label>Semantic replay search</label><input class="input" id="memorySearchInput" value="${escapeHtml(state.memorySearch)}"></div><div class="field"><label>Search action</label><button class="action-btn" type="button" id="runMemorySearch">Search Memory</button></div></div>
+            <div class="toolbar" style="margin-top:12px;">${['Find warehouse orchestration anomalies','Show replay where confidence dropped','Find swarm synchronization degradation','Recall prior orchestration episode'].map(q => `<button class="secondary-btn" type="button" data-memory-query="${q}">${q}</button>`).join('')}</div>
+          </div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="panel"><div class="panel-head"><div><h2>Latest cognitive episodes</h2><div class="sub">Derived from execution, simulation, Studio, replay, governance, and Ask COGNI runtime events.</div></div></div><div class="panel-body"><div class="api-list">${episodes.length ? episodes.map(ep => `<button class="api-card" type="button" data-memory-reconstruct="${ep.id}"><span class="api-top"><span class="api-name">${ep.title}</span><span class="stage active">${ep.type}</span></span><span class="api-desc">${ep.summary}</span><span class="tags"><span class="tag">${ep.domain}</span><span class="tag">${ep.replayId ? 'replay' : 'episode'}</span><span class="tag">confidence ${ep.confidencePoints}</span></span></button>`).join('') : empty('Run a playground execution, simulation, Studio workflow, or Ask COGNI conversation to create memory episodes.')}</div></div></div><div class="detail"><h2>Semantic replay search results</h2><pre id="memorySearchOutput">${pretty(searchResults || { query: state.memorySearch, instruction: 'Search orchestration memory, replay traces, governance events, anomalies, confidence transitions, execution sequences, and distributed coordination.' })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Cognitive timeline</h2><pre>${pretty(timeline.slice(0, 16))}</pre></div><div class="detail"><h2>Replay reconstruction</h2><pre id="memoryReconstructionOutput">${pretty(reconstruction || { instruction: 'Select a cognitive episode to reconstruct replay lineage, governance memory, confidence history, and explainability.' })}</pre></div></div>
+          <div class="detail" style="margin-top:18px;"><h2>Memory retention and edge readiness</h2><pre>${pretty(summary.retention || {})}</pre></div>`;
+        })
+        .catch(error => {
+          target.innerHTML = `<div class="panel"><div class="panel-head"><h2>Cognitive Memory & Replay Fabric</h2></div><div class="panel-body">${empty(`Memory fabric unavailable: ${error.message}`)}</div></div>`;
+        });
+    }
+
+    function renderAgents() {
+      const target = document.getElementById('view-agents');
+      target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Distributed Multi-Agent Cognitive Infrastructure</h2><div class="sub">Loading agent registry, delegation runtime, replay, governance, confidence, memory synchronization, and edge readiness.</div></div></div><div class="panel-body">${empty('Loading multi-agent runtime...')}</div></div>`;
+      const registryPromise = state.agentRegistry ? Promise.resolve(state.agentRegistry) : fetch('/api/agents/registry', { credentials: 'include' }).then(r => r.json()).then(payload => { state.agentRegistry = payload; return payload; });
+      const metricsPromise = fetch('/api/agents/metrics', { credentials: 'include' }).then(r => r.json()).catch(() => null);
+      Promise.all([registryPromise, metricsPromise])
+        .then(([registry, metricsPayload]) => {
+          state.agentMetrics = metricsPayload;
+          const agents = registry.agents || [];
+          const services = registry.runtime_services || [];
+          const metadataApis = registry.metadata_apis || [];
+          const metrics = (metricsPayload && metricsPayload.metrics) || {};
+          const selectedTypeCounts = agents.reduce((counts, agent) => {
+            counts[agent.type] = (counts[agent.type] || 0) + 1;
+            return counts;
+          }, {});
+          target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Distributed Multi-Agent Cognitive Infrastructure</h2><div class="sub">${registry.positioning}</div></div><span class="tag prod">PHASE-6E-MULTIAGENT</span></div><div class="panel-body">
+            <div class="stat-grid">${[
+              ['Agents', agents.length],
+              ['Runtime services', services.length],
+              ['Metadata APIs', metadataApis.length],
+              ['Executions', metrics.multi_agent_executions || 0],
+              ['Delegations', metrics.delegation_events || 0],
+              ['Governance events', metrics.governance_events || 0],
+              ['Memory sync', metrics.memory_sync_events || 0],
+              ['Avg confidence', metrics.average_agent_confidence || 0]
+            ].map(item => `<div class="stat"><div class="stat-label">${item[0]}</div><div class="stat-value">${item[1]}</div></div>`).join('')}</div>
+            <div class="form-grid" style="margin-top:12px;">
+              <div class="field"><label>Coordination objective</label><textarea class="textarea" id="agentObjective">${escapeHtml(state.agentObjective)}</textarea></div>
+              <div class="field"><label>Agent domain</label><select class="select" id="agentDomain">${['enterprise-workflow','robotics','drone','swarm','edge','digital-twin','airport','industrial','multilingual','observability'].map(domain => `<option value="${domain}" ${state.agentDomain === domain ? 'selected' : ''}>${domain}</option>`).join('')}</select></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runAgentCoordination">Run Multi-Agent Coordination</button><button class="secondary-btn" type="button" data-ask-prompt="Explain this delegation chain and show swarm coordination lineage">Ask COGNI Agent Analysis</button><button class="secondary-btn" type="button" data-module="memory">Open Memory Fabric</button><button class="secondary-btn" type="button" data-module="visualizer">Open Replay Visualizer</button></div>
+          </div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="panel"><div class="panel-head"><div><h2>Agent registry</h2><div class="sub">Metadata-driven capability directory with governance permissions, delegation rules, replay readiness, and edge compatibility.</div></div></div><div class="panel-body"><div class="api-list">${agents.map(agent => `<button class="api-card" type="button" data-ask-prompt="Explain ${agent.name} in the multi-agent runtime"><span class="api-top"><span class="api-name">${agent.name}</span><span class="stage active">${agent.type}</span></span><span class="api-desc">${agent.capabilities.slice(0, 3).join(', ')}</span><span class="tags">${agent.domains.slice(0, 4).map(domain => `<span class="tag">${domain}</span>`).join('')}<span class="tag">${agent.edgeReady ? 'edge-ready' : 'cloud/hybrid'}</span><span class="tag">${agent.replayCompatibility ? 'replay' : 'no replay'}</span></span></button>`).join('')}</div></div></div><div class="detail"><h2>Runtime composition</h2><pre>${pretty({ agentTypes: selectedTypeCounts, runtimeServices: services, integration: registry.integration })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Latest multi-agent execution</h2><pre id="agentExecutionOutput">${pretty(state.agentExecution || { instruction: 'Run coordination to create a replayable delegation chain with governance, confidence, memory synchronization, and distributed execution telemetry.' })}</pre></div><div class="detail"><h2>Agent replay reconstruction</h2><pre id="agentReplayOutput">${pretty(state.agentReplay || { instruction: 'Replay appears after coordination and can be reconstructed by the Agent Replay Runtime.' })}</pre></div></div>
+          <div class="detail" style="margin-top:18px;"><h2>Metadata-backed multi-agent APIs</h2><pre>${pretty(metadataApis.map(api => ({ api_key: api.api_key, name: api.name, lifecycle: api.lifecycle_state, replay: api.replay_support, governance: api.governance_support, locked: api.access_policy && api.access_policy.locked })))}</pre></div>`;
+        })
+        .catch(error => {
+          target.innerHTML = `<div class="panel"><div class="panel-head"><h2>Distributed Multi-Agent Cognitive Infrastructure</h2></div><div class="panel-body">${empty(`Multi-agent runtime unavailable: ${error.message}`)}</div></div>`;
+        });
+    }
+
+    function renderGovernance() {
+      const target = document.getElementById('view-governance');
+      target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Cognitive Governance & Policy Fabric</h2><div class="sub">Loading runtime policies, replay authorization, tenant governance, distributed compliance, escalation, risk intelligence, and explainability.</div></div></div><div class="panel-body">${empty('Loading governance fabric...')}</div></div>`;
+      const policyPromise = state.governanceRegistry ? Promise.resolve(state.governanceRegistry) : fetch('/api/governance/policies', { credentials: 'include' }).then(r => r.json()).then(payload => { state.governanceRegistry = payload; return payload; });
+      const metricsPromise = fetch('/api/governance/metrics', { credentials: 'include' }).then(r => r.json()).catch(() => null);
+      Promise.all([policyPromise, metricsPromise])
+        .then(([registry, metricsPayload]) => {
+          state.governanceMetrics = metricsPayload;
+          const policies = registry.policies || [];
+          const services = registry.runtime_services || [];
+          const metadataApis = registry.metadata_apis || [];
+          const metrics = (metricsPayload && metricsPayload.metrics) || {};
+          const categories = policies.reduce((counts, policy) => {
+            counts[policy.category] = (counts[policy.category] || 0) + 1;
+            return counts;
+          }, {});
+          target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Cognitive Governance & Policy Fabric</h2><div class="sub">${registry.positioning}</div></div><span class="tag prod">PHASE-6E-GOVERNANCE-FABRIC</span></div><div class="panel-body">
+            <div class="stat-grid">${[
+              ['Policies', policies.length],
+              ['Runtime services', services.length],
+              ['Metadata APIs', metadataApis.length],
+              ['Evaluations', metrics.governance_evaluations || 0],
+              ['Decisions', metrics.policy_decisions || 0],
+              ['Escalations', metrics.escalation_events || 0],
+              ['Replay auth', metrics.replay_authorizations || 0],
+              ['Risk score', metrics.average_risk_score || 0]
+            ].map(item => `<div class="stat"><div class="stat-label">${item[0]}</div><div class="stat-value">${item[1]}</div></div>`).join('')}</div>
+            <div class="form-grid" style="margin-top:12px;">
+              <div class="field"><label>Governance objective</label><textarea class="textarea" id="governanceObjective">${escapeHtml(state.governanceObjective)}</textarea></div>
+              <div class="field"><label>Governance domain</label><select class="select" id="governanceDomain">${['enterprise-workflow','drone','robotics','cobotics','industrial','edge','swarm','digital-twin','healthcare','multilingual','airport'].map(domain => `<option value="${domain}" ${state.governanceDomain === domain ? 'selected' : ''}>${domain}</option>`).join('')}</select></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runGovernanceEvaluation">Evaluate Governance</button><button class="secondary-btn" type="button" data-ask-prompt="Explain this governance escalation and replay authorization history">Ask COGNI Governance Analysis</button><button class="secondary-btn" type="button" data-module="visualizer">Open Replay Visualizer</button><button class="secondary-btn" type="button" data-module="audit">Open Audit Exports</button></div>
+          </div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="panel"><div class="panel-head"><div><h2>Policy registry</h2><div class="sub">Metadata-driven policy models for orchestration, replay, tenant, domain, safety, compliance, distributed, and edge governance.</div></div></div><div class="panel-body"><div class="api-list">${policies.map(policy => `<button class="api-card" type="button" data-ask-prompt="Explain ${policy.title} governance policy"><span class="api-top"><span class="api-name">${policy.title}</span><span class="stage active">${policy.category}</span></span><span class="api-desc">${policy.explanation}</span><span class="tags"><span class="tag">${policy.enforcement}</span><span class="tag">v${policy.version}</span>${policy.domains.slice(0, 3).map(domain => `<span class="tag">${domain}</span>`).join('')}</span></button>`).join('')}</div></div></div><div class="detail"><h2>Runtime composition</h2><pre>${pretty({ categories, runtimeServices: services, integration: registry.integration })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Latest governance evaluation</h2><pre id="governanceExecutionOutput">${pretty(state.governanceExecution || { instruction: 'Run governance evaluation to produce policy propagation, replay authorization, escalation handling, risk analysis, and explainable decisions.' })}</pre></div><div class="detail"><h2>Governance replay reconstruction</h2><pre id="governanceReplayOutput">${pretty(state.governanceReplay || { instruction: 'Governance replay appears after evaluation and reconstructs policy, authorization, escalation, compliance, and confidence replay.' })}</pre></div></div>
+          <div class="detail" style="margin-top:18px;"><h2>Metadata-backed governance APIs</h2><pre>${pretty(metadataApis.map(api => ({ api_key: api.api_key, name: api.name, lifecycle: api.lifecycle_state, replay: api.replay_support, governance: api.governance_support, locked: api.access_policy && api.access_policy.locked })))}</pre></div>`;
+        })
+        .catch(error => {
+          target.innerHTML = `<div class="panel"><div class="panel-head"><h2>Cognitive Governance & Policy Fabric</h2></div><div class="panel-body">${empty(`Governance fabric unavailable: ${error.message}`)}</div></div>`;
+        });
+    }
+
+    function renderMarketplace() {
+      const target = document.getElementById('view-marketplace');
+      target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Cognitive Marketplace Infrastructure</h2><div class="sub">Loading operational packages, orchestration packs, replay packs, governance packs, simulation environments, deployment templates, billing, and tenant access.</div></div></div><div class="panel-body">${empty('Loading marketplace...')}</div></div>`;
+      const registryPromise = fetch(`/api/marketplace/packages?q=${encodeURIComponent(state.marketplaceSearch)}`, { credentials: 'include' }).then(r => r.json()).then(payload => { state.marketplaceRegistry = payload; return payload; });
+      const metricsPromise = fetch('/api/marketplace/metrics', { credentials: 'include' }).then(r => r.json()).catch(() => null);
+      Promise.all([registryPromise, metricsPromise])
+        .then(([registry, metricsPayload]) => {
+          state.marketplaceMetrics = metricsPayload;
+          const packages = registry.packages || [];
+          const services = registry.runtime_services || [];
+          const metadataApis = registry.metadata_apis || [];
+          const metrics = (metricsPayload && metricsPayload.metrics) || {};
+          if (!packages.some(pkg => pkg.id === state.selectedMarketplacePackageId) && packages[0]) state.selectedMarketplacePackageId = packages[0].id;
+          const selected = packages.find(pkg => pkg.id === state.selectedMarketplacePackageId) || packages[0];
+          const typeCounts = packages.reduce((counts, pkg) => {
+            counts[pkg.type] = (counts[pkg.type] || 0) + 1;
+            return counts;
+          }, {});
+          target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Cognitive Marketplace Infrastructure</h2><div class="sub">${registry.positioning}</div></div><span class="tag prod">PHASE-6E-MARKETPLACE</span></div><div class="panel-body">
+            <div class="stat-grid">${[
+              ['Packages', metrics.package_count || packages.length],
+              ['Runtime services', services.length],
+              ['Metadata APIs', metadataApis.length],
+              ['Compiled', metrics.compiled_packages || 0],
+              ['Replay enabled', metrics.replay_enabled_packages || 0],
+              ['Governed', metrics.governance_enabled_packages || 0],
+              ['Simulations', metrics.simulation_enabled_packages || 0],
+              ['Edge ready', metrics.edge_ready_packages || 0]
+            ].map(item => `<div class="stat"><div class="stat-label">${item[0]}</div><div class="stat-value">${item[1]}</div></div>`).join('')}</div>
+            <div class="form-grid" style="margin-top:12px;">
+              <div class="field"><label>Semantic marketplace search</label><input class="input" id="marketplaceSearch" value="${escapeHtml(state.marketplaceSearch)}"></div>
+              <div class="field"><label>Selected package</label><select class="select" id="marketplacePackage">${packages.map(pkg => `<option value="${pkg.id}" ${state.selectedMarketplacePackageId === pkg.id ? 'selected' : ''}>${pkg.name}</option>`).join('')}</select></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runMarketplaceSearch">Search Packages</button><button class="secondary-btn" type="button" id="compileMarketplacePackage">Compile Operational Bundle</button><button class="secondary-btn" type="button" data-ask-prompt="Recommend orchestration packs for airports and edge swarm deployment templates">Ask COGNI Marketplace Help</button><button class="secondary-btn" type="button" data-module="playground">Open Playground</button></div>
+          </div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="panel"><div class="panel-head"><div><h2>Operational package registry</h2><div class="sub">Packages derive from backend marketplace metadata with APIs, workflows, simulations, replay, governance, deployment, standards, billing, and tenant access.</div></div></div><div class="panel-body"><div class="api-list">${packages.map(pkg => `<button class="api-card" type="button" data-marketplace-package="${pkg.id}"><span class="api-top"><span class="api-name">${pkg.name}</span><span class="stage ${pkg.locked ? 'beta' : 'active'}">${pkg.access}</span></span><span class="api-desc">${pkg.description}</span><span class="tags"><span class="tag">${pkg.type}</span><span class="tag">${pkg.status}</span><span class="tag">${pkg.minTier}</span>${pkg.domains.slice(0, 3).map(domain => `<span class="tag">${domain}</span>`).join('')}</span></button>`).join('') || empty('No packages matched this search.')}</div></div></div><div class="detail"><h2>Selected package</h2><pre>${pretty(selected || { instruction: 'Search for a marketplace package.' })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Compiled operational bundle</h2><pre id="marketplaceExecutionOutput">${pretty(state.marketplaceExecution || { instruction: 'Compile a package to resolve dependencies, validate governance, prepare deployment templates, and create replayable lineage.' })}</pre></div><div class="detail"><h2>Marketplace replay reconstruction</h2><pre id="marketplaceReplayOutput">${pretty(state.marketplaceReplay || { instruction: 'Replay appears after package compilation and reconstructs package, dependency, governance, deployment, simulation, and anomaly replay.' })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Runtime composition</h2><pre>${pretty({ typeCounts, runtimeServices: services, integration: registry.integration })}</pre></div><div class="detail"><h2>Metadata-backed marketplace APIs</h2><pre>${pretty(metadataApis.map(api => ({ api_key: api.api_key, name: api.name, lifecycle: api.lifecycle_state, replay: api.replay_support, governance: api.governance_support, locked: api.access_policy && api.access_policy.locked })))}</pre></div></div>`;
+        })
+        .catch(error => {
+          target.innerHTML = `<div class="panel"><div class="panel-head"><h2>Cognitive Marketplace Infrastructure</h2></div><div class="panel-body">${empty(`Marketplace unavailable: ${error.message}`)}</div></div>`;
+        });
+    }
+
+    function renderEnterpriseOs() {
+      const target = document.getElementById('view-enterprise-os');
+      target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Enterprise Cognitive Operating Infrastructure</h2><div class="sub">Loading unified operations command, executive intelligence, cross-domain runtime supervision, governance operations, replay intelligence, deployment readiness, incidents, and risk cognition.</div></div></div><div class="panel-body">${empty('Loading Enterprise OS...')}</div></div>`;
+      const summaryPromise = fetch('/api/enterprise-os/summary', { credentials: 'include' }).then(r => r.json()).then(payload => { state.enterpriseOsSummary = payload; return payload; });
+      const metricsPromise = fetch('/api/enterprise-os/metrics', { credentials: 'include' }).then(r => r.json()).catch(() => null);
+      Promise.all([summaryPromise, metricsPromise])
+        .then(([payload, metricsPayload]) => {
+          state.enterpriseMetrics = metricsPayload;
+          const summary = payload.summary || {};
+          const telemetry = summary.telemetry || {};
+          const risk = summary.risk || {};
+          const metrics = (metricsPayload && metricsPayload.metrics) || payload.metrics || {};
+          const domains = payload.operational_domains || [];
+          const runtimeServices = payload.runtime_services || [];
+          const advancedServices = payload.advanced_runtime_services || [];
+          const interoperabilityServices = payload.interoperability_runtime_services || [];
+          const commercialServices = payload.commercial_runtime_services || [];
+          const metadataApis = payload.metadata_apis || [];
+          const timeline = summary.timeline || [];
+          target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Enterprise Cognitive Operating Infrastructure</h2><div class="sub">${payload.positioning}</div></div><span class="tag prod">PHASE-6E-ENTERPRISE-OS</span></div><div class="panel-body">
+            <div class="stat-grid">${[
+              ['Health', summary.operationalHealth || metrics.operational_health || 'ready'],
+              ['Health score', summary.healthScore || metrics.health_score || 0],
+              ['Risk', risk.level || metrics.risk_level || 'controlled'],
+              ['Risk score', risk.score || metrics.risk_score || 0],
+              ['Domains', domains.length],
+              ['Runtime services', runtimeServices.length],
+              ['Commands', telemetry.enterpriseCommands || metrics.enterprise_commands || 0],
+              ['Replay events', telemetry.replayEvents || metrics.replay_events || 0]
+            ].map(item => `<div class="stat"><div class="stat-label">${item[0]}</div><div class="stat-value">${item[1]}</div></div>`).join('')}</div>
+            <div class="form-grid" style="margin-top:12px;">
+              <div class="field"><label>Enterprise command objective</label><textarea class="textarea" id="enterpriseCommandObjective">${escapeHtml(state.enterpriseCommandObjective)}</textarea></div>
+              <div class="field"><label>Operational domain</label><select class="select" id="enterpriseCommandDomain">${domains.map(domain => `<option value="${domain.id}" ${state.enterpriseCommandDomain === domain.id ? 'selected' : ''}>${domain.name}</option>`).join('')}</select></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runEnterpriseCommand">Run Enterprise Command</button><button class="secondary-btn" type="button" data-ask-prompt="Show enterprise operational risks and executive summary">Ask COGNI Enterprise Summary</button><button class="secondary-btn" type="button" data-module="observability">Open Observability</button><button class="secondary-btn" type="button" data-module="visualizer">Open Replay Explorer</button></div>
+          </div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Executive intelligence</h2><pre>${pretty({ summary: summary.executiveSummary, commandReadiness: summary.commandReadiness, telemetry, risk })}</pre></div><div class="detail"><h2>Cross-domain operations</h2><pre>${pretty((summary.domains || domains).map(domain => ({ id: domain.id, name: domain.name, status: domain.status || 'ready', runtimeEvents: domain.runtimeEvents || 0 })))}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Latest enterprise command</h2><pre id="enterpriseCommandOutput">${pretty(state.enterpriseCommand || { instruction: 'Run an enterprise command to create governed operational lineage, replay intelligence, risk analysis, deployment readiness, and executive summary.' })}</pre></div><div class="detail"><h2>Enterprise replay reconstruction</h2><pre id="enterpriseReplayOutput">${pretty(state.enterpriseReplay || { instruction: 'Enterprise replay appears after command execution and reconstructs governance, deployment, anomaly, confidence, incident, and executive replay.' })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Operational timeline</h2><pre>${pretty(timeline)}</pre></div><div class="detail"><h2>Runtime composition</h2><pre>${pretty({ runtimeServices, integration: payload.integration, runtimeIntegrations: summary.runtimeIntegrations })}</pre></div></div>
+          <div class="detail" style="margin-top:18px;"><h2>Metadata-backed Enterprise OS APIs</h2><pre>${pretty(metadataApis.map(api => ({ api_key: api.api_key, name: api.name, lifecycle: api.lifecycle_state, replay: api.replay_support, governance: api.governance_support, locked: api.access_policy && api.access_policy.locked })))}</pre></div>`;
+        })
+        .catch(error => {
+          target.innerHTML = `<div class="panel"><div class="panel-head"><h2>Enterprise Cognitive Operating Infrastructure</h2></div><div class="panel-body">${empty(`Enterprise OS unavailable: ${error.message}`)}</div></div>`;
+        });
+    }
+
+    function renderHealthcare() {
+      const target = document.getElementById('view-healthcare');
+      target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Unified Cognitive Healthcare Economy Infrastructure</h2><div class="sub">Loading healthcare economy runtimes, provider workflows, medical devices, surgery, pharma, insurance, telemedicine, research, logistics, governance, replay, SDKs, and enterprise operations.</div></div></div><div class="panel-body">${empty('Loading Healthcare Economy...')}</div></div>`;
+      const summaryPromise = fetch('/api/healthcare/summary', { credentials: 'include' }).then(r => r.json()).then(payload => { state.healthcareSummary = payload; return payload; });
+      const metricsPromise = fetch('/api/healthcare/metrics', { credentials: 'include' }).then(r => r.json()).catch(() => null);
+      Promise.all([summaryPromise, metricsPromise])
+        .then(([payload, metricsPayload]) => {
+          state.healthcareMetrics = metricsPayload;
+          const metrics = (metricsPayload && metricsPayload.metrics) || payload.metrics || {};
+          const branches = payload.branches || [];
+          const segments = payload.segments || [];
+          const runtimeServices = payload.runtime_services || [];
+          const advancedServices = payload.advanced_runtime_services || [];
+          const interoperabilityServices = payload.interoperability_runtime_services || [];
+          const commercialServices = payload.commercial_runtime_services || [];
+          const globalServices = payload.global_runtime_services || [];
+          const complianceServices = payload.compliance_runtime_services || [];
+          const metadataApis = payload.metadata_apis || [];
+          target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Unified Cognitive Healthcare Economy Infrastructure</h2><div class="sub">${payload.positioning}</div></div><span class="tag prod">PHASE-6B-HEALTHCARE-EXPANDED</span></div><div class="panel-body">
+            <div class="stat-grid">${[
+              ['Healthcare APIs', metadataApis.length],
+              ['Runtime services', runtimeServices.length],
+              ['Advanced services', advancedServices.length],
+              ['Interop services', interoperabilityServices.length],
+              ['Commercial services', commercialServices.length],
+              ['Global services', globalServices.length],
+              ['Compliance services', complianceServices.length],
+              ['Economy segments', segments.length],
+              ['Industry branches', branches.length],
+              ['Executions', metrics.workflow_executions || 0],
+              ['Global execs', metrics.global_executions || 0],
+              ['Compliance execs', metrics.compliance_executions || 0],
+              ['Replay events', metrics.replay_events || 0],
+              ['Governance events', metrics.governance_events || 0],
+              ['Avg confidence', metrics.average_confidence || 0]
+            ].map(item => `<div class="stat"><div class="stat-label">${item[0]}</div><div class="stat-value">${item[1]}</div></div>`).join('')}</div>
+            <div class="form-grid" style="margin-top:12px;">
+              <div class="field"><label>Healthcare workflow objective</label><textarea class="textarea" id="healthcareWorkflowObjective">${escapeHtml(state.healthcareWorkflowObjective)}</textarea></div>
+              <div class="field"><label>Workflow</label><select class="select" id="healthcareWorkflow">${['patient-journey-orchestration','icu-telemetry-replay','surgical-orchestration','telemedicine-remote-care','clinical-trial-coordination','insurance-claims-governance','pharma-supply-orchestration','medical-device-twin'].map(item => `<option value="${item}" ${state.healthcareWorkflow === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
+              <div class="field"><label>Healthcare branch</label><select class="select" id="healthcareBranch">${branches.map(branch => `<option value="${branch.id}" ${state.healthcareBranch === branch.id ? 'selected' : ''}>${branch.name}</option>`).join('')}</select></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runHealthcareWorkflow">Run Healthcare Workflow</button><button class="secondary-btn" type="button" data-ask-prompt="Recommend healthcare APIs for telemedicine insurance governance ICU telemetry and surgical orchestration">Ask COGNI Healthcare Intelligence</button><button class="secondary-btn" type="button" data-module="environments">Open Simulations</button><button class="secondary-btn" type="button" data-module="enterprise-os">Open Enterprise OS</button></div>
+          </div></div>
+          <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Advanced medical intelligence command</h2><div class="sub">Surgical robotics, autonomous clinical intelligence, AI diagnostics, biomedical telemetry, emergency coordination, population health, precision medicine, healthcare swarms, and national healthcare observability.</div></div></div><div class="panel-body">
+            <div class="form-grid">
+              <div class="field"><label>Advanced objective</label><textarea class="textarea" id="advancedHealthcareObjective">${escapeHtml(state.advancedHealthcareObjective)}</textarea></div>
+              <div class="field"><label>Advanced workflow</label><select class="select" id="advancedHealthcareWorkflow">${['surgical-robotics-orchestration','ai-diagnostics-confidence','biomedical-telemetry-replay','emergency-healthcare-coordination','population-health-orchestration','precision-medicine-intelligence','national-healthcare-observability','medical-swarm-coordination'].map(item => `<option value="${item}" ${state.advancedHealthcareWorkflow === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runAdvancedHealthcare">Run Advanced Healthcare</button><button class="secondary-btn" type="button" data-ask-prompt="Recommend APIs for robotic surgery biomedical telemetry population health and emergency coordination">Ask COGNI Advanced Healthcare</button></div>
+          </div></div>
+          <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Healthcare interoperability command</h2><div class="sub">HL7/FHIR, DICOM/PACS, medical devices, hospital federation, claims exchange, medical identity, national connectivity, workflow portability, governance federation, and cross-system replay.</div></div></div><div class="panel-body">
+            <div class="form-grid">
+              <div class="field"><label>Interoperability objective</label><textarea class="textarea" id="healthcareIntegrationObjective">${escapeHtml(state.healthcareIntegrationObjective)}</textarea></div>
+              <div class="field"><label>Interoperability workflow</label><select class="select" id="healthcareIntegrationWorkflow">${['fhir-hospital-federation','hl7-adt-patient-movement','dicom-pacs-imaging-replay','biomedical-device-gateway','insurance-claims-propagation','medical-identity-federation','national-healthcare-connectivity','cross-system-replay-audit'].map(item => `<option value="${item}" ${state.healthcareIntegrationWorkflow === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runHealthcareIntegration">Run Interoperability</button><button class="secondary-btn" type="button" data-ask-prompt="Explain this FHIR workflow and DICOM replay lineage with hospital federation governance synchronization">Ask COGNI Interoperability</button></div>
+          </div></div>
+          <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Healthcare commercial command</h2><div class="sub">MedTech lifecycle, pharma intelligence, procurement, supply chains, revenue cycle, insurance commerce, manufacturing, vendor ecosystems, marketplace, and healthcare economy analytics.</div></div></div><div class="panel-body">
+            <div class="form-grid">
+              <div class="field"><label>Commercial objective</label><textarea class="textarea" id="healthcareCommercialObjective">${escapeHtml(state.healthcareCommercialObjective)}</textarea></div>
+              <div class="field"><label>Commercial workflow</label><select class="select" id="healthcareCommercialWorkflow">${['procurement-pharma-revenue','medtech-lifecycle-intelligence','pharmaceutical-distribution','hospital-procurement','medical-supply-chain','insurance-revenue-cycle','medical-manufacturing','healthcare-marketplace','hospital-business-operations','healthcare-economy-analytics'].map(item => `<option value="${item}" ${state.healthcareCommercialWorkflow === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runHealthcareCommercial">Run Commercial Workflow</button><button class="secondary-btn" type="button" data-ask-prompt="Explain procurement orchestration and pharmaceutical replay lineage with insurance revenue anomalies">Ask COGNI Commercial</button></div>
+          </div></div>
+          <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Global healthcare command</h2><div class="sub">Sovereign healthcare, public health coordination, pandemic intelligence, epidemiology, humanitarian operations, resilience, global federation, crisis response, and strategic healthcare analytics.</div></div></div><div class="panel-body">
+            <div class="form-grid">
+              <div class="field"><label>Global healthcare objective</label><textarea class="textarea" id="healthcareGlobalObjective">${escapeHtml(state.healthcareGlobalObjective)}</textarea></div>
+              <div class="field"><label>Global workflow</label><select class="select" id="healthcareGlobalWorkflow">${['pandemic-public-health-coordination','sovereign-healthcare-governance','national-healthcare-observability','humanitarian-healthcare-operations','healthcare-resilience-continuity','global-healthcare-federation','epidemiological-risk-analytics','healthcare-crisis-coordination','public-health-policy-intelligence','strategic-healthcare-analytics'].map(item => `<option value="${item}" ${state.healthcareGlobalWorkflow === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runHealthcareGlobal">Run Global Healthcare</button><button class="secondary-btn" type="button" data-ask-prompt="Explain outbreak propagation and show pandemic replay with healthcare resilience coordination">Ask COGNI Global Healthcare</button></div>
+          </div></div>
+          <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Healthcare compliance command</h2><div class="sub">Regulatory governance, compliance replay, audit lineage, explainable AI governance, consent, privacy, manufacturing quality, cybersecurity, sovereign governance, and regulatory intelligence.</div></div></div><div class="panel-body">
+            <div class="form-grid">
+              <div class="field"><label>Compliance objective</label><textarea class="textarea" id="healthcareComplianceObjective">${escapeHtml(state.healthcareComplianceObjective)}</textarea></div>
+              <div class="field"><label>Compliance workflow</label><select class="select" id="healthcareComplianceWorkflow">${['regulatory-audit-ai-consent','hipaa-gdpr-consent-governance','gmp-manufacturing-traceability','ai-inference-governance-review','medical-device-cybersecurity','hospital-lab-clinical-audit','fhir-dicom-compliance-governance','insurance-financial-governance','telemedicine-privacy-compliance','sovereign-regulatory-intelligence'].map(item => `<option value="${item}" ${state.healthcareComplianceWorkflow === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runHealthcareCompliance">Run Compliance Validation</button><button class="secondary-btn" type="button" data-ask-prompt="Is this workflow HIPAA compliant and show audit reconstruction with AI inference lineage">Ask COGNI Compliance</button></div>
+          </div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Healthcare economy branches</h2><pre>${pretty(branches)}</pre></div><div class="detail"><h2>Ecosystem coverage</h2><pre>${pretty({ segments, multimodalSignals: payload.multimodalSignals, replayTypes: payload.replayTypes })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Latest healthcare execution</h2><pre id="healthcareExecutionOutput">${pretty(state.healthcareExecution || { instruction: 'Run a healthcare workflow to create clinical, device, governance, pharma, insurance, replay, and enterprise operations lineage.' })}</pre></div><div class="detail"><h2>Healthcare replay reconstruction</h2><pre id="healthcareReplayOutput">${pretty(state.healthcareReplay || { instruction: 'Healthcare replay appears after execution and reconstructs clinical, surgery, treatment, governance, insurance, logistics, anomaly, and explainability replay.' })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Advanced healthcare execution</h2><pre id="advancedHealthcareOutput">${pretty(state.advancedHealthcareExecution || { instruction: 'Run advanced healthcare to produce surgical robotics, diagnostics, biomedical telemetry, emergency, population health, precision medicine, and national observability lineage.' })}</pre></div><div class="detail"><h2>Advanced healthcare replay</h2><pre id="advancedHealthcareReplayOutput">${pretty(state.advancedHealthcareReplay || { instruction: 'Advanced replay reconstructs surgery, diagnosis, emergency, robotics, telemetry, governance, anomaly, and explainability replay.' })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Interoperability execution</h2><pre id="healthcareIntegrationOutput">${pretty(state.healthcareIntegrationExecution || { instruction: 'Run interoperability to produce HL7/FHIR, DICOM, biomedical device, hospital federation, insurance, identity, governance, and cross-system replay lineage.' })}</pre></div><div class="detail"><h2>Cross-system replay</h2><pre id="healthcareIntegrationReplayOutput">${pretty(state.healthcareIntegrationReplay || { instruction: 'Interoperability replay reconstructs standards translation, FHIR, DICOM, device, federation, governance, insurance, and audit replay.' })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Commercial execution</h2><pre id="healthcareCommercialOutput">${pretty(state.healthcareCommercialExecution || { instruction: 'Run commercial workflow to produce MedTech, pharma, procurement, supply chain, insurance, revenue, manufacturing, governance, and replay lineage.' })}</pre></div><div class="detail"><h2>Commercial replay</h2><pre id="healthcareCommercialReplayOutput">${pretty(state.healthcareCommercialReplay || { instruction: 'Commercial replay reconstructs procurement, financial, insurance, pharma, logistics, governance, anomaly, and MedTech replay.' })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Global healthcare execution</h2><pre id="healthcareGlobalOutput">${pretty(state.healthcareGlobalExecution || { instruction: 'Run global healthcare to produce public health, pandemic, epidemiology, humanitarian, resilience, federation, crisis, governance, and strategic analytics lineage.' })}</pre></div><div class="detail"><h2>Global healthcare replay</h2><pre id="healthcareGlobalReplayOutput">${pretty(state.healthcareGlobalReplay || { instruction: 'Global replay reconstructs pandemic, crisis, governance, humanitarian, epidemiological, emergency orchestration, federation, and anomaly replay.' })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Compliance execution</h2><pre id="healthcareComplianceOutput">${pretty(state.healthcareComplianceExecution || { instruction: 'Run compliance validation to produce regulatory governance, consent, AI governance, audit lineage, manufacturing quality, cybersecurity, privacy, and replay lineage.' })}</pre></div><div class="detail"><h2>Compliance replay</h2><pre id="healthcareComplianceReplayOutput">${pretty(state.healthcareComplianceReplay || { instruction: 'Compliance replay reconstructs audit, governance, AI inference, manufacturing, privacy, consent, cybersecurity, anomaly, and operational traceability replay.' })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Runtime composition</h2><pre>${pretty({ runtimeServices, advancedServices, interoperabilityServices, commercialServices, globalServices, complianceServices, advancedCategories: payload.advancedCategories, interoperabilityStandards: payload.interoperabilityStandards, commercialCategories: payload.commercialCategories, globalCategories: payload.globalCategories, complianceCoverage: payload.complianceCoverage, enterpriseIntegration: payload.enterpriseIntegration })}</pre></div><div class="detail"><h2>Metadata-backed healthcare APIs</h2><pre>${pretty(metadataApis.map(api => ({ api_key: api.api_key, name: api.name, lifecycle: api.lifecycle_state, min_tier: api.min_tier, replay: api.replay_support, governance: api.governance_support, locked: api.access_policy && api.access_policy.locked })))}</pre></div></div>`;
+        })
+        .catch(error => {
+          target.innerHTML = `<div class="panel"><div class="panel-head"><h2>Unified Cognitive Healthcare Economy Infrastructure</h2></div><div class="panel-body">${empty(`Healthcare runtime unavailable: ${error.message}`)}</div></div>`;
         });
     }
 
@@ -2049,9 +2860,11 @@
     function renderCurrentView() {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById(`view-${state.module}`).classList.add('active');
+      if (state.module === 'learn') renderLearn();
       if (state.module === 'docs') renderDocs();
       if (state.module === 'discovery') renderDiscovery();
       if (state.module === 'playground') renderPlayground();
+      if (state.module === 'studio') renderStudio();
       if (state.module === 'environments') renderEnvironments();
       if (state.module === 'billing') renderBilling();
       if (state.module === 'observability') renderObservability();
@@ -2061,8 +2874,15 @@
       if (state.module === 'sdk') renderSdk();
       if (state.module === 'admin') renderAdmin();
       if (state.module === 'readiness') renderReadiness();
+      if (state.module === 'standards') renderStandards();
       if (state.module === 'dependencies') renderDependencies();
       if (state.module === 'visualizer') renderVisualizer();
+      if (state.module === 'memory') renderMemory();
+      if (state.module === 'agents') renderAgents();
+      if (state.module === 'governance') renderGovernance();
+      if (state.module === 'marketplace') renderMarketplace();
+      if (state.module === 'enterprise-os') renderEnterpriseOs();
+      if (state.module === 'healthcare') renderHealthcare();
       if (state.module === 'audit') renderAudit();
       if (state.module === 'usecase') renderUsecase();
     }
@@ -2098,10 +2918,18 @@
       if (simulationBtn) { state.selectedSimulationId = simulationBtn.dataset.simulation; state.simulationRuntime = null; render(); return; }
       const discoveryBtn = event.target.closest('[data-discovery]');
       if (discoveryBtn) { els.search.value = discoveryBtn.dataset.discovery; state.domain = 'all'; state.module = 'docs'; render(); return; }
+      const standardsQueryBtn = event.target.closest('[data-standards-query]');
+      if (standardsQueryBtn) { state.module = 'standards'; render(); setTimeout(() => { const input = document.getElementById('standardsSearch'); if (input) input.value = standardsQueryBtn.dataset.standardsQuery; runStandardsSearch(standardsQueryBtn.dataset.standardsQuery).catch(() => {}); }, 250); return; }
       const askDomainBtn = event.target.closest('[data-ask-domain]');
       if (askDomainBtn) { state.module = 'ask'; state.chat.push({ role: 'You', text: `Explain roadmap and API plans for ${askDomainBtn.dataset.askDomain}` }); render(); return; }
       const askPromptBtn = event.target.closest('[data-ask-prompt]');
       if (askPromptBtn) { state.module = 'ask'; render(); setTimeout(() => { const input = document.getElementById('askInput'); if (input) input.value = askPromptBtn.dataset.askPrompt; }, 0); return; }
+      const learningQueryBtn = event.target.closest('[data-learning-query]');
+      if (learningQueryBtn) { state.module = 'ask'; render(); setTimeout(() => { const input = document.getElementById('askInput'); if (input) input.value = `Learning Mode: ${learningQueryBtn.dataset.learningQuery}`; }, 0); return; }
+      const learningSectionBtn = event.target.closest('[data-learning-section]');
+      if (learningSectionBtn) { els.search.value = learningSectionBtn.dataset.learningSection; state.module = 'learn'; render(); return; }
+      const contextualLearn = event.target.closest('[data-context-learn]');
+      if (contextualLearn) { const page = state.module; state.module = 'ask'; render(); setTimeout(() => { const input = document.getElementById('askInput'); if (input) input.value = `Learning Mode: Ask COGNI about the ${page} page. Explain what I should understand, what actions to take, and how orchestration, replay, governance, observability, and SDK integration apply here.`; }, 0); return; }
       const appAction = event.target.closest('[data-app-action]');
       if (appAction) {
         const app = applicationById(appAction.dataset.app);
@@ -2135,6 +2963,30 @@
         render();
         return;
       }
+      const studioAdd = event.target.closest('[data-studio-add-node]');
+      if (studioAdd) {
+        const node = state.studioRegistry.find(item => item.id === studioAdd.dataset.studioAddNode);
+        addStudioNode(node);
+        return;
+      }
+      const memoryQueryBtn = event.target.closest('[data-memory-query]');
+      if (memoryQueryBtn) {
+        state.memorySearch = memoryQueryBtn.dataset.memoryQuery;
+        state.memorySearchResults = null;
+        state.memoryReconstruction = null;
+        state.module = 'memory';
+        render();
+        return;
+      }
+      const marketplacePackageBtn = event.target.closest('[data-marketplace-package]');
+      if (marketplacePackageBtn) {
+        state.selectedMarketplacePackageId = marketplacePackageBtn.dataset.marketplacePackage;
+        state.marketplaceExecution = null;
+        state.marketplaceReplay = null;
+        state.module = 'marketplace';
+        render();
+        return;
+      }
       const footerAction = event.target.closest('[data-footer-action]');
       if (footerAction && footerAction.dataset.footerAction === 'sandbox') { state.playgroundMode = 'sandbox'; state.module = 'playground'; render(); return; }
       if (footerAction && footerAction.dataset.footerAction === 'onboarding') { state.module = 'issues'; render(); setTimeout(() => { const summary = document.getElementById('issueSummary'); if (summary) summary.value = 'Enterprise onboarding request for API-CINTENT workspace, API enablement, quota planning, and production access.'; }, 0); return; }
@@ -2152,6 +3004,64 @@
       if (event.target.id === 'playEcosystem') { state.roboticsEcosystem = event.target.value; render(); }
       if (event.target.id === 'playUavStandard') { state.uavStandard = event.target.value; render(); }
       if (event.target.id === 'playUavEcosystem') { state.uavEcosystem = event.target.value; render(); }
+      if (event.target.id === 'playProtocolMode') { state.protocolMode = event.target.value; render(); }
+      if (event.target.id === 'sdkDomain') { state.sdkDomain = event.target.value; state.sdkIntelligence = null; renderSdk(); }
+      if (event.target.id === 'sdkDeploymentMode') { state.sdkDeploymentMode = event.target.value; state.sdkIntelligence = null; renderSdk(); }
+      if (event.target.id === 'sdkProblem') { state.sdkProblem = event.target.value; state.sdkIntelligence = null; }
+      if (event.target.id === 'sdkEcosystem') { state.roboticsEcosystem = event.target.value; state.sdkIntelligence = null; renderSdk(); }
+      if (event.target.id === 'sdkStandard') { state.uavStandard = event.target.value; state.sdkIntelligence = null; renderSdk(); }
+      if (event.target.id === 'studioWorkflowTitle') { state.studioWorkflowTitle = event.target.value; state.studioCompiled = null; state.studioExecution = null; }
+      if (event.target.id === 'studioDescription') { state.studioDescription = event.target.value; state.studioCompiled = null; state.studioExecution = null; }
+      if (event.target.id === 'memorySearchInput') { state.memorySearch = event.target.value; }
+      if (event.target.id === 'agentObjective') { state.agentObjective = event.target.value; state.agentExecution = null; state.agentReplay = null; }
+      if (event.target.id === 'agentDomain') { state.agentDomain = event.target.value; state.agentExecution = null; state.agentReplay = null; renderAgents(); }
+      if (event.target.id === 'governanceObjective') { state.governanceObjective = event.target.value; state.governanceExecution = null; state.governanceReplay = null; }
+      if (event.target.id === 'governanceDomain') { state.governanceDomain = event.target.value; state.governanceExecution = null; state.governanceReplay = null; renderGovernance(); }
+      if (event.target.id === 'marketplaceSearch') { state.marketplaceSearch = event.target.value; }
+      if (event.target.id === 'marketplacePackage') { state.selectedMarketplacePackageId = event.target.value; state.marketplaceExecution = null; state.marketplaceReplay = null; renderMarketplace(); }
+      if (event.target.id === 'enterpriseCommandObjective') { state.enterpriseCommandObjective = event.target.value; state.enterpriseCommand = null; state.enterpriseReplay = null; }
+      if (event.target.id === 'enterpriseCommandDomain') { state.enterpriseCommandDomain = event.target.value; state.enterpriseCommand = null; state.enterpriseReplay = null; renderEnterpriseOs(); }
+      if (event.target.id === 'healthcareWorkflowObjective') { state.healthcareWorkflowObjective = event.target.value; state.healthcareExecution = null; state.healthcareReplay = null; }
+      if (event.target.id === 'healthcareWorkflow') { state.healthcareWorkflow = event.target.value; state.healthcareExecution = null; state.healthcareReplay = null; renderHealthcare(); }
+      if (event.target.id === 'healthcareBranch') { state.healthcareBranch = event.target.value; state.healthcareExecution = null; state.healthcareReplay = null; renderHealthcare(); }
+      if (event.target.id === 'advancedHealthcareObjective') { state.advancedHealthcareObjective = event.target.value; state.advancedHealthcareExecution = null; state.advancedHealthcareReplay = null; }
+      if (event.target.id === 'advancedHealthcareWorkflow') { state.advancedHealthcareWorkflow = event.target.value; state.advancedHealthcareExecution = null; state.advancedHealthcareReplay = null; renderHealthcare(); }
+      if (event.target.id === 'healthcareIntegrationObjective') { state.healthcareIntegrationObjective = event.target.value; state.healthcareIntegrationExecution = null; state.healthcareIntegrationReplay = null; }
+      if (event.target.id === 'healthcareIntegrationWorkflow') { state.healthcareIntegrationWorkflow = event.target.value; state.healthcareIntegrationExecution = null; state.healthcareIntegrationReplay = null; renderHealthcare(); }
+      if (event.target.id === 'healthcareCommercialObjective') { state.healthcareCommercialObjective = event.target.value; state.healthcareCommercialExecution = null; state.healthcareCommercialReplay = null; }
+      if (event.target.id === 'healthcareCommercialWorkflow') { state.healthcareCommercialWorkflow = event.target.value; state.healthcareCommercialExecution = null; state.healthcareCommercialReplay = null; renderHealthcare(); }
+      if (event.target.id === 'healthcareGlobalObjective') { state.healthcareGlobalObjective = event.target.value; state.healthcareGlobalExecution = null; state.healthcareGlobalReplay = null; }
+      if (event.target.id === 'healthcareGlobalWorkflow') { state.healthcareGlobalWorkflow = event.target.value; state.healthcareGlobalExecution = null; state.healthcareGlobalReplay = null; renderHealthcare(); }
+      if (event.target.id === 'healthcareComplianceObjective') { state.healthcareComplianceObjective = event.target.value; state.healthcareComplianceExecution = null; state.healthcareComplianceReplay = null; }
+      if (event.target.id === 'healthcareComplianceWorkflow') { state.healthcareComplianceWorkflow = event.target.value; state.healthcareComplianceExecution = null; state.healthcareComplianceReplay = null; renderHealthcare(); }
+    });
+
+    document.addEventListener('dragstart', event => {
+      const node = event.target.closest('[data-studio-node]');
+      if (!node || !event.dataTransfer) return;
+      event.dataTransfer.setData('text/plain', node.dataset.studioNode);
+      event.dataTransfer.effectAllowed = 'copy';
+    });
+
+    document.addEventListener('dragover', event => {
+      const canvas = event.target.closest('#studioCanvas');
+      if (!canvas) return;
+      event.preventDefault();
+      canvas.classList.add('drop-ready');
+    });
+
+    document.addEventListener('dragleave', event => {
+      const canvas = event.target.closest('#studioCanvas');
+      if (canvas) canvas.classList.remove('drop-ready');
+    });
+
+    document.addEventListener('drop', event => {
+      const canvas = event.target.closest('#studioCanvas');
+      if (!canvas || !event.dataTransfer) return;
+      event.preventDefault();
+      canvas.classList.remove('drop-ready');
+      const node = state.studioRegistry.find(item => item.id === event.dataTransfer.getData('text/plain'));
+      addStudioNode(node);
     });
 
     document.addEventListener('click', async event => {
@@ -2164,7 +3074,7 @@
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ api_key: a.id, mode: state.playgroundMode, input: { ...(parsed.input || parsed), roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem }, governanceContext: { ...(parsed.governanceContext || {}), roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem } })
+            body: JSON.stringify({ api_key: a.id, mode: state.playgroundMode, input: { ...(parsed.input || parsed), roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem, protocolMode: state.protocolMode }, governanceContext: { ...(parsed.governanceContext || {}), roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem, protocolMode: state.protocolMode } })
           });
           const payload = await response.json();
           document.getElementById('playOutput').textContent = JSON.stringify(payload, null, 2);
@@ -2183,12 +3093,21 @@
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ simulationId: state.selectedSimulationId, mode: 'sandbox', input: { requestedFrom: 'simulations-module', roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem, replay: true, governance: true } })
+            body: JSON.stringify({ simulationId: state.selectedSimulationId, mode: 'sandbox', input: { requestedFrom: 'simulations-module', roboticsEcosystem: state.roboticsEcosystem, uavStandard: state.uavStandard, uavEcosystem: state.uavEcosystem, protocolMode: state.protocolMode, replay: true, governance: true } })
           });
           const payload = await response.json();
           if (!response.ok) throw new Error(payload.error || 'Simulation execution failed');
           animateSimulation(payload);
         } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'standardsSearchBtn') {
+        const input = document.getElementById('standardsSearch');
+        try {
+          await runStandardsSearch(input ? input.value : '');
+        } catch (error) {
+          const output = document.getElementById('standardsResults');
           if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
         }
       }
@@ -2354,11 +3273,393 @@
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ api_key: selectedApi().id, language: sdkBtn.dataset.sdkLanguage })
+          body: JSON.stringify({ api_key: selectedApi().id, language: sdkBtn.dataset.sdkLanguage, context: sdkContextPayload() })
         });
         const payload = await response.json();
         const output = document.getElementById('sdkOutput');
         if (output) output.textContent = JSON.stringify(payload, null, 2);
+      }
+      if (event.target.id === 'runSdkIntelligence') {
+        const problem = document.getElementById('sdkProblem');
+        if (problem) state.sdkProblem = problem.value;
+        const response = await fetch('/api/sdk/intelligence', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(sdkContextPayload())
+        });
+        const payload = await response.json();
+        state.sdkIntelligence = payload;
+        renderSdk();
+      }
+      if (event.target.id === 'compileStudioWorkflow') {
+        const title = document.getElementById('studioWorkflowTitle');
+        const description = document.getElementById('studioDescription');
+        if (title) state.studioWorkflowTitle = title.value;
+        if (description) state.studioDescription = description.value;
+        const output = document.getElementById('studioOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'compiling', workflow: state.studioWorkflowTitle }, null, 2);
+        try {
+          const response = await fetch('/api/studio/compile', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: state.studioWorkflowTitle,
+              description: state.studioDescription,
+              nodes: state.studioNodes,
+              edges: studioEdges(state.studioNodes),
+              apiKeys: [selectedApi().id, ...state.cart],
+              domain: state.domain,
+              simulationId: state.selectedSimulationId,
+              ecosystem: state.roboticsEcosystem,
+              standard: state.uavStandard,
+              deploymentMode: state.sdkDeploymentMode
+            })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Studio workflow compilation failed');
+          state.studioCompiled = payload.compiledWorkflow || payload;
+          state.studioExecution = null;
+          renderStudio();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'executeStudioWorkflow') {
+        const output = document.getElementById('studioOutput');
+        const mode = document.getElementById('studioMode');
+        if (output) output.textContent = JSON.stringify({ status: 'executing', workflow: state.studioCompiled && state.studioCompiled.workflowId }, null, 2);
+        try {
+          const response = await fetch('/api/studio/execute', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ compiledWorkflow: state.studioCompiled, mode: mode ? mode.value : 'sandbox' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Studio workflow execution failed');
+          state.studioExecution = payload.runtime || payload.execution || payload;
+          renderStudio();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'exportStudioWorkflow') {
+        const workflowId = state.studioCompiled && state.studioCompiled.workflowId;
+        const output = document.getElementById('studioOutput');
+        if (!workflowId) return;
+        try {
+          const response = await fetch(`/api/studio/workflows/${encodeURIComponent(workflowId)}/export`, { credentials: 'include' });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Studio workflow export failed');
+          if (output) output.textContent = JSON.stringify(payload, null, 2);
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'runMemorySearch') {
+        const input = document.getElementById('memorySearchInput');
+        if (input) state.memorySearch = input.value;
+        const output = document.getElementById('memorySearchOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'searching', query: state.memorySearch }, null, 2);
+        try {
+          const response = await fetch(`/api/memory/search?q=${encodeURIComponent(state.memorySearch)}`, { credentials: 'include' });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Memory search failed');
+          state.memorySearchResults = payload;
+          if ((payload.results || []).length) {
+            const reconstructionResponse = await fetch(`/api/memory/reconstruct/${encodeURIComponent(payload.results[0].id)}`, { credentials: 'include' });
+            const reconstructionPayload = await reconstructionResponse.json();
+            if (reconstructionResponse.ok) state.memoryReconstruction = reconstructionPayload.reconstruction;
+          }
+          renderMemory();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'runAgentCoordination') {
+        const objective = document.getElementById('agentObjective');
+        const domain = document.getElementById('agentDomain');
+        if (objective) state.agentObjective = objective.value;
+        if (domain) state.agentDomain = domain.value;
+        const output = document.getElementById('agentExecutionOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'coordinating', objective: state.agentObjective, domain: state.agentDomain }, null, 2);
+        try {
+          const response = await fetch('/api/agents/coordinate', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ objective: state.agentObjective, domain: state.agentDomain, mode: 'sandbox' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Multi-agent coordination failed');
+          state.agentExecution = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/agents/replay/${encodeURIComponent(state.agentExecution.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.agentReplay = replayPayload;
+          state.memorySearch = 'delegation replay collaborative coordination';
+          renderAgents();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'runGovernanceEvaluation') {
+        const objective = document.getElementById('governanceObjective');
+        const domain = document.getElementById('governanceDomain');
+        if (objective) state.governanceObjective = objective.value;
+        if (domain) state.governanceDomain = domain.value;
+        const output = document.getElementById('governanceExecutionOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'evaluating', objective: state.governanceObjective, domain: state.governanceDomain }, null, 2);
+        try {
+          const response = await fetch('/api/governance/evaluate', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ objective: state.governanceObjective, domain: state.governanceDomain, mode: 'sandbox' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Governance evaluation failed');
+          state.governanceExecution = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/governance/replay/${encodeURIComponent(state.governanceExecution.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.governanceReplay = replayPayload;
+          state.memorySearch = 'governance replay policy escalation authorization';
+          renderGovernance();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'runMarketplaceSearch') {
+        const input = document.getElementById('marketplaceSearch');
+        if (input) state.marketplaceSearch = input.value;
+        state.marketplaceExecution = null;
+        state.marketplaceReplay = null;
+        renderMarketplace();
+      }
+      if (event.target.id === 'compileMarketplacePackage') {
+        const input = document.getElementById('marketplaceSearch');
+        const select = document.getElementById('marketplacePackage');
+        if (input) state.marketplaceSearch = input.value;
+        if (select) state.selectedMarketplacePackageId = select.value;
+        const output = document.getElementById('marketplaceExecutionOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'compiling', packageId: state.selectedMarketplacePackageId }, null, 2);
+        try {
+          const response = await fetch('/api/marketplace/compile', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ packageId: state.selectedMarketplacePackageId, query: state.marketplaceSearch, mode: 'sandbox' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Marketplace package compilation failed');
+          state.marketplaceExecution = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/marketplace/replay/${encodeURIComponent(state.marketplaceExecution.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.marketplaceReplay = replayPayload;
+          state.memorySearch = 'marketplace package replay governance deployment';
+          renderMarketplace();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'runEnterpriseCommand') {
+        const objective = document.getElementById('enterpriseCommandObjective');
+        const domain = document.getElementById('enterpriseCommandDomain');
+        if (objective) state.enterpriseCommandObjective = objective.value;
+        if (domain) state.enterpriseCommandDomain = domain.value;
+        const output = document.getElementById('enterpriseCommandOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'executing-enterprise-command', objective: state.enterpriseCommandObjective, domain: state.enterpriseCommandDomain }, null, 2);
+        try {
+          const response = await fetch('/api/enterprise-os/command', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ objective: state.enterpriseCommandObjective, domain: state.enterpriseCommandDomain, mode: 'sandbox' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Enterprise OS command failed');
+          state.enterpriseCommand = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/enterprise-os/replay/${encodeURIComponent(state.enterpriseCommand.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.enterpriseReplay = replayPayload;
+          state.memorySearch = 'enterprise operational risk governance replay incident deployment';
+          renderEnterpriseOs();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'runHealthcareWorkflow') {
+        const objective = document.getElementById('healthcareWorkflowObjective');
+        const workflow = document.getElementById('healthcareWorkflow');
+        const branch = document.getElementById('healthcareBranch');
+        if (objective) state.healthcareWorkflowObjective = objective.value;
+        if (workflow) state.healthcareWorkflow = workflow.value;
+        if (branch) state.healthcareBranch = branch.value;
+        const output = document.getElementById('healthcareExecutionOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'executing-healthcare-workflow', workflow: state.healthcareWorkflow, branch: state.healthcareBranch }, null, 2);
+        try {
+          const response = await fetch('/api/healthcare/execute', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ objective: state.healthcareWorkflowObjective, workflow: state.healthcareWorkflow, branch: state.healthcareBranch, mode: 'sandbox' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Healthcare workflow execution failed');
+          state.healthcareExecution = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/healthcare/replay/${encodeURIComponent(state.healthcareExecution.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.healthcareReplay = replayPayload;
+          state.memorySearch = 'healthcare clinical replay governance insurance device telemetry';
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'runAdvancedHealthcare') {
+        const objective = document.getElementById('advancedHealthcareObjective');
+        const workflow = document.getElementById('advancedHealthcareWorkflow');
+        if (objective) state.advancedHealthcareObjective = objective.value;
+        if (workflow) state.advancedHealthcareWorkflow = workflow.value;
+        const output = document.getElementById('advancedHealthcareOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'executing-advanced-healthcare', workflow: state.advancedHealthcareWorkflow }, null, 2);
+        try {
+          const response = await fetch('/api/healthcare/advanced/execute', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ objective: state.advancedHealthcareObjective, workflow: state.advancedHealthcareWorkflow, mode: 'sandbox' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Advanced healthcare execution failed');
+          state.advancedHealthcareExecution = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/healthcare/advanced/replay/${encodeURIComponent(state.advancedHealthcareExecution.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.advancedHealthcareReplay = replayPayload;
+          state.memorySearch = 'surgical replay diagnosis confidence biomedical telemetry emergency population health';
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'runHealthcareIntegration') {
+        const objective = document.getElementById('healthcareIntegrationObjective');
+        const workflow = document.getElementById('healthcareIntegrationWorkflow');
+        if (objective) state.healthcareIntegrationObjective = objective.value;
+        if (workflow) state.healthcareIntegrationWorkflow = workflow.value;
+        const output = document.getElementById('healthcareIntegrationOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'executing-healthcare-interoperability', workflow: state.healthcareIntegrationWorkflow }, null, 2);
+        try {
+          const response = await fetch('/api/healthcare/integration/execute', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ objective: state.healthcareIntegrationObjective, workflow: state.healthcareIntegrationWorkflow, mode: 'sandbox' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Healthcare interoperability execution failed');
+          state.healthcareIntegrationExecution = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/healthcare/integration/replay/${encodeURIComponent(state.healthcareIntegrationExecution.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.healthcareIntegrationReplay = replayPayload;
+          state.memorySearch = 'FHIR DICOM hospital federation interoperability replay governance';
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'runHealthcareCommercial') {
+        const objective = document.getElementById('healthcareCommercialObjective');
+        const workflow = document.getElementById('healthcareCommercialWorkflow');
+        if (objective) state.healthcareCommercialObjective = objective.value;
+        if (workflow) state.healthcareCommercialWorkflow = workflow.value;
+        const output = document.getElementById('healthcareCommercialOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'executing-healthcare-commercial', workflow: state.healthcareCommercialWorkflow }, null, 2);
+        try {
+          const response = await fetch('/api/healthcare/commercial/execute', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ objective: state.healthcareCommercialObjective, workflow: state.healthcareCommercialWorkflow, mode: 'sandbox' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Healthcare commercial execution failed');
+          state.healthcareCommercialExecution = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/healthcare/commercial/replay/${encodeURIComponent(state.healthcareCommercialExecution.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.healthcareCommercialReplay = replayPayload;
+          state.memorySearch = 'healthcare commercial procurement pharma insurance revenue replay';
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'runHealthcareGlobal') {
+        const objective = document.getElementById('healthcareGlobalObjective');
+        const workflow = document.getElementById('healthcareGlobalWorkflow');
+        if (objective) state.healthcareGlobalObjective = objective.value;
+        if (workflow) state.healthcareGlobalWorkflow = workflow.value;
+        const output = document.getElementById('healthcareGlobalOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'executing-global-healthcare', workflow: state.healthcareGlobalWorkflow }, null, 2);
+        try {
+          const response = await fetch('/api/healthcare/global/execute', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ objective: state.healthcareGlobalObjective, workflow: state.healthcareGlobalWorkflow, mode: 'sandbox' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Global healthcare execution failed');
+          state.healthcareGlobalExecution = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/healthcare/global/replay/${encodeURIComponent(state.healthcareGlobalExecution.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.healthcareGlobalReplay = replayPayload;
+          state.memorySearch = 'global healthcare pandemic public health humanitarian resilience replay';
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'runHealthcareCompliance') {
+        const objective = document.getElementById('healthcareComplianceObjective');
+        const workflow = document.getElementById('healthcareComplianceWorkflow');
+        if (objective) state.healthcareComplianceObjective = objective.value;
+        if (workflow) state.healthcareComplianceWorkflow = workflow.value;
+        const output = document.getElementById('healthcareComplianceOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'executing-healthcare-compliance', workflow: state.healthcareComplianceWorkflow }, null, 2);
+        try {
+          const response = await fetch('/api/healthcare/compliance/execute', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ objective: state.healthcareComplianceObjective, workflow: state.healthcareComplianceWorkflow, mode: 'sandbox' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Healthcare compliance execution failed');
+          state.healthcareComplianceExecution = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/healthcare/compliance/replay/${encodeURIComponent(state.healthcareComplianceExecution.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.healthcareComplianceReplay = replayPayload;
+          state.memorySearch = 'healthcare compliance audit consent AI governance cybersecurity replay';
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      const memoryReconstruct = event.target.closest('[data-memory-reconstruct]');
+      if (memoryReconstruct) {
+        const output = document.getElementById('memoryReconstructionOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'reconstructing', memoryId: memoryReconstruct.dataset.memoryReconstruct }, null, 2);
+        try {
+          const response = await fetch(`/api/memory/reconstruct/${encodeURIComponent(memoryReconstruct.dataset.memoryReconstruct)}`, { credentials: 'include' });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Memory reconstruction failed');
+          state.memoryReconstruction = payload.reconstruction;
+          renderMemory();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
       }
       if (event.target.id === 'askBtn') {
         const input = document.getElementById('askInput');
@@ -2371,21 +3672,8 @@
             body: JSON.stringify({ query: input.value })
           });
           const payload = await response.json();
-          const names = (payload.structuredResponse || []).map(item => `${item.name} (${item.lifecycle})`).join(', ');
-          const domainNames = (payload.domainResponse || []).map(item => `${item.title} [${item.status}]`).join(', ');
-          const appNames = (payload.applicationResponse || []).map(item => `${item.name} [${item.status}] -> ${(item.relatedApis || []).join(', ')}`).join('; ');
-          const robotics = payload.roboticsContext ? ` Robotics Core: ${payload.roboticsContext.apiCount} metadata-backed Robotics/Cobotics APIs are registered for ${payload.roboticsContext.phase}. Runtime services: ${(payload.roboticsContext.runtimeServices || []).slice(0, 5).map(item => item.name).join(', ')}. ${(payload.roboticsContext.APIs || []).slice(0, 4).map(item => `${item.name} (${item.lifecycle})`).join(', ')}. Positioning: ${payload.roboticsContext.positioning}` : '';
-          const cobotics = payload.coboticsContext ? ` Cobotics: ${payload.coboticsContext.apiCount} collaborative APIs are registered for ${payload.coboticsContext.phase}. Runtime services: ${(payload.coboticsContext.runtimeServices || []).slice(0, 5).map(item => item.name).join(', ')}. Capabilities: ${(payload.coboticsContext.coreCapabilities || []).slice(0, 5).join(', ')}. Positioning: ${payload.coboticsContext.positioning}` : '';
-          const hri = payload.hriContext ? ` HRI: ${payload.hriContext.apiCount} human-robot interaction APIs are registered for ${payload.hriContext.phase}. Runtime services: ${(payload.hriContext.runtimeServices || []).slice(0, 5).map(item => item.name).join(', ')}. Capabilities: ${(payload.hriContext.coreCapabilities || []).slice(0, 6).join(', ')}. ${payload.hriContext.shunyaAiAlignment} Positioning: ${payload.hriContext.positioning}` : '';
-          const industrial = payload.industrialRoboticsContext ? ` Industrial Robotics: ${payload.industrialRoboticsContext.apiCount} industrial APIs are registered for ${payload.industrialRoboticsContext.phase}. Runtime services: ${(payload.industrialRoboticsContext.runtimeServices || []).slice(0, 5).map(item => item.name).join(', ')}. Capabilities: ${(payload.industrialRoboticsContext.coreCapabilities || []).slice(0, 5).join(', ')}. Positioning: ${payload.industrialRoboticsContext.positioning}` : '';
-          const ecosystems = payload.roboticsContext && payload.roboticsContext.ecosystemCompatibility ? ` Ecosystem compatibility: ${(payload.roboticsContext.ecosystemCompatibility || []).map(item => item.name).join(', ')}. CINTENT remains above these stacks as cognitive orchestration infrastructure.` : '';
-          const uav = payload.uavContext ? ` UAV Standards: ${(payload.uavContext.standards || []).map(item => item.name).join(', ')}. UAV ecosystems: ${(payload.uavContext.ecosystems || []).map(item => item.name).join(', ')}. Positioning: ${payload.uavContext.positioning}` : '';
-          const performance = payload.performanceContext ? ` Performance: ${payload.performanceContext.api_usage} executions, ${payload.performanceContext.replay_activity} replay traces, ${payload.performanceContext.governance_events} governance events.` : '';
-          const latest = payload.latestExecutionContext;
-          const executionContext = latest ? ` Latest execution context: ${latest.executionId} ran ${latest.api} in ${latest.mode} mode with ${(latest.stages || []).length} live stages, ${(latest.governance || []).length} governance events, ${(latest.replay || []).length} replay events, and ${(latest.dependencies || []).length} dependency links. Confidence moved through ${(latest.confidenceTimeline || []).map(point => `${point.stage}:${Math.round(point.confidence * 100)}%`).join(' -> ')}.` : '';
-          const sim = payload.latestSimulationContext;
-          const simulationContext = sim ? ` Latest simulation context: ${sim.simulationId} used ${sim.api} in ${sim.domain} with ${(sim.nodes || []).length} orchestration nodes, ${(sim.agents || []).length} coordinating agents, replay ${sim.replayPackage && sim.replayPackage.replayId}, anomaly=${sim.telemetry && sim.telemetry.anomalyDetected}. ${(sim.explainability || []).join(' ')}` : '';
-          state.chat.push({ role: 'Ask COGNI', text: `${payload.answer}${names ? ` API matches: ${names}.` : ''}${domainNames ? ` Domain context: ${domainNames}.` : ''}${appNames ? ` Application context: ${appNames}.` : ''}${robotics}${cobotics}${hri}${industrial}${ecosystems}${uav}${executionContext}${simulationContext}${performance}` });
+          if (!response.ok) throw new Error(payload.error || 'Ask COGNI failed');
+          state.chat.push({ role: 'Ask COGNI', response: payload.adaptiveResponse || { directAnswer: payload.answer, keyRecommendations: [], suggestedNextSteps: [], optionalDiagnostics: {} } });
         } catch (error) {
           state.chat.push({ role: 'Ask COGNI', text: askCogni(input.value) });
         }
