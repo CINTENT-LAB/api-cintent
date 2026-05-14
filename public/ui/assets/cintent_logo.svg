@@ -1,10 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
-  <title id="title">CINTENT logo</title>
-  <desc id="desc">CINTENT cognitive infrastructure mark</desc>
-  <rect width="160" height="160" rx="28" fill="#101827"/>
-  <path d="M80 24 127 51v58L80 136l-47-27V51L80 24Z" fill="#f8fafc"/>
-  <path d="M80 39 114 59v42l-34 20-34-20V59l34-20Z" fill="#1b63c9"/>
-  <circle cx="80" cy="80" r="22" fill="#e4f7f8"/>
-  <path d="M80 58v44M58 80h44M65 65l30 30M95 65 65 95" stroke="#087f8c" stroke-width="8" stroke-linecap="round"/>
-  <circle cx="80" cy="80" r="8" fill="#101827"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" role="img" aria-labelledby="title desc">
+  <title id="title">CINTENT</title>
+  <desc id="desc">CINTENT wordmark styled from the live cintent.cognivantalabs.com brand treatment.</desc>
+  <defs>
+    <linearGradient id="cintentGradient" x1="54" y1="18" x2="362" y2="104" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5B6EFF"/>
+      <stop offset="1" stop-color="#8C5CFF"/>
+    </linearGradient>
+    <filter id="softGlow" x="-20%" y="-40%" width="140%" height="180%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.36 0 0 0 0 0.43 0 0 0 0 1 0 0 0 .38 0"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect x="8" y="8" width="104" height="104" rx="24" fill="#070B1A"/>
+  <path d="M60 29c18 0 32 9 39 23h-21c-4-5-10-8-18-8-14 0-24 11-24 26s10 26 24 26c8 0 14-3 18-8h21c-7 14-21 23-39 23-25 0-43-18-43-41s18-41 43-41Z" fill="url(#cintentGradient)" filter="url(#softGlow)"/>
+  <text x="134" y="77" fill="#E2E8F0" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="44" font-weight="700" letter-spacing="0">CINTENT</text>
+  <text x="136" y="99" fill="#94A3B8" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="2">COGNITIVE INTENT ENGINE</text>
 </svg>
