@@ -1,0 +1,927 @@
+{
+  "status": 200,
+  "body": {
+    "replayId": "studio-replay-studio-workflow-1778840729565-1778840729566",
+    "status": "reconstructed",
+    "orchestration": {
+      "orchestrationId": "studio-exec-1778840729566",
+      "workflowId": "studio-workflow-1778840729565",
+      "tenant": "demo-tenant",
+      "sessionId": "demo-6a44ed9f51c5",
+      "mode": "sandbox",
+      "source": "api-orchestration-fabric",
+      "status": "recovered",
+      "graph": {
+        "nodes": [
+          {
+            "id": "api-phase-intent",
+            "type": "api-execution",
+            "label": "Phase Intent Engine API",
+            "apiKey": "phase-intent",
+            "domain": "enterprise-workflow",
+            "replay": false,
+            "governance": false,
+            "order": 1,
+            "runtimeState": "initializing"
+          },
+          {
+            "id": "api-phase-domain",
+            "type": "api-execution",
+            "label": "Domain Taxonomy API",
+            "apiKey": "phase-domain",
+            "domain": "enterprise-workflow",
+            "replay": false,
+            "governance": false,
+            "order": 2,
+            "runtimeState": "orchestrating"
+          },
+          {
+            "id": "api-phase-routing",
+            "type": "api-execution",
+            "label": "Cognitive Routing API",
+            "apiKey": "phase-routing",
+            "domain": "enterprise-workflow",
+            "replay": false,
+            "governance": true,
+            "order": 3,
+            "runtimeState": "orchestrating"
+          },
+          {
+            "id": "api-cef-registry",
+            "type": "api-execution",
+            "label": "CEF Registry API",
+            "apiKey": "cef-registry",
+            "domain": "enterprise-workflow",
+            "replay": false,
+            "governance": false,
+            "order": 4,
+            "runtimeState": "orchestrating"
+          },
+          {
+            "id": "api-cef-execution",
+            "type": "api-execution",
+            "label": "CEF Execution Lifecycle API",
+            "apiKey": "cef-execution",
+            "domain": "enterprise-workflow",
+            "replay": false,
+            "governance": true,
+            "order": 5,
+            "runtimeState": "orchestrating"
+          },
+          {
+            "id": "api-cef-metadata",
+            "type": "api-execution",
+            "label": "Cognitive Metadata Contract API",
+            "apiKey": "cef-metadata",
+            "domain": "enterprise-workflow",
+            "replay": true,
+            "governance": false,
+            "order": 6,
+            "runtimeState": "orchestrating"
+          },
+          {
+            "id": "api-travel-intent",
+            "type": "api-execution",
+            "label": "Travel Intent Cognition API",
+            "apiKey": "travel-intent",
+            "domain": "travel",
+            "replay": true,
+            "governance": false,
+            "order": 7,
+            "runtimeState": "orchestrating"
+          },
+          {
+            "id": "api-travel-decision",
+            "type": "api-execution",
+            "label": "Travel Decision Graph API",
+            "apiKey": "travel-decision",
+            "domain": "travel",
+            "replay": true,
+            "governance": false,
+            "order": 8,
+            "runtimeState": "orchestrating"
+          }
+        ],
+        "edges": [
+          {
+            "from": "api-phase-intent",
+            "to": "api-phase-domain",
+            "label": "orchestration-flow"
+          },
+          {
+            "from": "api-phase-domain",
+            "to": "api-phase-routing",
+            "label": "orchestration-flow"
+          },
+          {
+            "from": "api-phase-routing",
+            "to": "api-cef-registry",
+            "label": "orchestration-flow"
+          },
+          {
+            "from": "api-cef-registry",
+            "to": "api-cef-execution",
+            "label": "orchestration-flow"
+          },
+          {
+            "from": "api-cef-execution",
+            "to": "api-cef-metadata",
+            "label": "orchestration-flow"
+          },
+          {
+            "from": "api-cef-metadata",
+            "to": "api-travel-intent",
+            "label": "orchestration-flow"
+          },
+          {
+            "from": "api-travel-intent",
+            "to": "api-travel-decision",
+            "label": "orchestration-flow"
+          }
+        ]
+      },
+      "stages": [
+        {
+          "order": 1,
+          "id": "api-phase-intent",
+          "label": "Phase Intent Engine API",
+          "type": "api-execution",
+          "runtimeState": "initializing",
+          "liveState": "completed",
+          "durationMs": 240,
+          "confidenceBefore": 0.66,
+          "confidenceAfter": 0.71
+        },
+        {
+          "order": 2,
+          "id": "api-phase-domain",
+          "label": "Domain Taxonomy API",
+          "type": "api-execution",
+          "runtimeState": "orchestrating",
+          "liveState": "completed",
+          "durationMs": 285,
+          "confidenceBefore": 0.685,
+          "confidenceAfter": 0.736
+        },
+        {
+          "order": 3,
+          "id": "api-phase-routing",
+          "label": "Cognitive Routing API",
+          "type": "api-execution",
+          "runtimeState": "orchestrating",
+          "liveState": "completed",
+          "durationMs": 330,
+          "confidenceBefore": 0.71,
+          "confidenceAfter": 0.762
+        },
+        {
+          "order": 4,
+          "id": "api-cef-registry",
+          "label": "CEF Registry API",
+          "type": "api-execution",
+          "runtimeState": "orchestrating",
+          "liveState": "completed",
+          "durationMs": 375,
+          "confidenceBefore": 0.735,
+          "confidenceAfter": 0.788
+        },
+        {
+          "order": 5,
+          "id": "api-cef-execution",
+          "label": "CEF Execution Lifecycle API",
+          "type": "api-execution",
+          "runtimeState": "orchestrating",
+          "liveState": "completed",
+          "durationMs": 420,
+          "confidenceBefore": 0.76,
+          "confidenceAfter": 0.814
+        },
+        {
+          "order": 6,
+          "id": "api-cef-metadata",
+          "label": "Cognitive Metadata Contract API",
+          "type": "api-execution",
+          "runtimeState": "orchestrating",
+          "liveState": "completed",
+          "durationMs": 465,
+          "confidenceBefore": 0.785,
+          "confidenceAfter": 0.84
+        },
+        {
+          "order": 7,
+          "id": "api-travel-intent",
+          "label": "Travel Intent Cognition API",
+          "type": "api-execution",
+          "runtimeState": "orchestrating",
+          "liveState": "completed",
+          "durationMs": 510,
+          "confidenceBefore": 0.81,
+          "confidenceAfter": 0.866
+        },
+        {
+          "order": 8,
+          "id": "api-travel-decision",
+          "label": "Travel Decision Graph API",
+          "type": "api-execution",
+          "runtimeState": "orchestrating",
+          "liveState": "completed",
+          "durationMs": 555,
+          "confidenceBefore": 0.835,
+          "confidenceAfter": 0.892
+        }
+      ],
+      "transitions": [
+        {
+          "from": "api-phase-intent",
+          "to": "api-phase-domain",
+          "status": "completed"
+        },
+        {
+          "from": "api-phase-domain",
+          "to": "api-phase-routing",
+          "status": "completed"
+        },
+        {
+          "from": "api-phase-routing",
+          "to": "api-cef-registry",
+          "status": "completed"
+        },
+        {
+          "from": "api-cef-registry",
+          "to": "api-cef-execution",
+          "status": "completed"
+        },
+        {
+          "from": "api-cef-execution",
+          "to": "api-cef-metadata",
+          "status": "completed"
+        },
+        {
+          "from": "api-cef-metadata",
+          "to": "api-travel-intent",
+          "status": "completed"
+        },
+        {
+          "from": "api-travel-intent",
+          "to": "api-travel-decision",
+          "status": "completed"
+        }
+      ],
+      "checkpoints": [
+        {
+          "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-1",
+          "stage": "api-phase-intent",
+          "order": 1,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": false,
+          "timestamp": "2026-05-15T10:25:29.566Z"
+        },
+        {
+          "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-2",
+          "stage": "api-phase-domain",
+          "order": 2,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": true,
+          "timestamp": "2026-05-15T10:25:29.666Z"
+        },
+        {
+          "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-3",
+          "stage": "api-phase-routing",
+          "order": 3,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": true,
+          "timestamp": "2026-05-15T10:25:29.766Z"
+        },
+        {
+          "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-4",
+          "stage": "api-cef-registry",
+          "order": 4,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": true,
+          "timestamp": "2026-05-15T10:25:29.866Z"
+        },
+        {
+          "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-5",
+          "stage": "api-cef-execution",
+          "order": 5,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": true,
+          "timestamp": "2026-05-15T10:25:29.966Z"
+        },
+        {
+          "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-6",
+          "stage": "api-cef-metadata",
+          "order": 6,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": true,
+          "timestamp": "2026-05-15T10:25:30.066Z"
+        },
+        {
+          "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-7",
+          "stage": "api-travel-intent",
+          "order": 7,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": true,
+          "timestamp": "2026-05-15T10:25:30.166Z"
+        },
+        {
+          "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-8",
+          "stage": "api-travel-decision",
+          "order": 8,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": true,
+          "timestamp": "2026-05-15T10:25:30.266Z"
+        }
+      ],
+      "governance": {
+        "status": "passed",
+        "interventions": [
+          {
+            "node": "api-phase-routing",
+            "policy": "tenant-governance-policy",
+            "status": "injected"
+          },
+          {
+            "node": "api-cef-execution",
+            "policy": "tenant-governance-policy",
+            "status": "injected"
+          }
+        ]
+      },
+      "replay": {
+        "replayId": "studio-replay-studio-workflow-1778840729565-1778840729566",
+        "workflowReplay": [
+          {
+            "order": 1,
+            "id": "api-phase-intent",
+            "label": "Phase Intent Engine API",
+            "type": "api-execution",
+            "runtimeState": "initializing",
+            "liveState": "completed",
+            "durationMs": 240,
+            "confidenceBefore": 0.66,
+            "confidenceAfter": 0.71
+          },
+          {
+            "order": 2,
+            "id": "api-phase-domain",
+            "label": "Domain Taxonomy API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 285,
+            "confidenceBefore": 0.685,
+            "confidenceAfter": 0.736
+          },
+          {
+            "order": 3,
+            "id": "api-phase-routing",
+            "label": "Cognitive Routing API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 330,
+            "confidenceBefore": 0.71,
+            "confidenceAfter": 0.762
+          },
+          {
+            "order": 4,
+            "id": "api-cef-registry",
+            "label": "CEF Registry API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 375,
+            "confidenceBefore": 0.735,
+            "confidenceAfter": 0.788
+          },
+          {
+            "order": 5,
+            "id": "api-cef-execution",
+            "label": "CEF Execution Lifecycle API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 420,
+            "confidenceBefore": 0.76,
+            "confidenceAfter": 0.814
+          },
+          {
+            "order": 6,
+            "id": "api-cef-metadata",
+            "label": "Cognitive Metadata Contract API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 465,
+            "confidenceBefore": 0.785,
+            "confidenceAfter": 0.84
+          },
+          {
+            "order": 7,
+            "id": "api-travel-intent",
+            "label": "Travel Intent Cognition API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 510,
+            "confidenceBefore": 0.81,
+            "confidenceAfter": 0.866
+          },
+          {
+            "order": 8,
+            "id": "api-travel-decision",
+            "label": "Travel Decision Graph API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 555,
+            "confidenceBefore": 0.835,
+            "confidenceAfter": 0.892
+          }
+        ],
+        "governanceReplay": [
+          {
+            "node": "api-phase-routing",
+            "policy": "tenant-governance-policy",
+            "status": "injected"
+          },
+          {
+            "node": "api-cef-execution",
+            "policy": "tenant-governance-policy",
+            "status": "injected"
+          }
+        ],
+        "distributedReplay": [
+          {
+            "node": "api-phase-intent",
+            "vectorClock": 1,
+            "status": "synchronized"
+          },
+          {
+            "node": "api-phase-domain",
+            "vectorClock": 2,
+            "status": "synchronized"
+          },
+          {
+            "node": "api-phase-routing",
+            "vectorClock": 3,
+            "status": "synchronized"
+          },
+          {
+            "node": "api-cef-registry",
+            "vectorClock": 4,
+            "status": "synchronized"
+          },
+          {
+            "node": "api-cef-execution",
+            "vectorClock": 5,
+            "status": "synchronized"
+          },
+          {
+            "node": "api-cef-metadata",
+            "vectorClock": 6,
+            "status": "synchronized"
+          },
+          {
+            "node": "api-travel-intent",
+            "vectorClock": 7,
+            "status": "synchronized"
+          },
+          {
+            "node": "api-travel-decision",
+            "vectorClock": 8,
+            "status": "synchronized"
+          }
+        ]
+      },
+      "confidenceTimeline": [
+        {
+          "step": "api-phase-intent",
+          "before": 0.66,
+          "score": 0.71
+        },
+        {
+          "step": "api-phase-domain",
+          "before": 0.685,
+          "score": 0.736
+        },
+        {
+          "step": "api-phase-routing",
+          "before": 0.71,
+          "score": 0.762
+        },
+        {
+          "step": "api-cef-registry",
+          "before": 0.735,
+          "score": 0.788
+        },
+        {
+          "step": "api-cef-execution",
+          "before": 0.76,
+          "score": 0.814
+        },
+        {
+          "step": "api-cef-metadata",
+          "before": 0.785,
+          "score": 0.84
+        },
+        {
+          "step": "api-travel-intent",
+          "before": 0.81,
+          "score": 0.866
+        },
+        {
+          "step": "api-travel-decision",
+          "before": 0.835,
+          "score": 0.892
+        }
+      ],
+      "telemetry": {},
+      "recovery": {
+        "retryCount": 1,
+        "lastCheckpoint": {
+          "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-8",
+          "stage": "api-travel-decision",
+          "order": 8,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": true,
+          "timestamp": "2026-05-15T10:25:30.266Z"
+        },
+        "recoveryReady": true
+      },
+      "createdAt": "2026-05-15T10:25:29.566Z",
+      "updatedAt": "2026-05-15T10:25:51.669Z",
+      "integrity": {
+        "algorithm": "sha256",
+        "digest": "f7d3a3f1e00f38",
+        "bytes": 6238,
+        "generatedAt": "2026-05-15T10:25:29.566Z"
+      }
+    },
+    "timeline": [
+      {
+        "type": "checkpoint",
+        "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-1",
+        "stage": "api-phase-intent",
+        "order": 1,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": false,
+        "timestamp": "2026-05-15T10:25:29.566Z"
+      },
+      {
+        "type": "checkpoint",
+        "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-2",
+        "stage": "api-phase-domain",
+        "order": 2,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T10:25:29.666Z"
+      },
+      {
+        "type": "checkpoint",
+        "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-3",
+        "stage": "api-phase-routing",
+        "order": 3,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T10:25:29.766Z"
+      },
+      {
+        "type": "checkpoint",
+        "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-4",
+        "stage": "api-cef-registry",
+        "order": 4,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T10:25:29.866Z"
+      },
+      {
+        "type": "checkpoint",
+        "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-5",
+        "stage": "api-cef-execution",
+        "order": 5,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T10:25:29.966Z"
+      },
+      {
+        "type": "checkpoint",
+        "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-6",
+        "stage": "api-cef-metadata",
+        "order": 6,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T10:25:30.066Z"
+      },
+      {
+        "type": "checkpoint",
+        "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-7",
+        "stage": "api-travel-intent",
+        "order": 7,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T10:25:30.166Z"
+      },
+      {
+        "type": "checkpoint",
+        "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-8",
+        "stage": "api-travel-decision",
+        "order": 8,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T10:25:30.266Z"
+      },
+      {
+        "type": "orchestration.stage.completed",
+        "timestamp": "2026-05-15T10:25:29.566Z",
+        "payload": {
+          "orchestrationId": "studio-exec-1778840729566",
+          "stage": {
+            "order": 1,
+            "id": "api-phase-intent",
+            "label": "Phase Intent Engine API",
+            "type": "api-execution",
+            "runtimeState": "initializing",
+            "liveState": "completed",
+            "durationMs": 240,
+            "confidenceBefore": 0.66,
+            "confidenceAfter": 0.71
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-1",
+            "stage": "api-phase-intent",
+            "order": 1,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": false,
+            "timestamp": "2026-05-15T10:25:29.566Z"
+          }
+        }
+      },
+      {
+        "type": "orchestration.stage.completed",
+        "timestamp": "2026-05-15T10:25:29.568Z",
+        "payload": {
+          "orchestrationId": "studio-exec-1778840729566",
+          "stage": {
+            "order": 2,
+            "id": "api-phase-domain",
+            "label": "Domain Taxonomy API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 285,
+            "confidenceBefore": 0.685,
+            "confidenceAfter": 0.736
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-2",
+            "stage": "api-phase-domain",
+            "order": 2,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T10:25:29.666Z"
+          }
+        }
+      },
+      {
+        "type": "orchestration.stage.completed",
+        "timestamp": "2026-05-15T10:25:29.568Z",
+        "payload": {
+          "orchestrationId": "studio-exec-1778840729566",
+          "stage": {
+            "order": 3,
+            "id": "api-phase-routing",
+            "label": "Cognitive Routing API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 330,
+            "confidenceBefore": 0.71,
+            "confidenceAfter": 0.762
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-3",
+            "stage": "api-phase-routing",
+            "order": 3,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T10:25:29.766Z"
+          }
+        }
+      },
+      {
+        "type": "orchestration.stage.completed",
+        "timestamp": "2026-05-15T10:25:29.569Z",
+        "payload": {
+          "orchestrationId": "studio-exec-1778840729566",
+          "stage": {
+            "order": 4,
+            "id": "api-cef-registry",
+            "label": "CEF Registry API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 375,
+            "confidenceBefore": 0.735,
+            "confidenceAfter": 0.788
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-4",
+            "stage": "api-cef-registry",
+            "order": 4,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T10:25:29.866Z"
+          }
+        }
+      },
+      {
+        "type": "orchestration.stage.completed",
+        "timestamp": "2026-05-15T10:25:29.570Z",
+        "payload": {
+          "orchestrationId": "studio-exec-1778840729566",
+          "stage": {
+            "order": 5,
+            "id": "api-cef-execution",
+            "label": "CEF Execution Lifecycle API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 420,
+            "confidenceBefore": 0.76,
+            "confidenceAfter": 0.814
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-5",
+            "stage": "api-cef-execution",
+            "order": 5,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T10:25:29.966Z"
+          }
+        }
+      },
+      {
+        "type": "orchestration.stage.completed",
+        "timestamp": "2026-05-15T10:25:29.571Z",
+        "payload": {
+          "orchestrationId": "studio-exec-1778840729566",
+          "stage": {
+            "order": 6,
+            "id": "api-cef-metadata",
+            "label": "Cognitive Metadata Contract API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 465,
+            "confidenceBefore": 0.785,
+            "confidenceAfter": 0.84
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-6",
+            "stage": "api-cef-metadata",
+            "order": 6,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T10:25:30.066Z"
+          }
+        }
+      },
+      {
+        "type": "orchestration.stage.completed",
+        "timestamp": "2026-05-15T10:25:29.571Z",
+        "payload": {
+          "orchestrationId": "studio-exec-1778840729566",
+          "stage": {
+            "order": 7,
+            "id": "api-travel-intent",
+            "label": "Travel Intent Cognition API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 510,
+            "confidenceBefore": 0.81,
+            "confidenceAfter": 0.866
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-7",
+            "stage": "api-travel-intent",
+            "order": 7,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T10:25:30.166Z"
+          }
+        }
+      },
+      {
+        "type": "orchestration.stage.completed",
+        "timestamp": "2026-05-15T10:25:29.572Z",
+        "payload": {
+          "orchestrationId": "studio-exec-1778840729566",
+          "stage": {
+            "order": 8,
+            "id": "api-travel-decision",
+            "label": "Travel Decision Graph API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 555,
+            "confidenceBefore": 0.835,
+            "confidenceAfter": 0.892
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-8",
+            "stage": "api-travel-decision",
+            "order": 8,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T10:25:30.266Z"
+          }
+        }
+      },
+      {
+        "type": "orchestration.recovered",
+        "timestamp": "2026-05-15T10:25:51.669Z",
+        "payload": {
+          "orchestrationId": "studio-exec-1778840729566",
+          "action": "retry",
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778840729565-1778840729566-checkpoint-8",
+            "stage": "api-travel-decision",
+            "order": 8,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T10:25:30.266Z"
+          }
+        }
+      },
+      {
+        "type": "replay.reconstructed",
+        "timestamp": "2026-05-15T10:25:51.672Z",
+        "payload": {
+          "replayId": "studio-replay-studio-workflow-1778840729565-1778840729566",
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "9e0a6df3ef8dbe",
+            "bytes": 7562,
+            "generatedAt": "2026-05-15T10:25:51.672Z"
+          }
+        }
+      },
+      {
+        "type": "orchestration.fabric.executed",
+        "timestamp": "2026-05-15T10:25:29.572Z",
+        "payload": {
+          "orchestrationId": "studio-exec-1778840729566",
+          "replayId": "studio-replay-studio-workflow-1778840729565-1778840729566",
+          "stages": 8
+        }
+      }
+    ],
+    "diff": {
+      "plannedStages": 8,
+      "replayEvents": 11,
+      "integrity": "sha256-payload-hash-ready"
+    },
+    "exportable": true,
+    "integrity": {
+      "algorithm": "sha256",
+      "digest": "86a90bb5f234bd",
+      "bytes": 7831,
+      "generatedAt": "2026-05-15T10:25:51.675Z"
+    },
+    "consistency": {
+      "deterministic": true,
+      "timelineEvents": 19,
+      "checkpointCoverage": true,
+      "verifiedAt": "2026-05-15T10:25:51.675Z"
+    }
+  }
+}

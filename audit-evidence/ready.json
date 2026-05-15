@@ -1,0 +1,69 @@
+{
+  "status": "production-ready-with-warnings",
+  "timestamp": "2026-05-15T10:25:32.593Z",
+  "dependencies": {
+    "database": "fallback",
+    "orchestration": "ready",
+    "replay": "ready",
+    "telemetry": "ready",
+    "eventBus": "ready",
+    "persistence": "ready"
+  },
+  "readiness": {
+    "status": "production-ready-with-warnings",
+    "checks": [
+      {
+        "id": "api-health",
+        "status": "pass",
+        "detail": "HTTP runtime is responding"
+      },
+      {
+        "id": "request-tracing",
+        "status": "pass",
+        "detail": "268 requests observed"
+      },
+      {
+        "id": "orchestration-runtime",
+        "status": "pass",
+        "detail": "16 orchestration fabric runs in memory"
+      },
+      {
+        "id": "replay-integrity",
+        "status": "pass",
+        "detail": "Replay reconstruction returns SHA-256 integrity envelopes"
+      },
+      {
+        "id": "telemetry-runtime",
+        "status": "pass",
+        "detail": "56 telemetry ingestions observed"
+      },
+      {
+        "id": "sse-streams",
+        "status": "pass",
+        "detail": "2 active event stream clients"
+      },
+      {
+        "id": "rate-limits",
+        "status": "pass",
+        "detail": "0 requests throttled"
+      },
+      {
+        "id": "p95-latency",
+        "status": "warn",
+        "detail": "5718ms p95 response latency"
+      },
+      {
+        "id": "database",
+        "status": "warn",
+        "detail": "Using in-memory fallback; configure DATABASE_URL for production"
+      },
+      {
+        "id": "jwt-secret",
+        "status": "warn",
+        "detail": "Demo JWT secret in use"
+      }
+    ],
+    "p95LatencyMs": 5718,
+    "uptimeSeconds": 915.86
+  }
+}

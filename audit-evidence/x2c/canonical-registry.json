@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "cintent.cognitive.v1.0.0",
+  "domains": [
+    {
+      "domain": "airport",
+      "api_count": 0,
+      "simulation_count": 0
+    },
+    {
+      "domain": "bfsi",
+      "api_count": 0,
+      "simulation_count": 0
+    },
+    {
+      "domain": "cobotics",
+      "api_count": 27,
+      "simulation_count": 11
+    },
+    {
+      "domain": "drone",
+      "api_count": 13,
+      "simulation_count": 4
+    },
+    {
+      "domain": "edge",
+      "api_count": 0,
+      "simulation_count": 0
+    },
+    {
+      "domain": "enterprise",
+      "api_count": 148,
+      "simulation_count": 5
+    },
+    {
+      "domain": "healthcare",
+      "api_count": 155,
+      "simulation_count": 50
+    },
+    {
+      "domain": "iot-smart-infrastructure",
+      "api_count": 0,
+      "simulation_count": 2
+    },
+    {
+      "domain": "legal",
+      "api_count": 0,
+      "simulation_count": 0
+    },
+    {
+      "domain": "logistics",
+      "api_count": 0,
+      "simulation_count": 0
+    },
+    {
+      "domain": "manufacturing",
+      "api_count": 0,
+      "simulation_count": 0
+    },
+    {
+      "domain": "multilingual",
+      "api_count": 0,
+      "simulation_count": 2
+    },
+    {
+      "domain": "platform",
+      "api_count": 15,
+      "simulation_count": 0
+    },
+    {
+      "domain": "robotics",
+      "api_count": 59,
+      "simulation_count": 23
+    },
+    {
+      "domain": "smart-governance",
+      "api_count": 17,
+      "simulation_count": 1
+    },
+    {
+      "domain": "travel",
+      "api_count": 3,
+      "simulation_count": 1
+    }
+  ],
+  "apiCount": 437,
+  "simulationCount": 99,
+  "sdkRegistry": {
+    "languages": [
+      "Python",
+      "TypeScript",
+      "REST",
+      "ROS2",
+      "PX4",
+      "MAVLink",
+      "HEBI",
+      "NVIDIA Isaac"
+    ],
+    "source": "canonical-metadata-registry",
+    "template_policy": "derive-from-api-contracts"
+  }
+}

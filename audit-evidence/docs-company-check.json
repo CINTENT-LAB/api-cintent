@@ -1,0 +1,17 @@
+{
+  "/api/docs": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8",
+    "sample": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>CINTENT Live API Documentation</title>\n  <link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist@5/swagger-ui.css\">\n  <style>body{margin:0;background:#f8fafc}.topbar{display:none}.cintent-docs-head{padding:16px 24px;background:#0f172a;color:white;font:600 14px system-ui}.cintent-docs-head a{color:#93c5fd}</style>\n</head>\n<body>\n  <div class=\"cint"
+  },
+  "/api/openapi.json": {
+    "status": 200,
+    "contentType": "application/json; charset=utf-8",
+    "sample": "{\"openapi\":\"3.0.3\",\"info\":{\"title\":\"CINTENT Cognitive Infrastructure API\",\"version\":\"2.1.0\",\"description\":\"Live metadata-driven APIs for Ask COGNI, domains, orchestration, replay, simulations, observability, SDK generation, and enterprise settings.\"},\"servers\":[{\"url\":\"https://api-cintent.cognivantalabs.com\"},{\"url\":\"http://localhost:3116\"}],\"paths\":{\"/api/cogni/ask\":{\"post\":{\"operationId\":\"askCogni\",\"tags\":[\"Ask COGNI\"],\"summary\":\"Ask the contextual cognitive workspace assistant.\",\"requestBody\""
+  },
+  "/company.json": {
+    "status": 200,
+    "contentType": "application/json; charset=utf-8",
+    "sample": "{\"name\":\"Cognivanta Labs\",\"legal_name\":\"Cognivanta Labs\",\"platform\":\"CINTENT\",\"website\":\"https://api-cintent.cognivantalabs.com\",\"product_url\":\"https://api-cintent.cognivantalabs.com/CINTENT-PLATFORM-PROD.html\",\"founding_date\":null,\"leadership\":[],\"address\":null,\"social_links\":[],\"contact\":{\"security\":\"security@cognivantalabs.com\",\"support\":\"support@cognivantalabs.com\"},\"metadata_note\":\"Public company metadata is intentionally limited to verified operator-provided fields. Placeholder social link"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "source": "canonical-cognitive-data-model",
+  "phase": "PHASE-X.2C-CINTENT-DATA-MODEL-GOVERNANCE",
+  "schemaVersion": "cintent.cognitive.v1.0.0",
+  "coreEntities": [
+    "workspace",
+    "session",
+    "domain",
+    "application",
+    "workflow",
+    "orchestration",
+    "replay",
+    "telemetry",
+    "simulation",
+    "governance",
+    "deployment",
+    "sdk",
+    "runtime_event",
+    "agent",
+    "context",
+    "memory",
+    "policy",
+    "tenant",
+    "user",
+    "execution_artifact"
+  ],
+  "eventSpecification": [
+    "workspace.updated",
+    "context.synchronized",
+    "workflow.generated",
+    "orchestration.started",
+    "orchestration.stage.completed",
+    "orchestration.recovered",
+    "replay.generated",
+    "replay.reconstructed",
+    "telemetry.ingested",
+    "telemetry.anomaly.detected",
+    "governance.validated",
+    "simulation.executed",
+    "sdk.generated",
+    "ask_cogni.reasoned",
+    "deployment.prepared"
+  ],
+  "normalization": {
+    "domains": "Domains are runtime configurations mapped into canonical primitives.",
+    "orchestration": "All orchestration runs expose stages, transitions, checkpoints, confidence, recovery, governance, and lineage.",
+    "replay": "All replay events expose workflow, orchestration, telemetry, governance, and confidence linkage.",
+    "telemetry": "All telemetry exposes source, metrics, thresholds, anomaly state, confidence, governance state, and runtime links.",
+    "governance": "Governance inherits global, tenant, domain, application, workflow, and operation policies."
+  }
+}

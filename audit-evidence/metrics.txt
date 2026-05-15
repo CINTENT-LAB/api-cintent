@@ -1,0 +1,27 @@
+# HELP cintent_requests_total Total HTTP requests observed by CINTENT.
+# TYPE cintent_requests_total counter
+cintent_requests_total 256
+# HELP cintent_errors_total Total server errors.
+# TYPE cintent_errors_total counter
+cintent_errors_total 0
+# HELP cintent_rate_limited_total Total rate-limited requests.
+# TYPE cintent_rate_limited_total counter
+cintent_rate_limited_total 0
+# HELP cintent_orchestration_executions_total Unified orchestration executions.
+# TYPE cintent_orchestration_executions_total counter
+cintent_orchestration_executions_total 15
+# HELP cintent_replay_reconstructions_total Replay reconstructions.
+# TYPE cintent_replay_reconstructions_total counter
+cintent_replay_reconstructions_total 9
+# HELP cintent_telemetry_ingestions_total Telemetry ingestions.
+# TYPE cintent_telemetry_ingestions_total counter
+cintent_telemetry_ingestions_total 55
+# HELP cintent_sse_clients Active SSE clients.
+# TYPE cintent_sse_clients gauge
+cintent_sse_clients 2
+# HELP cintent_security_denials_total RBAC/authentication denials.
+# TYPE cintent_security_denials_total counter
+cintent_security_denials_total 3
+# HELP cintent_http_p95_latency_ms HTTP p95 latency in milliseconds.
+# TYPE cintent_http_p95_latency_ms gauge
+cintent_http_p95_latency_ms 5718

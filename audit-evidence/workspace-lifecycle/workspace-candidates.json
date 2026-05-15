@@ -1,0 +1,2381 @@
+{
+  "source": "unified-cognitive-state-engine",
+  "tenant": "demo-tenant",
+  "persistenceSource": "local-runtime-ledger",
+  "workspaces": [
+    {
+      "workspace_id": "lifecycle-valid-drone",
+      "domain": "drone",
+      "application_id": "chaxu",
+      "selected_workflow": "drone swarm mission replay",
+      "selected_simulation": "drone-fleet-coordination",
+      "selected_apis": [
+        "drone-fleet"
+      ],
+      "state": {
+        "context": {
+          "domain": "drone",
+          "applicationId": "chaxu",
+          "selectedWorkflow": "drone swarm mission replay",
+          "selectedSimulation": "drone-fleet-coordination",
+          "selectedApis": [
+            "drone-fleet"
+          ]
+        }
+      },
+      "tenant_id": "demo-tenant",
+      "session_id": "demo-5416940bea21",
+      "updated_at": "2026-05-15T13:38:00.882Z"
+    },
+    {
+      "workspace_id": "lifecycle-invalid-drone-healthcare",
+      "domain": "drone",
+      "application_id": "chaxu",
+      "selected_workflow": "multilingual telemedicine workflow",
+      "selected_simulation": "travel-orchestration",
+      "selected_apis": [
+        "healthcare-impl-executable-runtime"
+      ],
+      "state": {
+        "context": {
+          "domain": "drone",
+          "applicationId": "chaxu",
+          "selectedWorkflow": "multilingual telemedicine workflow",
+          "selectedSimulation": "travel-orchestration",
+          "selectedApis": [
+            "healthcare-impl-executable-runtime"
+          ]
+        },
+        "chat": [
+          {
+            "role": "Ask COGNI",
+            "text": "stale restored prompt that should not auto-hydrate"
+          }
+        ]
+      },
+      "tenant_id": "demo-tenant",
+      "session_id": "demo-5416940bea21",
+      "updated_at": "2026-05-15T13:38:00.876Z"
+    },
+    {
+      "workspace_id": "ask-workspace-6dr8ag",
+      "tenant_id": "demo-tenant",
+      "session_id": "ask-session-jgv9oy",
+      "domain": "healthcare",
+      "application_id": "smart-hospital",
+      "selected_apis": [
+        "healthcare-impl-executable-runtime",
+        "healthcare-impl-streaming-runtime",
+        "healthcare-impl-governance-runtime"
+      ],
+      "selected_workflow": "patient management",
+      "selected_simulation": "healthcare-hospital-operations",
+      "state": {
+        "workspace_id": "ask-workspace-6dr8ag",
+        "tenant_id": "demo-tenant",
+        "session_id": "ask-session-jgv9oy",
+        "active_domain": "healthcare",
+        "active_application": "smart-hospital",
+        "active_workflow": "patient management",
+        "active_apis": [
+          "healthcare-impl-executable-runtime",
+          "healthcare-impl-streaming-runtime",
+          "healthcare-impl-governance-runtime"
+        ],
+        "active_simulation": "healthcare-hospital-operations",
+        "orchestration_state": {
+          "id": "studio-exec-1778848901968",
+          "api_key": "studio-runtime",
+          "api_name": "X2C cross-domain canonical workflow",
+          "tenant": "demo-tenant",
+          "session_type": "studio-runtime",
+          "mode": "sandbox",
+          "status": "simulated-success",
+          "governance": {
+            "status": "passed",
+            "interventions": [
+              {
+                "node": "api-drone-fleet",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              },
+              {
+                "node": "api-observe-replay-reconstruct",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              },
+              {
+                "node": "governance-policy-validation",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              }
+            ]
+          },
+          "replay": {
+            "replayId": "studio-replay-studio-workflow-1778848899090-1778848901968",
+            "workflowReplay": [
+              {
+                "order": 1,
+                "id": "api-drone-fleet",
+                "label": "Drone Fleet Coordination API",
+                "type": "api-execution",
+                "runtimeState": "initializing",
+                "liveState": "completed",
+                "durationMs": 240,
+                "confidenceBefore": 0.66,
+                "confidenceAfter": 0.71
+              },
+              {
+                "order": 2,
+                "id": "api-observe-replay-reconstruct",
+                "label": "Replay Reconstruction API",
+                "type": "api-execution",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 285,
+                "confidenceBefore": 0.685,
+                "confidenceAfter": 0.736
+              },
+              {
+                "order": 3,
+                "id": "governance-policy-validation",
+                "label": "Policy validation",
+                "type": "governance",
+                "runtimeState": "governance-check",
+                "liveState": "completed",
+                "durationMs": 330,
+                "confidenceBefore": 0.71,
+                "confidenceAfter": 0.762
+              },
+              {
+                "order": 4,
+                "id": "replay-capture-node",
+                "label": "Replay capture",
+                "type": "replay",
+                "runtimeState": "replay-capturing",
+                "liveState": "completed",
+                "durationMs": 375,
+                "confidenceBefore": 0.735,
+                "confidenceAfter": 0.788
+              },
+              {
+                "order": 5,
+                "id": "multi-agent-coordination",
+                "label": "Agent coordination",
+                "type": "multi-agent",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 420,
+                "confidenceBefore": 0.76,
+                "confidenceAfter": 0.814
+              },
+              {
+                "order": 6,
+                "id": "simulation-execution-node",
+                "label": "Simulation execution",
+                "type": "simulation",
+                "runtimeState": "simulation-executing",
+                "liveState": "completed",
+                "durationMs": 465,
+                "confidenceBefore": 0.785,
+                "confidenceAfter": 0.84
+              },
+              {
+                "order": 7,
+                "id": "observability-telemetry-node",
+                "label": "Telemetry propagation",
+                "type": "observability",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 510,
+                "confidenceBefore": 0.81,
+                "confidenceAfter": 0.866
+              },
+              {
+                "order": 8,
+                "id": "human-approval-node",
+                "label": "Human approval",
+                "type": "human-interaction",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 555,
+                "confidenceBefore": 0.835,
+                "confidenceAfter": 0.892
+              }
+            ],
+            "governanceReplay": [
+              {
+                "node": "api-drone-fleet",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              },
+              {
+                "node": "api-observe-replay-reconstruct",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              },
+              {
+                "node": "governance-policy-validation",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              }
+            ],
+            "distributedReplay": [
+              {
+                "node": "api-drone-fleet",
+                "vectorClock": 1,
+                "status": "synchronized"
+              },
+              {
+                "node": "api-observe-replay-reconstruct",
+                "vectorClock": 2,
+                "status": "synchronized"
+              },
+              {
+                "node": "multi-agent-coordination",
+                "vectorClock": 3,
+                "status": "synchronized"
+              },
+              {
+                "node": "simulation-execution-node",
+                "vectorClock": 4,
+                "status": "synchronized"
+              }
+            ]
+          },
+          "confidenceEvolution": [
+            {
+              "step": "api-drone-fleet",
+              "before": 0.66,
+              "score": 0.71
+            },
+            {
+              "step": "api-observe-replay-reconstruct",
+              "before": 0.685,
+              "score": 0.736
+            },
+            {
+              "step": "governance-policy-validation",
+              "before": 0.71,
+              "score": 0.762
+            },
+            {
+              "step": "replay-capture-node",
+              "before": 0.735,
+              "score": 0.788
+            },
+            {
+              "step": "multi-agent-coordination",
+              "before": 0.76,
+              "score": 0.814
+            },
+            {
+              "step": "simulation-execution-node",
+              "before": 0.785,
+              "score": 0.84
+            },
+            {
+              "step": "observability-telemetry-node",
+              "before": 0.81,
+              "score": 0.866
+            },
+            {
+              "step": "human-approval-node",
+              "before": 0.835,
+              "score": 0.892
+            }
+          ],
+          "distributedSynchronization": [
+            {
+              "node": "api-drone-fleet",
+              "vectorClock": 1,
+              "status": "synchronized"
+            },
+            {
+              "node": "api-observe-replay-reconstruct",
+              "vectorClock": 2,
+              "status": "synchronized"
+            },
+            {
+              "node": "multi-agent-coordination",
+              "vectorClock": 3,
+              "status": "synchronized"
+            },
+            {
+              "node": "simulation-execution-node",
+              "vectorClock": 4,
+              "status": "synchronized"
+            }
+          ],
+          "orchestrationTrace": [
+            {
+              "order": 1,
+              "id": "api-drone-fleet",
+              "label": "Drone Fleet Coordination API",
+              "type": "api-execution",
+              "runtimeState": "initializing",
+              "liveState": "completed",
+              "durationMs": 240,
+              "confidenceBefore": 0.66,
+              "confidenceAfter": 0.71
+            },
+            {
+              "order": 2,
+              "id": "api-observe-replay-reconstruct",
+              "label": "Replay Reconstruction API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 285,
+              "confidenceBefore": 0.685,
+              "confidenceAfter": 0.736
+            },
+            {
+              "order": 3,
+              "id": "governance-policy-validation",
+              "label": "Policy validation",
+              "type": "governance",
+              "runtimeState": "governance-check",
+              "liveState": "completed",
+              "durationMs": 330,
+              "confidenceBefore": 0.71,
+              "confidenceAfter": 0.762
+            },
+            {
+              "order": 4,
+              "id": "replay-capture-node",
+              "label": "Replay capture",
+              "type": "replay",
+              "runtimeState": "replay-capturing",
+              "liveState": "completed",
+              "durationMs": 375,
+              "confidenceBefore": 0.735,
+              "confidenceAfter": 0.788
+            },
+            {
+              "order": 5,
+              "id": "multi-agent-coordination",
+              "label": "Agent coordination",
+              "type": "multi-agent",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 420,
+              "confidenceBefore": 0.76,
+              "confidenceAfter": 0.814
+            },
+            {
+              "order": 6,
+              "id": "simulation-execution-node",
+              "label": "Simulation execution",
+              "type": "simulation",
+              "runtimeState": "simulation-executing",
+              "liveState": "completed",
+              "durationMs": 465,
+              "confidenceBefore": 0.785,
+              "confidenceAfter": 0.84
+            },
+            {
+              "order": 7,
+              "id": "observability-telemetry-node",
+              "label": "Telemetry propagation",
+              "type": "observability",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 510,
+              "confidenceBefore": 0.81,
+              "confidenceAfter": 0.866
+            },
+            {
+              "order": 8,
+              "id": "human-approval-node",
+              "label": "Human approval",
+              "type": "human-interaction",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 555,
+              "confidenceBefore": 0.835,
+              "confidenceAfter": 0.892
+            }
+          ],
+          "dependencyVisibility": [
+            {
+              "dependency": "phase-intent",
+              "order": 1,
+              "status": "resolved"
+            },
+            {
+              "dependency": "phase-domain",
+              "order": 2,
+              "status": "resolved"
+            },
+            {
+              "dependency": "gov-validate",
+              "order": 3,
+              "status": "resolved"
+            },
+            {
+              "dependency": "rbt-fleet-coordinate",
+              "order": 4,
+              "status": "resolved"
+            },
+            {
+              "dependency": "rbt-distributed-coordinate",
+              "order": 5,
+              "status": "resolved"
+            },
+            {
+              "dependency": "rbt-edge-coordinate",
+              "order": 6,
+              "status": "resolved"
+            },
+            {
+              "dependency": "edge-runtime",
+              "order": 7,
+              "status": "resolved"
+            },
+            {
+              "dependency": "edge-synchronize",
+              "order": 8,
+              "status": "resolved"
+            },
+            {
+              "dependency": "edge-replay",
+              "order": 9,
+              "status": "resolved"
+            },
+            {
+              "dependency": "edge-governance",
+              "order": 10,
+              "status": "resolved"
+            },
+            {
+              "dependency": "edge-observability",
+              "order": 11,
+              "status": "resolved"
+            },
+            {
+              "dependency": "rbt-runtime-core",
+              "order": 12,
+              "status": "resolved"
+            },
+            {
+              "dependency": "rbt-replay",
+              "order": 13,
+              "status": "resolved"
+            },
+            {
+              "dependency": "rbt-observability",
+              "order": 14,
+              "status": "resolved"
+            },
+            {
+              "dependency": "rbt-governance",
+              "order": 15,
+              "status": "resolved"
+            }
+          ],
+          "visualization": {
+            "nodes": [
+              {
+                "id": "api-drone-fleet",
+                "type": "api-execution",
+                "label": "Drone Fleet Coordination API",
+                "apiKey": "drone-fleet",
+                "domain": "drone",
+                "replay": true,
+                "governance": true,
+                "order": 1,
+                "runtimeState": "initializing"
+              },
+              {
+                "id": "api-observe-replay-reconstruct",
+                "type": "api-execution",
+                "label": "Replay Reconstruction API",
+                "apiKey": "observe-replay-reconstruct",
+                "domain": "robotics",
+                "replay": true,
+                "governance": true,
+                "order": 2,
+                "runtimeState": "orchestrating"
+              },
+              {
+                "id": "governance-policy-validation",
+                "type": "governance",
+                "label": "Policy validation",
+                "purpose": "policy validation, restriction propagation, escalation handling, compliance enforcement",
+                "order": 3,
+                "runtimeState": "governance-check"
+              },
+              {
+                "id": "replay-capture-node",
+                "type": "replay",
+                "label": "Replay capture",
+                "purpose": "replay capture, reconstruction, orchestration replay, explainability checkpoint",
+                "order": 4,
+                "runtimeState": "replay-capturing"
+              },
+              {
+                "id": "multi-agent-coordination",
+                "type": "multi-agent",
+                "label": "Agent coordination",
+                "purpose": "delegation propagation, collaborative reasoning, distributed cognition",
+                "order": 5,
+                "runtimeState": "orchestrating"
+              },
+              {
+                "id": "simulation-execution-node",
+                "type": "simulation",
+                "label": "Simulation execution",
+                "purpose": "simulation execution, digital twin synchronization, predictive simulation, swarm simulation",
+                "order": 6,
+                "runtimeState": "simulation-executing"
+              },
+              {
+                "id": "observability-telemetry-node",
+                "type": "observability",
+                "label": "Telemetry propagation",
+                "purpose": "confidence tracking, anomaly monitoring, orchestration analytics",
+                "order": 7,
+                "runtimeState": "orchestrating"
+              },
+              {
+                "id": "human-approval-node",
+                "type": "human-interaction",
+                "label": "Human approval",
+                "purpose": "human approval, escalation trigger, override, multilingual interaction",
+                "order": 8,
+                "runtimeState": "orchestrating"
+              }
+            ],
+            "edges": [
+              {
+                "from": "api-drone-fleet",
+                "to": "api-observe-replay-reconstruct",
+                "label": "orchestration-flow"
+              },
+              {
+                "from": "api-observe-replay-reconstruct",
+                "to": "governance-policy-validation",
+                "label": "orchestration-flow"
+              },
+              {
+                "from": "governance-policy-validation",
+                "to": "replay-capture-node",
+                "label": "orchestration-flow"
+              },
+              {
+                "from": "replay-capture-node",
+                "to": "multi-agent-coordination",
+                "label": "orchestration-flow"
+              },
+              {
+                "from": "multi-agent-coordination",
+                "to": "simulation-execution-node",
+                "label": "orchestration-flow"
+              },
+              {
+                "from": "simulation-execution-node",
+                "to": "observability-telemetry-node",
+                "label": "orchestration-flow"
+              },
+              {
+                "from": "observability-telemetry-node",
+                "to": "human-approval-node",
+                "label": "orchestration-flow"
+              }
+            ]
+          },
+          "executionPlan": {
+            "executionId": "studio-exec-1778848901968",
+            "apiKey": "studio-runtime",
+            "apiName": "X2C cross-domain canonical workflow",
+            "domain": "enterprise-workflow",
+            "mode": "sandbox",
+            "stages": [
+              {
+                "order": 1,
+                "id": "api-drone-fleet",
+                "label": "Drone Fleet Coordination API",
+                "type": "api-execution",
+                "runtimeState": "initializing",
+                "liveState": "completed",
+                "durationMs": 240,
+                "confidenceBefore": 0.66,
+                "confidenceAfter": 0.71
+              },
+              {
+                "order": 2,
+                "id": "api-observe-replay-reconstruct",
+                "label": "Replay Reconstruction API",
+                "type": "api-execution",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 285,
+                "confidenceBefore": 0.685,
+                "confidenceAfter": 0.736
+              },
+              {
+                "order": 3,
+                "id": "governance-policy-validation",
+                "label": "Policy validation",
+                "type": "governance",
+                "runtimeState": "governance-check",
+                "liveState": "completed",
+                "durationMs": 330,
+                "confidenceBefore": 0.71,
+                "confidenceAfter": 0.762
+              },
+              {
+                "order": 4,
+                "id": "replay-capture-node",
+                "label": "Replay capture",
+                "type": "replay",
+                "runtimeState": "replay-capturing",
+                "liveState": "completed",
+                "durationMs": 375,
+                "confidenceBefore": 0.735,
+                "confidenceAfter": 0.788
+              },
+              {
+                "order": 5,
+                "id": "multi-agent-coordination",
+                "label": "Agent coordination",
+                "type": "multi-agent",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 420,
+                "confidenceBefore": 0.76,
+                "confidenceAfter": 0.814
+              },
+              {
+                "order": 6,
+                "id": "simulation-execution-node",
+                "label": "Simulation execution",
+                "type": "simulation",
+                "runtimeState": "simulation-executing",
+                "liveState": "completed",
+                "durationMs": 465,
+                "confidenceBefore": 0.785,
+                "confidenceAfter": 0.84
+              },
+              {
+                "order": 7,
+                "id": "observability-telemetry-node",
+                "label": "Telemetry propagation",
+                "type": "observability",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 510,
+                "confidenceBefore": 0.81,
+                "confidenceAfter": 0.866
+              },
+              {
+                "order": 8,
+                "id": "human-approval-node",
+                "label": "Human approval",
+                "type": "human-interaction",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 555,
+                "confidenceBefore": 0.835,
+                "confidenceAfter": 0.892
+              }
+            ],
+            "graph": {
+              "nodes": [
+                {
+                  "id": "api-drone-fleet",
+                  "type": "api-execution",
+                  "label": "Drone Fleet Coordination API",
+                  "apiKey": "drone-fleet",
+                  "domain": "drone",
+                  "replay": true,
+                  "governance": true,
+                  "order": 1,
+                  "runtimeState": "initializing"
+                },
+                {
+                  "id": "api-observe-replay-reconstruct",
+                  "type": "api-execution",
+                  "label": "Replay Reconstruction API",
+                  "apiKey": "observe-replay-reconstruct",
+                  "domain": "robotics",
+                  "replay": true,
+                  "governance": true,
+                  "order": 2,
+                  "runtimeState": "orchestrating"
+                },
+                {
+                  "id": "governance-policy-validation",
+                  "type": "governance",
+                  "label": "Policy validation",
+                  "purpose": "policy validation, restriction propagation, escalation handling, compliance enforcement",
+                  "order": 3,
+                  "runtimeState": "governance-check"
+                },
+                {
+                  "id": "replay-capture-node",
+                  "type": "replay",
+                  "label": "Replay capture",
+                  "purpose": "replay capture, reconstruction, orchestration replay, explainability checkpoint",
+                  "order": 4,
+                  "runtimeState": "replay-capturing"
+                },
+                {
+                  "id": "multi-agent-coordination",
+                  "type": "multi-agent",
+                  "label": "Agent coordination",
+                  "purpose": "delegation propagation, collaborative reasoning, distributed cognition",
+                  "order": 5,
+                  "runtimeState": "orchestrating"
+                },
+                {
+                  "id": "simulation-execution-node",
+                  "type": "simulation",
+                  "label": "Simulation execution",
+                  "purpose": "simulation execution, digital twin synchronization, predictive simulation, swarm simulation",
+                  "order": 6,
+                  "runtimeState": "simulation-executing"
+                },
+                {
+                  "id": "observability-telemetry-node",
+                  "type": "observability",
+                  "label": "Telemetry propagation",
+                  "purpose": "confidence tracking, anomaly monitoring, orchestration analytics",
+                  "order": 7,
+                  "runtimeState": "orchestrating"
+                },
+                {
+                  "id": "human-approval-node",
+                  "type": "human-interaction",
+                  "label": "Human approval",
+                  "purpose": "human approval, escalation trigger, override, multilingual interaction",
+                  "order": 8,
+                  "runtimeState": "orchestrating"
+                }
+              ],
+              "edges": [
+                {
+                  "from": "api-drone-fleet",
+                  "to": "api-observe-replay-reconstruct",
+                  "label": "orchestration-flow"
+                },
+                {
+                  "from": "api-observe-replay-reconstruct",
+                  "to": "governance-policy-validation",
+                  "label": "orchestration-flow"
+                },
+                {
+                  "from": "governance-policy-validation",
+                  "to": "replay-capture-node",
+                  "label": "orchestration-flow"
+                },
+                {
+                  "from": "replay-capture-node",
+                  "to": "multi-agent-coordination",
+                  "label": "orchestration-flow"
+                },
+                {
+                  "from": "multi-agent-coordination",
+                  "to": "simulation-execution-node",
+                  "label": "orchestration-flow"
+                },
+                {
+                  "from": "simulation-execution-node",
+                  "to": "observability-telemetry-node",
+                  "label": "orchestration-flow"
+                },
+                {
+                  "from": "observability-telemetry-node",
+                  "to": "human-approval-node",
+                  "label": "orchestration-flow"
+                }
+              ]
+            },
+            "dependencyGraph": [
+              {
+                "dependency": "phase-intent",
+                "order": 1,
+                "status": "resolved"
+              },
+              {
+                "dependency": "phase-domain",
+                "order": 2,
+                "status": "resolved"
+              },
+              {
+                "dependency": "gov-validate",
+                "order": 3,
+                "status": "resolved"
+              },
+              {
+                "dependency": "rbt-fleet-coordinate",
+                "order": 4,
+                "status": "resolved"
+              },
+              {
+                "dependency": "rbt-distributed-coordinate",
+                "order": 5,
+                "status": "resolved"
+              },
+              {
+                "dependency": "rbt-edge-coordinate",
+                "order": 6,
+                "status": "resolved"
+              },
+              {
+                "dependency": "edge-runtime",
+                "order": 7,
+                "status": "resolved"
+              },
+              {
+                "dependency": "edge-synchronize",
+                "order": 8,
+                "status": "resolved"
+              },
+              {
+                "dependency": "edge-replay",
+                "order": 9,
+                "status": "resolved"
+              },
+              {
+                "dependency": "edge-governance",
+                "order": 10,
+                "status": "resolved"
+              },
+              {
+                "dependency": "edge-observability",
+                "order": 11,
+                "status": "resolved"
+              },
+              {
+                "dependency": "rbt-runtime-core",
+                "order": 12,
+                "status": "resolved"
+              },
+              {
+                "dependency": "rbt-replay",
+                "order": 13,
+                "status": "resolved"
+              },
+              {
+                "dependency": "rbt-observability",
+                "order": 14,
+                "status": "resolved"
+              },
+              {
+                "dependency": "rbt-governance",
+                "order": 15,
+                "status": "resolved"
+              }
+            ],
+            "confidenceTimeline": [
+              {
+                "node": "api-drone-fleet",
+                "before": 0.66,
+                "after": 0.71
+              },
+              {
+                "node": "api-observe-replay-reconstruct",
+                "before": 0.685,
+                "after": 0.736
+              },
+              {
+                "node": "governance-policy-validation",
+                "before": 0.71,
+                "after": 0.762
+              },
+              {
+                "node": "replay-capture-node",
+                "before": 0.735,
+                "after": 0.788
+              },
+              {
+                "node": "multi-agent-coordination",
+                "before": 0.76,
+                "after": 0.814
+              },
+              {
+                "node": "simulation-execution-node",
+                "before": 0.785,
+                "after": 0.84
+              },
+              {
+                "node": "observability-telemetry-node",
+                "before": 0.81,
+                "after": 0.866
+              },
+              {
+                "node": "human-approval-node",
+                "before": 0.835,
+                "after": 0.892
+              }
+            ],
+            "governancePropagation": [
+              {
+                "node": "api-drone-fleet",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              },
+              {
+                "node": "api-observe-replay-reconstruct",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              },
+              {
+                "node": "governance-policy-validation",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              }
+            ],
+            "replayPropagation": [
+              {
+                "node": "api-drone-fleet",
+                "replayId": "studio-replay-api-drone-fleet-1778848899090",
+                "status": "capture-ready"
+              },
+              {
+                "node": "api-observe-replay-reconstruct",
+                "replayId": "studio-replay-api-observe-replay-reconstruct-1778848899090",
+                "status": "capture-ready"
+              },
+              {
+                "node": "governance-policy-validation",
+                "replayId": "studio-replay-governance-policy-validation-1778848899090",
+                "status": "capture-ready"
+              },
+              {
+                "node": "replay-capture-node",
+                "replayId": "studio-replay-replay-capture-node-1778848899090",
+                "status": "capture-ready"
+              },
+              {
+                "node": "multi-agent-coordination",
+                "replayId": "studio-replay-multi-agent-coordination-1778848899090",
+                "status": "capture-ready"
+              },
+              {
+                "node": "simulation-execution-node",
+                "replayId": "studio-replay-simulation-execution-node-1778848899090",
+                "status": "capture-ready"
+              },
+              {
+                "node": "observability-telemetry-node",
+                "replayId": "studio-replay-observability-telemetry-node-1778848899090",
+                "status": "capture-ready"
+              },
+              {
+                "node": "human-approval-node",
+                "replayId": "studio-replay-human-approval-node-1778848899090",
+                "status": "capture-ready"
+              }
+            ],
+            "distributedSynchronization": [
+              {
+                "node": "api-drone-fleet",
+                "vectorClock": 1,
+                "status": "synchronized"
+              },
+              {
+                "node": "api-observe-replay-reconstruct",
+                "vectorClock": 2,
+                "status": "synchronized"
+              },
+              {
+                "node": "multi-agent-coordination",
+                "vectorClock": 3,
+                "status": "synchronized"
+              },
+              {
+                "node": "simulation-execution-node",
+                "vectorClock": 4,
+                "status": "synchronized"
+              }
+            ]
+          },
+          "studioRuntime": {
+            "services": [
+              "orchestration-studio-runtime",
+              "visual-workflow-canvas-engine",
+              "metadata-driven-node-registry",
+              "cognitive-workflow-compiler",
+              "runtime-execution-graph-generator",
+              "replay-aware-orchestration-engine",
+              "studio-governance-propagation-runtime",
+              "multi-agent-workflow-runtime",
+              "simulation-integration-runtime",
+              "distributed-execution-runtime",
+              "workflow-explainability-engine",
+              "workflow-confidence-evolution-runtime",
+              "orchestration-versioning-runtime",
+              "workflow-collaboration-runtime",
+              "edge-orchestration-runtime"
+            ],
+            "compiledWorkflow": {
+              "workflowId": "studio-workflow-1778848899090",
+              "version": "1.0.0",
+              "tenant": "demo-tenant",
+              "title": "X2C cross-domain canonical workflow",
+              "description": "Metadata-driven cognitive workflow compiled by CINTENT Orchestration Studio.",
+              "status": "compiled",
+              "source": "cognitive-orchestration-studio-runtime",
+              "compiledAt": "2026-05-15T12:41:39.090Z",
+              "nodes": [
+                {
+                  "id": "api-drone-fleet",
+                  "type": "api-execution",
+                  "label": "Drone Fleet Coordination API",
+                  "apiKey": "drone-fleet",
+                  "domain": "drone",
+                  "replay": true,
+                  "governance": true
+                },
+                {
+                  "id": "api-observe-replay-reconstruct",
+                  "type": "api-execution",
+                  "label": "Replay Reconstruction API",
+                  "apiKey": "observe-replay-reconstruct",
+                  "domain": "robotics",
+                  "replay": true,
+                  "governance": true
+                },
+                {
+                  "id": "governance-policy-validation",
+                  "type": "governance",
+                  "label": "Policy validation",
+                  "purpose": "policy validation, restriction propagation, escalation handling, compliance enforcement"
+                },
+                {
+                  "id": "replay-capture-node",
+                  "type": "replay",
+                  "label": "Replay capture",
+                  "purpose": "replay capture, reconstruction, orchestration replay, explainability checkpoint"
+                },
+                {
+                  "id": "multi-agent-coordination",
+                  "type": "multi-agent",
+                  "label": "Agent coordination",
+                  "purpose": "delegation propagation, collaborative reasoning, distributed cognition"
+                },
+                {
+                  "id": "simulation-execution-node",
+                  "type": "simulation",
+                  "label": "Simulation execution",
+                  "purpose": "simulation execution, digital twin synchronization, predictive simulation, swarm simulation"
+                },
+                {
+                  "id": "observability-telemetry-node",
+                  "type": "observability",
+                  "label": "Telemetry propagation",
+                  "purpose": "confidence tracking, anomaly monitoring, orchestration analytics"
+                },
+                {
+                  "id": "human-approval-node",
+                  "type": "human-interaction",
+                  "label": "Human approval",
+                  "purpose": "human approval, escalation trigger, override, multilingual interaction"
+                }
+              ],
+              "edges": [
+                {
+                  "from": "api-drone-fleet",
+                  "to": "api-observe-replay-reconstruct",
+                  "label": "orchestration-flow"
+                },
+                {
+                  "from": "api-observe-replay-reconstruct",
+                  "to": "governance-policy-validation",
+                  "label": "orchestration-flow"
+                },
+                {
+                  "from": "governance-policy-validation",
+                  "to": "replay-capture-node",
+                  "label": "orchestration-flow"
+                },
+                {
+                  "from": "replay-capture-node",
+                  "to": "multi-agent-coordination",
+                  "label": "orchestration-flow"
+                },
+                {
+                  "from": "multi-agent-coordination",
+                  "to": "simulation-execution-node",
+                  "label": "orchestration-flow"
+                },
+                {
+                  "from": "simulation-execution-node",
+                  "to": "observability-telemetry-node",
+                  "label": "orchestration-flow"
+                },
+                {
+                  "from": "observability-telemetry-node",
+                  "to": "human-approval-node",
+                  "label": "orchestration-flow"
+                }
+              ],
+              "runtimeGraph": {
+                "nodes": [
+                  {
+                    "id": "api-drone-fleet",
+                    "type": "api-execution",
+                    "label": "Drone Fleet Coordination API",
+                    "apiKey": "drone-fleet",
+                    "domain": "drone",
+                    "replay": true,
+                    "governance": true,
+                    "order": 1,
+                    "runtimeState": "initializing"
+                  },
+                  {
+                    "id": "api-observe-replay-reconstruct",
+                    "type": "api-execution",
+                    "label": "Replay Reconstruction API",
+                    "apiKey": "observe-replay-reconstruct",
+                    "domain": "robotics",
+                    "replay": true,
+                    "governance": true,
+                    "order": 2,
+                    "runtimeState": "orchestrating"
+                  },
+                  {
+                    "id": "governance-policy-validation",
+                    "type": "governance",
+                    "label": "Policy validation",
+                    "purpose": "policy validation, restriction propagation, escalation handling, compliance enforcement",
+                    "order": 3,
+                    "runtimeState": "governance-check"
+                  },
+                  {
+                    "id": "replay-capture-node",
+                    "type": "replay",
+                    "label": "Replay capture",
+                    "purpose": "replay capture, reconstruction, orchestration replay, explainability checkpoint",
+                    "order": 4,
+                    "runtimeState": "replay-capturing"
+                  },
+                  {
+                    "id": "multi-agent-coordination",
+                    "type": "multi-agent",
+                    "label": "Agent coordination",
+                    "purpose": "delegation propagation, collaborative reasoning, distributed cognition",
+                    "order": 5,
+                    "runtimeState": "orchestrating"
+                  },
+                  {
+                    "id": "simulation-execution-node",
+                    "type": "simulation",
+                    "label": "Simulation execution",
+                    "purpose": "simulation execution, digital twin synchronization, predictive simulation, swarm simulation",
+                    "order": 6,
+                    "runtimeState": "simulation-executing"
+                  },
+                  {
+                    "id": "observability-telemetry-node",
+                    "type": "observability",
+                    "label": "Telemetry propagation",
+                    "purpose": "confidence tracking, anomaly monitoring, orchestration analytics",
+                    "order": 7,
+                    "runtimeState": "orchestrating"
+                  },
+                  {
+                    "id": "human-approval-node",
+                    "type": "human-interaction",
+                    "label": "Human approval",
+                    "purpose": "human approval, escalation trigger, override, multilingual interaction",
+                    "order": 8,
+                    "runtimeState": "orchestrating"
+                  }
+                ],
+                "edges": [
+                  {
+                    "from": "api-drone-fleet",
+                    "to": "api-observe-replay-reconstruct",
+                    "label": "orchestration-flow"
+                  },
+                  {
+                    "from": "api-observe-replay-reconstruct",
+                    "to": "governance-policy-validation",
+                    "label": "orchestration-flow"
+                  },
+                  {
+                    "from": "governance-policy-validation",
+                    "to": "replay-capture-node",
+                    "label": "orchestration-flow"
+                  },
+                  {
+                    "from": "replay-capture-node",
+                    "to": "multi-agent-coordination",
+                    "label": "orchestration-flow"
+                  },
+                  {
+                    "from": "multi-agent-coordination",
+                    "to": "simulation-execution-node",
+                    "label": "orchestration-flow"
+                  },
+                  {
+                    "from": "simulation-execution-node",
+                    "to": "observability-telemetry-node",
+                    "label": "orchestration-flow"
+                  },
+                  {
+                    "from": "observability-telemetry-node",
+                    "to": "human-approval-node",
+                    "label": "orchestration-flow"
+                  }
+                ]
+              },
+              "dependencyResolution": [
+                {
+                  "dependency": "phase-intent",
+                  "order": 1,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "phase-domain",
+                  "order": 2,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "gov-validate",
+                  "order": 3,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "rbt-fleet-coordinate",
+                  "order": 4,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "rbt-distributed-coordinate",
+                  "order": 5,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "rbt-edge-coordinate",
+                  "order": 6,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "edge-runtime",
+                  "order": 7,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "edge-synchronize",
+                  "order": 8,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "edge-replay",
+                  "order": 9,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "edge-governance",
+                  "order": 10,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "edge-observability",
+                  "order": 11,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "rbt-runtime-core",
+                  "order": 12,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "rbt-replay",
+                  "order": 13,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "rbt-observability",
+                  "order": 14,
+                  "status": "resolved"
+                },
+                {
+                  "dependency": "rbt-governance",
+                  "order": 15,
+                  "status": "resolved"
+                }
+              ],
+              "governanceInjection": [
+                {
+                  "node": "api-drone-fleet",
+                  "policy": "tenant-governance-policy",
+                  "status": "injected"
+                },
+                {
+                  "node": "api-observe-replay-reconstruct",
+                  "policy": "tenant-governance-policy",
+                  "status": "injected"
+                },
+                {
+                  "node": "governance-policy-validation",
+                  "policy": "tenant-governance-policy",
+                  "status": "injected"
+                }
+              ],
+              "replayPropagation": [
+                {
+                  "node": "api-drone-fleet",
+                  "replayId": "studio-replay-api-drone-fleet-1778848899090",
+                  "status": "capture-ready"
+                },
+                {
+                  "node": "api-observe-replay-reconstruct",
+                  "replayId": "studio-replay-api-observe-replay-reconstruct-1778848899090",
+                  "status": "capture-ready"
+                },
+                {
+                  "node": "governance-policy-validation",
+                  "replayId": "studio-replay-governance-policy-validation-1778848899090",
+                  "status": "capture-ready"
+                },
+                {
+                  "node": "replay-capture-node",
+                  "replayId": "studio-replay-replay-capture-node-1778848899090",
+                  "status": "capture-ready"
+                },
+                {
+                  "node": "multi-agent-coordination",
+                  "replayId": "studio-replay-multi-agent-coordination-1778848899090",
+                  "status": "capture-ready"
+                },
+                {
+                  "node": "simulation-execution-node",
+                  "replayId": "studio-replay-simulation-execution-node-1778848899090",
+                  "status": "capture-ready"
+                },
+                {
+                  "node": "observability-telemetry-node",
+                  "replayId": "studio-replay-observability-telemetry-node-1778848899090",
+                  "status": "capture-ready"
+                },
+                {
+                  "node": "human-approval-node",
+                  "replayId": "studio-replay-human-approval-node-1778848899090",
+                  "status": "capture-ready"
+                }
+              ],
+              "distributedSynchronization": [
+                {
+                  "node": "api-drone-fleet",
+                  "vectorClock": 1,
+                  "status": "synchronized"
+                },
+                {
+                  "node": "api-observe-replay-reconstruct",
+                  "vectorClock": 2,
+                  "status": "synchronized"
+                },
+                {
+                  "node": "multi-agent-coordination",
+                  "vectorClock": 3,
+                  "status": "synchronized"
+                },
+                {
+                  "node": "simulation-execution-node",
+                  "vectorClock": 4,
+                  "status": "synchronized"
+                }
+              ],
+              "confidenceTimeline": [
+                {
+                  "node": "api-drone-fleet",
+                  "before": 0.66,
+                  "after": 0.71
+                },
+                {
+                  "node": "api-observe-replay-reconstruct",
+                  "before": 0.685,
+                  "after": 0.736
+                },
+                {
+                  "node": "governance-policy-validation",
+                  "before": 0.71,
+                  "after": 0.762
+                },
+                {
+                  "node": "replay-capture-node",
+                  "before": 0.735,
+                  "after": 0.788
+                },
+                {
+                  "node": "multi-agent-coordination",
+                  "before": 0.76,
+                  "after": 0.814
+                },
+                {
+                  "node": "simulation-execution-node",
+                  "before": 0.785,
+                  "after": 0.84
+                },
+                {
+                  "node": "observability-telemetry-node",
+                  "before": 0.81,
+                  "after": 0.866
+                },
+                {
+                  "node": "human-approval-node",
+                  "before": 0.835,
+                  "after": 0.892
+                }
+              ],
+              "validation": {
+                "replayReady": true,
+                "governanceReady": true,
+                "explainabilityReady": true,
+                "sdkReady": true,
+                "simulationAware": true,
+                "edgeReady": false
+              }
+            },
+            "workflowReplay": true,
+            "governanceRuntime": [
+              {
+                "node": "api-drone-fleet",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              },
+              {
+                "node": "api-observe-replay-reconstruct",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              },
+              {
+                "node": "governance-policy-validation",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              }
+            ],
+            "confidenceRuntime": [
+              {
+                "node": "api-drone-fleet",
+                "before": 0.66,
+                "after": 0.71
+              },
+              {
+                "node": "api-observe-replay-reconstruct",
+                "before": 0.685,
+                "after": 0.736
+              },
+              {
+                "node": "governance-policy-validation",
+                "before": 0.71,
+                "after": 0.762
+              },
+              {
+                "node": "replay-capture-node",
+                "before": 0.735,
+                "after": 0.788
+              },
+              {
+                "node": "multi-agent-coordination",
+                "before": 0.76,
+                "after": 0.814
+              },
+              {
+                "node": "simulation-execution-node",
+                "before": 0.785,
+                "after": 0.84
+              },
+              {
+                "node": "observability-telemetry-node",
+                "before": 0.81,
+                "after": 0.866
+              },
+              {
+                "node": "human-approval-node",
+                "before": 0.835,
+                "after": 0.892
+              }
+            ],
+            "sdkIntegrationReady": true,
+            "collaborationReady": true,
+            "edgeReady": false
+          },
+          "timestamp": "2026-05-15T12:41:41.968Z"
+        },
+        "replay_state": null,
+        "telemetry_state": null,
+        "governance_state": null,
+        "user_mode": "beginner",
+        "runtime_environment": "sandbox",
+        "prior_context": {
+          "priorQuestions": [],
+          "workflowMemory": []
+        },
+        "semantic_memory": []
+      },
+      "expires_at": null,
+      "updated_at": "2026-05-15T12:51:01.560Z"
+    },
+    {
+      "workspace_id": "ask-workspace-2qbajg",
+      "tenant_id": "demo-tenant",
+      "session_id": "ask-session-ep5h7m",
+      "domain": "drone",
+      "application_id": "CHAXU",
+      "selected_apis": [
+        "drone-fleet",
+        "edge-swarm-coordinate",
+        "observe-replay-reconstruct"
+      ],
+      "selected_workflow": "swarm coordination",
+      "selected_simulation": "drone-fleet-coordination",
+      "state": {
+        "context_id": "ask-context-gzdklv",
+        "workflow_state": {
+          "stage": "inspect-replay",
+          "completed": [
+            "select-domain",
+            "select-apis",
+            "generate-workflow",
+            "run-simulation"
+          ],
+          "nextStage": "inspect-replay",
+          "progress": 57,
+          "runtimeState": "idle"
+        },
+        "validation": {
+          "valid": true,
+          "selectedDomain": "drone",
+          "suggestedDomain": "drone",
+          "mismatches": [],
+          "actions": []
+        },
+        "composed_context": {
+          "workspaceId": "ask-workspace-2qbajg",
+          "sessionId": "ask-session-ep5h7m",
+          "contextId": "ask-context-gzdklv",
+          "domain": "drone",
+          "assistant": "Drone Mission Intelligence Assistant",
+          "application": "CHAXU",
+          "workflow": "swarm coordination",
+          "simulation": "drone-fleet-coordination",
+          "selectedApis": [
+            "drone-fleet",
+            "edge-swarm-coordinate",
+            "observe-replay-reconstruct"
+          ],
+          "selectedApiNames": [],
+          "mode": "technical",
+          "environment": "sandbox",
+          "workflowState": {
+            "stage": "inspect-replay",
+            "completed": [
+              "select-domain",
+              "select-apis",
+              "generate-workflow",
+              "run-simulation"
+            ],
+            "nextStage": "inspect-replay",
+            "progress": 57,
+            "runtimeState": "idle"
+          },
+          "priorQuestions": [],
+          "currentQuestion": "Learning Mode: Ask COGNI about the playground page. Explain what I should understand, what actions to take, and how orchestration, replay, governance, observability, and SDK integration apply here.",
+          "validation": {
+            "valid": true,
+            "selectedDomain": "drone",
+            "suggestedDomain": "drone",
+            "mismatches": [],
+            "actions": []
+          }
+        }
+      },
+      "expires_at": null,
+      "updated_at": "2026-05-15T12:49:20.444Z"
+    },
+    {
+      "workspace_id": "x2b-workspace-drone",
+      "tenant_id": "demo-tenant",
+      "session_id": "x2b-session-drone",
+      "domain": "drone",
+      "application_id": "CHAXU",
+      "selected_apis": [
+        "drone-fleet",
+        "observe-replay-reconstruct"
+      ],
+      "selected_workflow": "swarm coordination",
+      "selected_simulation": "drone-fleet-coordination",
+      "state": {
+        "context_id": "ctx-a5b7aa959ce060",
+        "workflow_state": {
+          "stage": "inspect-replay",
+          "completed": [
+            "select-domain",
+            "select-apis",
+            "generate-workflow",
+            "run-simulation"
+          ],
+          "nextStage": "inspect-replay",
+          "progress": 57,
+          "runtimeState": "idle"
+        },
+        "validation": {
+          "valid": false,
+          "selectedDomain": "drone",
+          "suggestedDomain": "healthcare",
+          "mismatches": [
+            {
+              "type": "query-domain",
+              "selectedItem": "question/workflow",
+              "selectedValue": "Build multilingual telemedicine system swarm coordination",
+              "expectedDomain": "drone",
+              "actualDomain": "healthcare",
+              "message": "This request sounds like Healthcare, while the workspace is set to Drone."
+            }
+          ],
+          "actions": [
+            {
+              "id": "switch-domain",
+              "label": "Switch to Healthcare",
+              "domain": "healthcare"
+            },
+            {
+              "id": "switch-simulation",
+              "label": "Switch simulation"
+            },
+            {
+              "id": "continue-intentionally",
+              "label": "Continue intentionally"
+            }
+          ]
+        },
+        "composed_context": {
+          "workspaceId": "x2b-workspace-drone",
+          "sessionId": "x2b-session-drone",
+          "contextId": "ctx-a5b7aa959ce060",
+          "domain": "drone",
+          "assistant": "Drone Mission Intelligence Assistant",
+          "application": "Drone Mission Intelligence Assistant",
+          "workflow": "swarm coordination",
+          "simulation": "drone-fleet-coordination",
+          "selectedApis": [
+            "drone-fleet",
+            "observe-replay-reconstruct"
+          ],
+          "selectedApiNames": [],
+          "mode": "technical",
+          "environment": "sandbox",
+          "workflowState": {
+            "stage": "inspect-replay",
+            "completed": [
+              "select-domain",
+              "select-apis",
+              "generate-workflow",
+              "run-simulation"
+            ],
+            "nextStage": "inspect-replay",
+            "progress": 57,
+            "runtimeState": "idle"
+          },
+          "priorQuestions": [
+            "Generate drone swarm architecture and mission replay plan",
+            "Generate drone swarm architecture and mission replay plan",
+            "Generate drone swarm architecture and mission replay plan",
+            "Generate drone swarm architecture and mission replay plan"
+          ],
+          "currentQuestion": "Build multilingual telemedicine system",
+          "validation": {
+            "valid": false,
+            "selectedDomain": "drone",
+            "suggestedDomain": "healthcare",
+            "mismatches": [
+              {
+                "type": "query-domain",
+                "selectedItem": "question/workflow",
+                "selectedValue": "Build multilingual telemedicine system swarm coordination",
+                "expectedDomain": "drone",
+                "actualDomain": "healthcare",
+                "message": "This request sounds like Healthcare, while the workspace is set to Drone."
+              }
+            ],
+            "actions": [
+              {
+                "id": "switch-domain",
+                "label": "Switch to Healthcare",
+                "domain": "healthcare"
+              },
+              {
+                "id": "switch-simulation",
+                "label": "Switch simulation"
+              },
+              {
+                "id": "continue-intentionally",
+                "label": "Continue intentionally"
+              }
+            ]
+          }
+        }
+      },
+      "expires_at": null,
+      "updated_at": "2026-05-15T12:38:03.840Z"
+    },
+    {
+      "workspace_id": "workspace-demo-tenant-platform-platform",
+      "tenant_id": "demo-tenant",
+      "session_id": "session-98cd4a6d1bb3e2",
+      "domain": "platform",
+      "application_id": "",
+      "selected_apis": [
+        "phase-intent",
+        "gov-policy-engine",
+        "observe-replay-reconstruct"
+      ],
+      "selected_workflow": "",
+      "selected_simulation": "",
+      "state": {
+        "context_id": "ctx-327f0b51eace6e",
+        "workflow_state": {
+          "stage": "select-domain",
+          "completed": [
+            "select-apis"
+          ],
+          "nextStage": "select-domain",
+          "progress": 14,
+          "runtimeState": "idle"
+        },
+        "validation": {
+          "valid": true,
+          "selectedDomain": "platform",
+          "suggestedDomain": "drone",
+          "mismatches": [],
+          "actions": []
+        },
+        "composed_context": {
+          "workspaceId": "workspace-demo-tenant-platform-platform",
+          "sessionId": "session-98cd4a6d1bb3e2",
+          "contextId": "ctx-327f0b51eace6e",
+          "domain": "platform",
+          "assistant": "CINTENT Workspace Assistant",
+          "application": "",
+          "workflow": "",
+          "simulation": "",
+          "selectedApis": [
+            "phase-intent",
+            "gov-policy-engine",
+            "observe-replay-reconstruct"
+          ],
+          "selectedApiNames": [],
+          "mode": "business",
+          "environment": "sandbox",
+          "workflowState": {
+            "stage": "select-domain",
+            "completed": [
+              "select-apis"
+            ],
+            "nextStage": "select-domain",
+            "progress": 14,
+            "runtimeState": "idle"
+          },
+          "priorQuestions": [
+            "Explain mission replay lineage"
+          ],
+          "currentQuestion": "Explain mission replay lineage",
+          "validation": {
+            "valid": true,
+            "selectedDomain": "platform",
+            "suggestedDomain": "drone",
+            "mismatches": [],
+            "actions": []
+          }
+        }
+      },
+      "expires_at": null,
+      "updated_at": "2026-05-15T10:33:15.114Z"
+    },
+    {
+      "workspace_id": "workspace-demo-tenant-healthcare-platform",
+      "tenant_id": "demo-tenant",
+      "session_id": "session-a55af00e0dbf4a",
+      "domain": "healthcare",
+      "application_id": "",
+      "selected_apis": [
+        "healthcare-impl-executable-runtime",
+        "healthcare-impl-streaming-runtime",
+        "healthcare-impl-governance-runtime"
+      ],
+      "selected_workflow": "",
+      "selected_simulation": "",
+      "state": {
+        "context_id": "ctx-bf1608fbf62c99",
+        "workflow_state": {
+          "stage": "generate-workflow",
+          "completed": [
+            "select-domain",
+            "select-apis"
+          ],
+          "nextStage": "generate-workflow",
+          "progress": 29,
+          "runtimeState": "idle"
+        },
+        "validation": {
+          "valid": true,
+          "selectedDomain": "healthcare",
+          "suggestedDomain": "healthcare",
+          "mismatches": [],
+          "actions": []
+        },
+        "composed_context": {
+          "workspaceId": "workspace-demo-tenant-healthcare-platform",
+          "sessionId": "session-a55af00e0dbf4a",
+          "contextId": "ctx-bf1608fbf62c99",
+          "domain": "healthcare",
+          "assistant": "Healthcare Cognitive Assistant",
+          "application": "",
+          "workflow": "",
+          "simulation": "",
+          "selectedApis": [
+            "healthcare-impl-executable-runtime",
+            "healthcare-impl-streaming-runtime",
+            "healthcare-impl-governance-runtime"
+          ],
+          "selectedApiNames": [],
+          "mode": "business",
+          "environment": "sandbox",
+          "workflowState": {
+            "stage": "generate-workflow",
+            "completed": [
+              "select-domain",
+              "select-apis"
+            ],
+            "nextStage": "generate-workflow",
+            "progress": 29,
+            "runtimeState": "idle"
+          },
+          "priorQuestions": [],
+          "currentQuestion": "Build multilingual telemedicine system",
+          "validation": {
+            "valid": true,
+            "selectedDomain": "healthcare",
+            "suggestedDomain": "healthcare",
+            "mismatches": [],
+            "actions": []
+          }
+        }
+      },
+      "expires_at": null,
+      "updated_at": "2026-05-15T10:25:23.711Z"
+    },
+    {
+      "workspace_id": "workspace-demo-tenant-drone-platform",
+      "tenant_id": "demo-tenant",
+      "session_id": "session-616d68f833a008",
+      "domain": "drone",
+      "application_id": "",
+      "selected_apis": [
+        "drone-fleet",
+        "edge-swarm-coordinate",
+        "observe-replay-reconstruct"
+      ],
+      "selected_workflow": "",
+      "selected_simulation": "",
+      "state": {
+        "context_id": "ctx-97b31ac3c928d4",
+        "workflow_state": {
+          "stage": "generate-workflow",
+          "completed": [
+            "select-domain",
+            "select-apis"
+          ],
+          "nextStage": "generate-workflow",
+          "progress": 29,
+          "runtimeState": "idle"
+        },
+        "validation": {
+          "valid": true,
+          "selectedDomain": "drone",
+          "suggestedDomain": "drone",
+          "mismatches": [],
+          "actions": []
+        },
+        "composed_context": {
+          "workspaceId": "workspace-demo-tenant-drone-platform",
+          "sessionId": "session-616d68f833a008",
+          "contextId": "ctx-97b31ac3c928d4",
+          "domain": "drone",
+          "assistant": "Drone Mission Intelligence Assistant",
+          "application": "",
+          "workflow": "",
+          "simulation": "",
+          "selectedApis": [
+            "drone-fleet",
+            "edge-swarm-coordinate",
+            "observe-replay-reconstruct"
+          ],
+          "selectedApiNames": [],
+          "mode": "business",
+          "environment": "sandbox",
+          "workflowState": {
+            "stage": "generate-workflow",
+            "completed": [
+              "select-domain",
+              "select-apis"
+            ],
+            "nextStage": "generate-workflow",
+            "progress": 29,
+            "runtimeState": "idle"
+          },
+          "priorQuestions": [],
+          "currentQuestion": "Generate drone swarm architecture",
+          "validation": {
+            "valid": true,
+            "selectedDomain": "drone",
+            "suggestedDomain": "drone",
+            "mismatches": [],
+            "actions": []
+          }
+        }
+      },
+      "expires_at": null,
+      "updated_at": "2026-05-15T10:25:20.556Z"
+    },
+    {
+      "workspace_id": "test-workspace-travel-blisstrail",
+      "tenant_id": "demo-tenant",
+      "session_id": "test-session-travel-blisstrail",
+      "domain": "travel",
+      "application_id": "blisstrail",
+      "selected_apis": [
+        "travel-intent"
+      ],
+      "selected_workflow": "travel orchestration workflow",
+      "selected_simulation": "healthcare-hospital-operations",
+      "state": {
+        "context_id": "test-context-travel-1778840530660",
+        "workflow_state": {
+          "stage": "inspect-replay",
+          "completed": [
+            "select-domain",
+            "select-apis",
+            "generate-workflow",
+            "run-simulation"
+          ],
+          "nextStage": "inspect-replay",
+          "progress": 57,
+          "runtimeState": "idle"
+        },
+        "validation": {
+          "valid": false,
+          "selectedDomain": "travel",
+          "suggestedDomain": "healthcare",
+          "mismatches": [
+            {
+              "type": "simulation-domain",
+              "selectedItem": "simulation",
+              "selectedValue": "Hospital cognitive operations",
+              "expectedDomain": "travel",
+              "actualDomain": "healthcare",
+              "message": "Hospital cognitive operations does not match the Travel workspace."
+            }
+          ],
+          "actions": [
+            {
+              "id": "switch-domain",
+              "label": "Switch to Healthcare",
+              "domain": "healthcare"
+            },
+            {
+              "id": "switch-simulation",
+              "label": "Switch simulation"
+            },
+            {
+              "id": "continue-intentionally",
+              "label": "Continue intentionally"
+            }
+          ]
+        },
+        "composed_context": {
+          "workspaceId": "test-workspace-travel-blisstrail",
+          "sessionId": "test-session-travel-blisstrail",
+          "contextId": "test-context-travel-1778840530660",
+          "domain": "travel",
+          "assistant": "Travel Intelligence Assistant",
+          "application": "blisstrail",
+          "workflow": "travel orchestration workflow",
+          "simulation": "healthcare-hospital-operations",
+          "selectedApis": [
+            "travel-intent"
+          ],
+          "selectedApiNames": [],
+          "mode": "technical",
+          "environment": "sandbox",
+          "workflowState": {
+            "stage": "inspect-replay",
+            "completed": [
+              "select-domain",
+              "select-apis",
+              "generate-workflow",
+              "run-simulation"
+            ],
+            "nextStage": "inspect-replay",
+            "progress": 57,
+            "runtimeState": "idle"
+          },
+          "priorQuestions": [
+            "Create airport orchestration workflow",
+            "Run ICU monitoring simulation for patient flow",
+            "Create airport orchestration workflow"
+          ],
+          "currentQuestion": "Run ICU monitoring simulation for patient flow",
+          "validation": {
+            "valid": false,
+            "selectedDomain": "travel",
+            "suggestedDomain": "healthcare",
+            "mismatches": [
+              {
+                "type": "simulation-domain",
+                "selectedItem": "simulation",
+                "selectedValue": "Hospital cognitive operations",
+                "expectedDomain": "travel",
+                "actualDomain": "healthcare",
+                "message": "Hospital cognitive operations does not match the Travel workspace."
+              }
+            ],
+            "actions": [
+              {
+                "id": "switch-domain",
+                "label": "Switch to Healthcare",
+                "domain": "healthcare"
+              },
+              {
+                "id": "switch-simulation",
+                "label": "Switch simulation"
+              },
+              {
+                "id": "continue-intentionally",
+                "label": "Continue intentionally"
+              }
+            ]
+          }
+        }
+      },
+      "expires_at": null,
+      "updated_at": "2026-05-15T10:22:19.623Z"
+    },
+    {
+      "workspace_id": "test-workspace-healthcare-smart-hospital",
+      "tenant_id": "demo-tenant",
+      "session_id": "test-session-healthcare-smart-hospital",
+      "domain": "healthcare",
+      "application_id": "smart-hospital",
+      "selected_apis": [
+        "healthcare-impl-executable-runtime"
+      ],
+      "selected_workflow": "PX4 MAVLink mission workflow",
+      "selected_simulation": "healthcare-hospital-operations",
+      "state": {
+        "context_id": "test-context-healthcare-1778840530660",
+        "workflow_state": {
+          "stage": "inspect-replay",
+          "completed": [
+            "select-domain",
+            "select-apis",
+            "generate-workflow",
+            "run-simulation"
+          ],
+          "nextStage": "inspect-replay",
+          "progress": 57,
+          "runtimeState": "idle"
+        },
+        "validation": {
+          "valid": false,
+          "selectedDomain": "healthcare",
+          "suggestedDomain": "drone",
+          "mismatches": [
+            {
+              "type": "query-domain",
+              "selectedItem": "question/workflow",
+              "selectedValue": "Create PX4 MAVLink drone swarm architecture PX4 MAVLink mission workflow",
+              "expectedDomain": "healthcare",
+              "actualDomain": "drone",
+              "message": "This request sounds like Drone, while the workspace is set to Healthcare."
+            }
+          ],
+          "actions": [
+            {
+              "id": "switch-domain",
+              "label": "Switch to Drone",
+              "domain": "drone"
+            },
+            {
+              "id": "switch-simulation",
+              "label": "Switch simulation"
+            },
+            {
+              "id": "continue-intentionally",
+              "label": "Continue intentionally"
+            }
+          ]
+        },
+        "composed_context": {
+          "workspaceId": "test-workspace-healthcare-smart-hospital",
+          "sessionId": "test-session-healthcare-smart-hospital",
+          "contextId": "test-context-healthcare-1778840530660",
+          "domain": "healthcare",
+          "assistant": "Healthcare Cognitive Assistant",
+          "application": "smart-hospital",
+          "workflow": "PX4 MAVLink mission workflow",
+          "simulation": "healthcare-hospital-operations",
+          "selectedApis": [
+            "healthcare-impl-executable-runtime"
+          ],
+          "selectedApiNames": [],
+          "mode": "technical",
+          "environment": "sandbox",
+          "workflowState": {
+            "stage": "inspect-replay",
+            "completed": [
+              "select-domain",
+              "select-apis",
+              "generate-workflow",
+              "run-simulation"
+            ],
+            "nextStage": "inspect-replay",
+            "progress": 57,
+            "runtimeState": "idle"
+          },
+          "priorQuestions": [
+            "Build multilingual telemedicine system",
+            "Create PX4 MAVLink drone swarm architecture",
+            "Build multilingual telemedicine system"
+          ],
+          "currentQuestion": "Create PX4 MAVLink drone swarm architecture",
+          "validation": {
+            "valid": false,
+            "selectedDomain": "healthcare",
+            "suggestedDomain": "drone",
+            "mismatches": [
+              {
+                "type": "query-domain",
+                "selectedItem": "question/workflow",
+                "selectedValue": "Create PX4 MAVLink drone swarm architecture PX4 MAVLink mission workflow",
+                "expectedDomain": "healthcare",
+                "actualDomain": "drone",
+                "message": "This request sounds like Drone, while the workspace is set to Healthcare."
+              }
+            ],
+            "actions": [
+              {
+                "id": "switch-domain",
+                "label": "Switch to Drone",
+                "domain": "drone"
+              },
+              {
+                "id": "switch-simulation",
+                "label": "Switch simulation"
+              },
+              {
+                "id": "continue-intentionally",
+                "label": "Continue intentionally"
+              }
+            ]
+          }
+        }
+      },
+      "expires_at": null,
+      "updated_at": "2026-05-15T10:22:16.658Z"
+    },
+    {
+      "workspace_id": "test-workspace-drone-chaxu",
+      "tenant_id": "demo-tenant",
+      "session_id": "test-session-drone-chaxu",
+      "domain": "drone",
+      "application_id": "chaxu",
+      "selected_apis": [
+        "drone-fleet"
+      ],
+      "selected_workflow": "multilingual telemedicine workflow",
+      "selected_simulation": "drone-fleet-coordination",
+      "state": {
+        "context_id": "test-context-drone-1778840530660",
+        "workflow_state": {
+          "stage": "inspect-replay",
+          "completed": [
+            "select-domain",
+            "select-apis",
+            "generate-workflow",
+            "run-simulation"
+          ],
+          "nextStage": "inspect-replay",
+          "progress": 57,
+          "runtimeState": "idle"
+        },
+        "validation": {
+          "valid": false,
+          "selectedDomain": "drone",
+          "suggestedDomain": "healthcare",
+          "mismatches": [
+            {
+              "type": "query-domain",
+              "selectedItem": "question/workflow",
+              "selectedValue": "Build multilingual telemedicine workflow multilingual telemedicine workflow",
+              "expectedDomain": "drone",
+              "actualDomain": "healthcare",
+              "message": "This request sounds like Healthcare, while the workspace is set to Drone."
+            }
+          ],
+          "actions": [
+            {
+              "id": "switch-domain",
+              "label": "Switch to Healthcare",
+              "domain": "healthcare"
+            },
+            {
+              "id": "switch-simulation",
+              "label": "Switch simulation"
+            },
+            {
+              "id": "continue-intentionally",
+              "label": "Continue intentionally"
+            }
+          ]
+        },
+        "composed_context": {
+          "workspaceId": "test-workspace-drone-chaxu",
+          "sessionId": "test-session-drone-chaxu",
+          "contextId": "test-context-drone-1778840530660",
+          "domain": "drone",
+          "assistant": "Drone Mission Intelligence Assistant",
+          "application": "chaxu",
+          "workflow": "multilingual telemedicine workflow",
+          "simulation": "drone-fleet-coordination",
+          "selectedApis": [
+            "drone-fleet"
+          ],
+          "selectedApiNames": [],
+          "mode": "technical",
+          "environment": "sandbox",
+          "workflowState": {
+            "stage": "inspect-replay",
+            "completed": [
+              "select-domain",
+              "select-apis",
+              "generate-workflow",
+              "run-simulation"
+            ],
+            "nextStage": "inspect-replay",
+            "progress": 57,
+            "runtimeState": "idle"
+          },
+          "priorQuestions": [
+            "Generate drone swarm architecture",
+            "Build multilingual telemedicine workflow",
+            "Generate drone swarm architecture"
+          ],
+          "currentQuestion": "Build multilingual telemedicine workflow",
+          "validation": {
+            "valid": false,
+            "selectedDomain": "drone",
+            "suggestedDomain": "healthcare",
+            "mismatches": [
+              {
+                "type": "query-domain",
+                "selectedItem": "question/workflow",
+                "selectedValue": "Build multilingual telemedicine workflow multilingual telemedicine workflow",
+                "expectedDomain": "drone",
+                "actualDomain": "healthcare",
+                "message": "This request sounds like Healthcare, while the workspace is set to Drone."
+              }
+            ],
+            "actions": [
+              {
+                "id": "switch-domain",
+                "label": "Switch to Healthcare",
+                "domain": "healthcare"
+              },
+              {
+                "id": "switch-simulation",
+                "label": "Switch simulation"
+              },
+              {
+                "id": "continue-intentionally",
+                "label": "Continue intentionally"
+              }
+            ]
+          }
+        }
+      },
+      "expires_at": null,
+      "updated_at": "2026-05-15T10:22:13.680Z"
+    },
+    {
+      "workspace_id": "test-workspace-manufacturing-manufacturing",
+      "tenant_id": "demo-tenant",
+      "session_id": "test-session-manufacturing-manufacturing",
+      "domain": "manufacturing",
+      "application_id": "manufacturing",
+      "selected_apis": [
+        "irobot-manufacturing-orchestrate"
+      ],
+      "selected_workflow": "manufacturing orchestration workflow",
+      "selected_simulation": "",
+      "state": {
+        "context_id": "test-context-manufacturing-1778840527558",
+        "workflow_state": {
+          "stage": "run-simulation",
+          "completed": [
+            "select-domain",
+            "select-apis",
+            "generate-workflow"
+          ],
+          "nextStage": "run-simulation",
+          "progress": 43,
+          "runtimeState": "idle"
+        },
+        "validation": {
+          "valid": true,
+          "selectedDomain": "manufacturing",
+          "suggestedDomain": "manufacturing",
+          "mismatches": [],
+          "actions": []
+        },
+        "composed_context": {
+          "workspaceId": "test-workspace-manufacturing-manufacturing",
+          "sessionId": "test-session-manufacturing-manufacturing",
+          "contextId": "test-context-manufacturing-1778840527558",
+          "domain": "manufacturing",
+          "assistant": "Manufacturing Systems Assistant",
+          "application": "manufacturing",
+          "workflow": "manufacturing orchestration workflow",
+          "simulation": "",
+          "selectedApis": [
+            "irobot-manufacturing-orchestrate"
+          ],
+          "selectedApiNames": [],
+          "mode": "technical",
+          "environment": "sandbox",
+          "workflowState": {
+            "stage": "run-simulation",
+            "completed": [
+              "select-domain",
+              "select-apis",
+              "generate-workflow"
+            ],
+            "nextStage": "run-simulation",
+            "progress": 43,
+            "runtimeState": "idle"
+          },
+          "priorQuestions": [
+            "Recommend APIs for smart manufacturing"
+          ],
+          "currentQuestion": "Recommend APIs for smart manufacturing",
+          "validation": {
+            "valid": true,
+            "selectedDomain": "manufacturing",
+            "suggestedDomain": "manufacturing",
+            "mismatches": [],
+            "actions": []
+          }
+        }
+      },
+      "expires_at": null,
+      "updated_at": "2026-05-15T10:22:10.645Z"
+    }
+  ]
+}

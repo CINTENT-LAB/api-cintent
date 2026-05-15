@@ -59,7 +59,10 @@ async function request(path, options = {}, jar = {}) {
     body: JSON.stringify({ domain: 'manufacturing', source: 'test-sensor', temperature: 94, vibration: 6.1, anomaly: true })
   }, jar);
   assert.equal(telemetry.response.status, 200, 'telemetry should ingest');
-  assert.ok(telemetry.body.orchestration, 'anomaly telemetry should trigger orchestration');
+  assert.ok(
+    telemetry.body.orchestration || telemetry.body.orchestrationTrigger,
+    'anomaly telemetry should trigger immediate orchestration or queue an orchestration worker event'
+  );
 
   const simulation = await request('/api/simulations/execute', {
     method: 'POST',

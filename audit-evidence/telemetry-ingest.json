@@ -1,0 +1,28 @@
+{
+  "status": "ingested",
+  "telemetry": {
+    "id": "telemetry-1778840729577-924b84",
+    "tenant": "demo-tenant",
+    "domain": "manufacturing",
+    "source": "audit-sensor-press-7",
+    "anomaly": false,
+    "sample": {
+      "domain": "manufacturing",
+      "application": "Smart Factory",
+      "source": "audit-sensor-press-7",
+      "metrics": {
+        "temperatureC": 91.4,
+        "vibrationMmS": 7.8,
+        "pressureBar": 4.1
+      },
+      "thresholds": {
+        "temperatureC": 85
+      },
+      "workflow": "predictive maintenance"
+    },
+    "timestamp": "2026-05-15T10:25:29.577Z"
+  },
+  "orchestration": null,
+  "orchestrationTrigger": null,
+  "backpressure": false
+}

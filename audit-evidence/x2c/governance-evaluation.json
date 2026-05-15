@@ -1,0 +1,2739 @@
+{
+  "source": "governance-fabric-runtime",
+  "schemaVersion": "cintent.cognitive.v1.0.0",
+  "governance": {
+    "schema_version": "cintent.cognitive.v1.0.0",
+    "governance_id": "governance-e2da4a7fbe139914",
+    "tenant_id": "demo-tenant",
+    "domain": "drone",
+    "operation": "orchestration.started",
+    "profile": "airspace-safety",
+    "inherited_policies": [
+      "schema-version-required",
+      "tenant-boundary-required",
+      "lineage-required",
+      "geo-boundary",
+      "mission-replay",
+      "edge-telemetry"
+    ],
+    "constraints": [
+      {
+        "id": "tenant-scope",
+        "status": "enforced",
+        "reason": "Every runtime operation must have tenant scope."
+      },
+      {
+        "id": "schema-version",
+        "status": "enforced",
+        "reason": "cintent.cognitive.v1.0.0 attached to operation."
+      },
+      {
+        "id": "replay-lineage",
+        "status": "enforced",
+        "reason": "Replay linkage is required when execution emits replayable state."
+      },
+      {
+        "id": "role-scope",
+        "status": "advisory",
+        "reason": "Role guest mapped to canonical RBAC envelope."
+      }
+    ],
+    "decision": "allowed",
+    "evaluated_at": "2026-05-15T13:38:07.311Z"
+  },
+  "execution": {
+    "id": "gov-eval-1778852287310",
+    "api_key": "gov-fabric-runtime",
+    "api_name": "Cognitive Governance Fabric Evaluation",
+    "tenant": "demo-tenant",
+    "session_type": "governance-fabric-runtime",
+    "mode": "sandbox",
+    "status": "governed-sandbox-restricted",
+    "domain": "drone",
+    "governance": {
+      "status": "evaluated",
+      "policyCount": 10,
+      "interventions": [
+        {
+          "order": 1,
+          "policyId": "workflow-authorization",
+          "title": "Workflow authorization",
+          "category": "orchestration",
+          "version": "2026.05.15",
+          "enforcement": "approval-checkpoint",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.26,
+          "confidenceBefore": 0.84,
+          "confidenceAfter": 0.833,
+          "explanation": "Validates that the tenant and session can execute the requested orchestration scope."
+        },
+        {
+          "order": 2,
+          "policyId": "orchestration-restrictions",
+          "title": "Orchestration restrictions",
+          "category": "orchestration",
+          "version": "2026.05.15",
+          "enforcement": "runtime-restriction",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.3,
+          "confidenceBefore": 0.825,
+          "confidenceAfter": 0.826,
+          "explanation": "Applies domain and lifecycle restrictions before runtime execution proceeds."
+        },
+        {
+          "order": 3,
+          "policyId": "tenant-isolation",
+          "title": "Tenant isolation",
+          "category": "tenant",
+          "version": "2026.05.15",
+          "enforcement": "tenant-boundary",
+          "status": "authorized",
+          "approvalRequired": false,
+          "escalation": false,
+          "risk": 0.28,
+          "confidenceBefore": 0.81,
+          "confidenceAfter": 0.83,
+          "explanation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+        },
+        {
+          "order": 4,
+          "policyId": "tenant-orchestration-limits",
+          "title": "Tenant orchestration limits",
+          "category": "tenant",
+          "version": "2026.05.15",
+          "enforcement": "quota-boundary",
+          "status": "authorized",
+          "approvalRequired": false,
+          "escalation": false,
+          "risk": 0.2,
+          "confidenceBefore": 0.795,
+          "confidenceAfter": 0.844,
+          "explanation": "Checks demo, developer, professional, and enterprise orchestration limits."
+        },
+        {
+          "order": 5,
+          "policyId": "drone-airspace-governance",
+          "title": "Drone airspace governance",
+          "category": "domain",
+          "version": "2026.05.15",
+          "enforcement": "airspace-policy",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.52,
+          "confidenceBefore": 0.78,
+          "confidenceAfter": 0.786,
+          "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+        },
+        {
+          "order": 6,
+          "policyId": "emergency-escalation",
+          "title": "Emergency escalation",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "emergency-propagation",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.58,
+          "confidenceBefore": 0.765,
+          "confidenceAfter": 0.776,
+          "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+        },
+        {
+          "order": 7,
+          "policyId": "restricted-zone-governance",
+          "title": "Restricted-zone governance",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "restricted-zone-check",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.54,
+          "confidenceBefore": 0.75,
+          "confidenceAfter": 0.783,
+          "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+        },
+        {
+          "order": 8,
+          "policyId": "standards-aware-enforcement",
+          "title": "Standards-aware enforcement",
+          "category": "compliance",
+          "version": "2026.05.15",
+          "enforcement": "standards-readiness-check",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.28,
+          "confidenceBefore": 0.735,
+          "confidenceAfter": 0.83,
+          "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+        },
+        {
+          "order": 9,
+          "policyId": "replay-authorization",
+          "title": "Replay authorization",
+          "category": "replay",
+          "version": "2026.05.15",
+          "enforcement": "read-replay-scope",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.24,
+          "confidenceBefore": 0.72,
+          "confidenceAfter": 0.837,
+          "explanation": "Controls replay package visibility, reconstruction access, and replay lineage authorization."
+        },
+        {
+          "order": 10,
+          "policyId": "audit-compliance",
+          "title": "Audit compliance",
+          "category": "compliance",
+          "version": "2026.05.15",
+          "enforcement": "audit-lineage",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.21,
+          "confidenceBefore": 0.705,
+          "confidenceAfter": 0.842,
+          "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+        }
+      ],
+      "riskScore": 0.341,
+      "tenant": "demo-tenant"
+    },
+    "replay": {
+      "replayId": "gov-replay-1778852287310",
+      "policyReplay": [
+        {
+          "policyId": "workflow-authorization",
+          "status": "approved-with-checkpoint",
+          "version": "2026.05.15",
+          "explanation": "Validates that the tenant and session can execute the requested orchestration scope."
+        },
+        {
+          "policyId": "orchestration-restrictions",
+          "status": "approved-with-checkpoint",
+          "version": "2026.05.15",
+          "explanation": "Applies domain and lifecycle restrictions before runtime execution proceeds."
+        },
+        {
+          "policyId": "tenant-isolation",
+          "status": "authorized",
+          "version": "2026.05.15",
+          "explanation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+        },
+        {
+          "policyId": "tenant-orchestration-limits",
+          "status": "authorized",
+          "version": "2026.05.15",
+          "explanation": "Checks demo, developer, professional, and enterprise orchestration limits."
+        },
+        {
+          "policyId": "drone-airspace-governance",
+          "status": "restricted-to-sandbox",
+          "version": "2026.05.15",
+          "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+        },
+        {
+          "policyId": "emergency-escalation",
+          "status": "restricted-to-sandbox",
+          "version": "2026.05.15",
+          "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+        },
+        {
+          "policyId": "restricted-zone-governance",
+          "status": "restricted-to-sandbox",
+          "version": "2026.05.15",
+          "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+        },
+        {
+          "policyId": "standards-aware-enforcement",
+          "status": "approved-with-checkpoint",
+          "version": "2026.05.15",
+          "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+        },
+        {
+          "policyId": "replay-authorization",
+          "status": "approved-with-checkpoint",
+          "version": "2026.05.15",
+          "explanation": "Controls replay package visibility, reconstruction access, and replay lineage authorization."
+        },
+        {
+          "policyId": "audit-compliance",
+          "status": "approved-with-checkpoint",
+          "version": "2026.05.15",
+          "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+        }
+      ],
+      "authorizationReplay": [
+        {
+          "policyId": "workflow-authorization",
+          "approvalRequired": true,
+          "enforcement": "approval-checkpoint"
+        },
+        {
+          "policyId": "orchestration-restrictions",
+          "approvalRequired": true,
+          "enforcement": "runtime-restriction"
+        },
+        {
+          "policyId": "tenant-isolation",
+          "approvalRequired": false,
+          "enforcement": "tenant-boundary"
+        },
+        {
+          "policyId": "tenant-orchestration-limits",
+          "approvalRequired": false,
+          "enforcement": "quota-boundary"
+        },
+        {
+          "policyId": "drone-airspace-governance",
+          "approvalRequired": true,
+          "enforcement": "airspace-policy"
+        },
+        {
+          "policyId": "emergency-escalation",
+          "approvalRequired": true,
+          "enforcement": "emergency-propagation"
+        },
+        {
+          "policyId": "restricted-zone-governance",
+          "approvalRequired": true,
+          "enforcement": "restricted-zone-check"
+        },
+        {
+          "policyId": "standards-aware-enforcement",
+          "approvalRequired": true,
+          "enforcement": "standards-readiness-check"
+        },
+        {
+          "policyId": "replay-authorization",
+          "approvalRequired": true,
+          "enforcement": "read-replay-scope"
+        },
+        {
+          "policyId": "audit-compliance",
+          "approvalRequired": true,
+          "enforcement": "audit-lineage"
+        }
+      ],
+      "escalationReplay": [
+        {
+          "order": 5,
+          "policyId": "drone-airspace-governance",
+          "title": "Drone airspace governance",
+          "category": "domain",
+          "version": "2026.05.15",
+          "enforcement": "airspace-policy",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.52,
+          "confidenceBefore": 0.78,
+          "confidenceAfter": 0.786,
+          "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+        },
+        {
+          "order": 6,
+          "policyId": "emergency-escalation",
+          "title": "Emergency escalation",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "emergency-propagation",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.58,
+          "confidenceBefore": 0.765,
+          "confidenceAfter": 0.776,
+          "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+        },
+        {
+          "order": 7,
+          "policyId": "restricted-zone-governance",
+          "title": "Restricted-zone governance",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "restricted-zone-check",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.54,
+          "confidenceBefore": 0.75,
+          "confidenceAfter": 0.783,
+          "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+        }
+      ],
+      "complianceReconstruction": [
+        {
+          "order": 5,
+          "policyId": "drone-airspace-governance",
+          "title": "Drone airspace governance",
+          "category": "domain",
+          "version": "2026.05.15",
+          "enforcement": "airspace-policy",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.52,
+          "confidenceBefore": 0.78,
+          "confidenceAfter": 0.786,
+          "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+        },
+        {
+          "order": 6,
+          "policyId": "emergency-escalation",
+          "title": "Emergency escalation",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "emergency-propagation",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.58,
+          "confidenceBefore": 0.765,
+          "confidenceAfter": 0.776,
+          "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+        },
+        {
+          "order": 7,
+          "policyId": "restricted-zone-governance",
+          "title": "Restricted-zone governance",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "restricted-zone-check",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.54,
+          "confidenceBefore": 0.75,
+          "confidenceAfter": 0.783,
+          "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+        },
+        {
+          "order": 8,
+          "policyId": "standards-aware-enforcement",
+          "title": "Standards-aware enforcement",
+          "category": "compliance",
+          "version": "2026.05.15",
+          "enforcement": "standards-readiness-check",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.28,
+          "confidenceBefore": 0.735,
+          "confidenceAfter": 0.83,
+          "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+        },
+        {
+          "order": 10,
+          "policyId": "audit-compliance",
+          "title": "Audit compliance",
+          "category": "compliance",
+          "version": "2026.05.15",
+          "enforcement": "audit-lineage",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.21,
+          "confidenceBefore": 0.705,
+          "confidenceAfter": 0.842,
+          "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+        }
+      ],
+      "confidenceReplay": [
+        {
+          "policyId": "workflow-authorization",
+          "before": 0.84,
+          "score": 0.833
+        },
+        {
+          "policyId": "orchestration-restrictions",
+          "before": 0.825,
+          "score": 0.826
+        },
+        {
+          "policyId": "tenant-isolation",
+          "before": 0.81,
+          "score": 0.83
+        },
+        {
+          "policyId": "tenant-orchestration-limits",
+          "before": 0.795,
+          "score": 0.844
+        },
+        {
+          "policyId": "drone-airspace-governance",
+          "before": 0.78,
+          "score": 0.786
+        },
+        {
+          "policyId": "emergency-escalation",
+          "before": 0.765,
+          "score": 0.776
+        },
+        {
+          "policyId": "restricted-zone-governance",
+          "before": 0.75,
+          "score": 0.783
+        },
+        {
+          "policyId": "standards-aware-enforcement",
+          "before": 0.735,
+          "score": 0.83
+        },
+        {
+          "policyId": "replay-authorization",
+          "before": 0.72,
+          "score": 0.837
+        },
+        {
+          "policyId": "audit-compliance",
+          "before": 0.705,
+          "score": 0.842
+        }
+      ]
+    },
+    "confidenceEvolution": [
+      {
+        "step": "workflow-authorization",
+        "before": 0.84,
+        "score": 0.833,
+        "interpretation": "Validates that the tenant and session can execute the requested orchestration scope."
+      },
+      {
+        "step": "orchestration-restrictions",
+        "before": 0.825,
+        "score": 0.826,
+        "interpretation": "Applies domain and lifecycle restrictions before runtime execution proceeds."
+      },
+      {
+        "step": "tenant-isolation",
+        "before": 0.81,
+        "score": 0.83,
+        "interpretation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+      },
+      {
+        "step": "tenant-orchestration-limits",
+        "before": 0.795,
+        "score": 0.844,
+        "interpretation": "Checks demo, developer, professional, and enterprise orchestration limits."
+      },
+      {
+        "step": "drone-airspace-governance",
+        "before": 0.78,
+        "score": 0.786,
+        "interpretation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+      },
+      {
+        "step": "emergency-escalation",
+        "before": 0.765,
+        "score": 0.776,
+        "interpretation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+      },
+      {
+        "step": "restricted-zone-governance",
+        "before": 0.75,
+        "score": 0.783,
+        "interpretation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+      },
+      {
+        "step": "standards-aware-enforcement",
+        "before": 0.735,
+        "score": 0.83,
+        "interpretation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+      },
+      {
+        "step": "replay-authorization",
+        "before": 0.72,
+        "score": 0.837,
+        "interpretation": "Controls replay package visibility, reconstruction access, and replay lineage authorization."
+      },
+      {
+        "step": "audit-compliance",
+        "before": 0.705,
+        "score": 0.842,
+        "interpretation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+      }
+    ],
+    "distributedSynchronization": [
+      {
+        "policy": "drone-airspace-governance",
+        "vectorClock": 1,
+        "status": "policy-propagated"
+      },
+      {
+        "policy": "emergency-escalation",
+        "vectorClock": 2,
+        "status": "policy-propagated"
+      },
+      {
+        "policy": "restricted-zone-governance",
+        "vectorClock": 3,
+        "status": "policy-propagated"
+      }
+    ],
+    "orchestrationTrace": [
+      {
+        "order": 1,
+        "step": "workflow-authorization",
+        "state": "approval-checkpoint",
+        "status": "approved-with-checkpoint",
+        "durationMs": 215
+      },
+      {
+        "order": 2,
+        "step": "orchestration-restrictions",
+        "state": "runtime-restriction",
+        "status": "approved-with-checkpoint",
+        "durationMs": 250
+      },
+      {
+        "order": 3,
+        "step": "tenant-isolation",
+        "state": "tenant-boundary",
+        "status": "authorized",
+        "durationMs": 285
+      },
+      {
+        "order": 4,
+        "step": "tenant-orchestration-limits",
+        "state": "quota-boundary",
+        "status": "authorized",
+        "durationMs": 320
+      },
+      {
+        "order": 5,
+        "step": "drone-airspace-governance",
+        "state": "airspace-policy",
+        "status": "restricted-to-sandbox",
+        "durationMs": 355
+      },
+      {
+        "order": 6,
+        "step": "emergency-escalation",
+        "state": "emergency-propagation",
+        "status": "restricted-to-sandbox",
+        "durationMs": 390
+      },
+      {
+        "order": 7,
+        "step": "restricted-zone-governance",
+        "state": "restricted-zone-check",
+        "status": "restricted-to-sandbox",
+        "durationMs": 425
+      },
+      {
+        "order": 8,
+        "step": "standards-aware-enforcement",
+        "state": "standards-readiness-check",
+        "status": "approved-with-checkpoint",
+        "durationMs": 460
+      },
+      {
+        "order": 9,
+        "step": "replay-authorization",
+        "state": "read-replay-scope",
+        "status": "approved-with-checkpoint",
+        "durationMs": 495
+      },
+      {
+        "order": 10,
+        "step": "audit-compliance",
+        "state": "audit-lineage",
+        "status": "approved-with-checkpoint",
+        "durationMs": 530
+      }
+    ],
+    "dependencyVisibility": [
+      {
+        "policy": "workflow-authorization",
+        "dependsOn": [
+          "tenant-boundary",
+          "runtime-context",
+          "replay-authorization"
+        ],
+        "version": "2026.05.15"
+      },
+      {
+        "policy": "orchestration-restrictions",
+        "dependsOn": [
+          "tenant-boundary",
+          "runtime-context",
+          "replay-authorization"
+        ],
+        "version": "2026.05.15"
+      },
+      {
+        "policy": "tenant-isolation",
+        "dependsOn": [
+          "tenant-boundary",
+          "runtime-context",
+          "replay-authorization"
+        ],
+        "version": "2026.05.15"
+      },
+      {
+        "policy": "tenant-orchestration-limits",
+        "dependsOn": [
+          "tenant-boundary",
+          "runtime-context",
+          "replay-authorization"
+        ],
+        "version": "2026.05.15"
+      },
+      {
+        "policy": "drone-airspace-governance",
+        "dependsOn": [
+          "tenant-boundary",
+          "runtime-context",
+          "replay-authorization"
+        ],
+        "version": "2026.05.15"
+      },
+      {
+        "policy": "emergency-escalation",
+        "dependsOn": [
+          "tenant-boundary",
+          "runtime-context",
+          "replay-authorization"
+        ],
+        "version": "2026.05.15"
+      },
+      {
+        "policy": "restricted-zone-governance",
+        "dependsOn": [
+          "tenant-boundary",
+          "runtime-context",
+          "replay-authorization"
+        ],
+        "version": "2026.05.15"
+      },
+      {
+        "policy": "standards-aware-enforcement",
+        "dependsOn": [
+          "tenant-boundary",
+          "runtime-context",
+          "replay-authorization"
+        ],
+        "version": "2026.05.15"
+      },
+      {
+        "policy": "replay-authorization",
+        "dependsOn": [
+          "tenant-boundary",
+          "runtime-context",
+          "replay-authorization"
+        ],
+        "version": "2026.05.15"
+      },
+      {
+        "policy": "audit-compliance",
+        "dependsOn": [
+          "tenant-boundary",
+          "runtime-context",
+          "replay-authorization"
+        ],
+        "version": "2026.05.15"
+      }
+    ],
+    "executionPlan": {
+      "executionId": "gov-eval-1778852287310",
+      "apiKey": "gov-fabric-runtime",
+      "apiName": "Cognitive Governance Fabric Evaluation",
+      "domain": "drone",
+      "mode": "sandbox",
+      "objective": "Validate governed cognitive orchestration runtime.",
+      "stages": [
+        {
+          "order": 1,
+          "policyId": "workflow-authorization",
+          "title": "Workflow authorization",
+          "category": "orchestration",
+          "version": "2026.05.15",
+          "enforcement": "approval-checkpoint",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.26,
+          "confidenceBefore": 0.84,
+          "confidenceAfter": 0.833,
+          "explanation": "Validates that the tenant and session can execute the requested orchestration scope."
+        },
+        {
+          "order": 2,
+          "policyId": "orchestration-restrictions",
+          "title": "Orchestration restrictions",
+          "category": "orchestration",
+          "version": "2026.05.15",
+          "enforcement": "runtime-restriction",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.3,
+          "confidenceBefore": 0.825,
+          "confidenceAfter": 0.826,
+          "explanation": "Applies domain and lifecycle restrictions before runtime execution proceeds."
+        },
+        {
+          "order": 3,
+          "policyId": "tenant-isolation",
+          "title": "Tenant isolation",
+          "category": "tenant",
+          "version": "2026.05.15",
+          "enforcement": "tenant-boundary",
+          "status": "authorized",
+          "approvalRequired": false,
+          "escalation": false,
+          "risk": 0.28,
+          "confidenceBefore": 0.81,
+          "confidenceAfter": 0.83,
+          "explanation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+        },
+        {
+          "order": 4,
+          "policyId": "tenant-orchestration-limits",
+          "title": "Tenant orchestration limits",
+          "category": "tenant",
+          "version": "2026.05.15",
+          "enforcement": "quota-boundary",
+          "status": "authorized",
+          "approvalRequired": false,
+          "escalation": false,
+          "risk": 0.2,
+          "confidenceBefore": 0.795,
+          "confidenceAfter": 0.844,
+          "explanation": "Checks demo, developer, professional, and enterprise orchestration limits."
+        },
+        {
+          "order": 5,
+          "policyId": "drone-airspace-governance",
+          "title": "Drone airspace governance",
+          "category": "domain",
+          "version": "2026.05.15",
+          "enforcement": "airspace-policy",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.52,
+          "confidenceBefore": 0.78,
+          "confidenceAfter": 0.786,
+          "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+        },
+        {
+          "order": 6,
+          "policyId": "emergency-escalation",
+          "title": "Emergency escalation",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "emergency-propagation",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.58,
+          "confidenceBefore": 0.765,
+          "confidenceAfter": 0.776,
+          "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+        },
+        {
+          "order": 7,
+          "policyId": "restricted-zone-governance",
+          "title": "Restricted-zone governance",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "restricted-zone-check",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.54,
+          "confidenceBefore": 0.75,
+          "confidenceAfter": 0.783,
+          "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+        },
+        {
+          "order": 8,
+          "policyId": "standards-aware-enforcement",
+          "title": "Standards-aware enforcement",
+          "category": "compliance",
+          "version": "2026.05.15",
+          "enforcement": "standards-readiness-check",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.28,
+          "confidenceBefore": 0.735,
+          "confidenceAfter": 0.83,
+          "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+        },
+        {
+          "order": 9,
+          "policyId": "replay-authorization",
+          "title": "Replay authorization",
+          "category": "replay",
+          "version": "2026.05.15",
+          "enforcement": "read-replay-scope",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.24,
+          "confidenceBefore": 0.72,
+          "confidenceAfter": 0.837,
+          "explanation": "Controls replay package visibility, reconstruction access, and replay lineage authorization."
+        },
+        {
+          "order": 10,
+          "policyId": "audit-compliance",
+          "title": "Audit compliance",
+          "category": "compliance",
+          "version": "2026.05.15",
+          "enforcement": "audit-lineage",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.21,
+          "confidenceBefore": 0.705,
+          "confidenceAfter": 0.842,
+          "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+        }
+      ],
+      "dependencyGraph": [
+        {
+          "from": "policy-engine",
+          "to": "workflow-authorization",
+          "relationship": "approval-checkpoint"
+        },
+        {
+          "from": "policy-engine",
+          "to": "orchestration-restrictions",
+          "relationship": "runtime-restriction"
+        },
+        {
+          "from": "policy-engine",
+          "to": "tenant-isolation",
+          "relationship": "tenant-boundary"
+        },
+        {
+          "from": "policy-engine",
+          "to": "tenant-orchestration-limits",
+          "relationship": "quota-boundary"
+        },
+        {
+          "from": "policy-engine",
+          "to": "drone-airspace-governance",
+          "relationship": "airspace-policy"
+        },
+        {
+          "from": "policy-engine",
+          "to": "emergency-escalation",
+          "relationship": "emergency-propagation"
+        },
+        {
+          "from": "policy-engine",
+          "to": "restricted-zone-governance",
+          "relationship": "restricted-zone-check"
+        },
+        {
+          "from": "policy-engine",
+          "to": "standards-aware-enforcement",
+          "relationship": "standards-readiness-check"
+        },
+        {
+          "from": "policy-engine",
+          "to": "replay-authorization",
+          "relationship": "read-replay-scope"
+        },
+        {
+          "from": "policy-engine",
+          "to": "audit-compliance",
+          "relationship": "audit-lineage"
+        }
+      ],
+      "confidenceTimeline": [
+        {
+          "stage": "workflow-authorization",
+          "before": 0.84,
+          "score": 0.833
+        },
+        {
+          "stage": "orchestration-restrictions",
+          "before": 0.825,
+          "score": 0.826
+        },
+        {
+          "stage": "tenant-isolation",
+          "before": 0.81,
+          "score": 0.83
+        },
+        {
+          "stage": "tenant-orchestration-limits",
+          "before": 0.795,
+          "score": 0.844
+        },
+        {
+          "stage": "drone-airspace-governance",
+          "before": 0.78,
+          "score": 0.786
+        },
+        {
+          "stage": "emergency-escalation",
+          "before": 0.765,
+          "score": 0.776
+        },
+        {
+          "stage": "restricted-zone-governance",
+          "before": 0.75,
+          "score": 0.783
+        },
+        {
+          "stage": "standards-aware-enforcement",
+          "before": 0.735,
+          "score": 0.83
+        },
+        {
+          "stage": "replay-authorization",
+          "before": 0.72,
+          "score": 0.837
+        },
+        {
+          "stage": "audit-compliance",
+          "before": 0.705,
+          "score": 0.842
+        }
+      ],
+      "governancePropagation": [
+        {
+          "order": 1,
+          "policyId": "workflow-authorization",
+          "title": "Workflow authorization",
+          "category": "orchestration",
+          "version": "2026.05.15",
+          "enforcement": "approval-checkpoint",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.26,
+          "confidenceBefore": 0.84,
+          "confidenceAfter": 0.833,
+          "explanation": "Validates that the tenant and session can execute the requested orchestration scope."
+        },
+        {
+          "order": 2,
+          "policyId": "orchestration-restrictions",
+          "title": "Orchestration restrictions",
+          "category": "orchestration",
+          "version": "2026.05.15",
+          "enforcement": "runtime-restriction",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.3,
+          "confidenceBefore": 0.825,
+          "confidenceAfter": 0.826,
+          "explanation": "Applies domain and lifecycle restrictions before runtime execution proceeds."
+        },
+        {
+          "order": 3,
+          "policyId": "tenant-isolation",
+          "title": "Tenant isolation",
+          "category": "tenant",
+          "version": "2026.05.15",
+          "enforcement": "tenant-boundary",
+          "status": "authorized",
+          "approvalRequired": false,
+          "escalation": false,
+          "risk": 0.28,
+          "confidenceBefore": 0.81,
+          "confidenceAfter": 0.83,
+          "explanation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+        },
+        {
+          "order": 4,
+          "policyId": "tenant-orchestration-limits",
+          "title": "Tenant orchestration limits",
+          "category": "tenant",
+          "version": "2026.05.15",
+          "enforcement": "quota-boundary",
+          "status": "authorized",
+          "approvalRequired": false,
+          "escalation": false,
+          "risk": 0.2,
+          "confidenceBefore": 0.795,
+          "confidenceAfter": 0.844,
+          "explanation": "Checks demo, developer, professional, and enterprise orchestration limits."
+        },
+        {
+          "order": 5,
+          "policyId": "drone-airspace-governance",
+          "title": "Drone airspace governance",
+          "category": "domain",
+          "version": "2026.05.15",
+          "enforcement": "airspace-policy",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.52,
+          "confidenceBefore": 0.78,
+          "confidenceAfter": 0.786,
+          "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+        },
+        {
+          "order": 6,
+          "policyId": "emergency-escalation",
+          "title": "Emergency escalation",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "emergency-propagation",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.58,
+          "confidenceBefore": 0.765,
+          "confidenceAfter": 0.776,
+          "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+        },
+        {
+          "order": 7,
+          "policyId": "restricted-zone-governance",
+          "title": "Restricted-zone governance",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "restricted-zone-check",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.54,
+          "confidenceBefore": 0.75,
+          "confidenceAfter": 0.783,
+          "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+        },
+        {
+          "order": 8,
+          "policyId": "standards-aware-enforcement",
+          "title": "Standards-aware enforcement",
+          "category": "compliance",
+          "version": "2026.05.15",
+          "enforcement": "standards-readiness-check",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.28,
+          "confidenceBefore": 0.735,
+          "confidenceAfter": 0.83,
+          "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+        },
+        {
+          "order": 9,
+          "policyId": "replay-authorization",
+          "title": "Replay authorization",
+          "category": "replay",
+          "version": "2026.05.15",
+          "enforcement": "read-replay-scope",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.24,
+          "confidenceBefore": 0.72,
+          "confidenceAfter": 0.837,
+          "explanation": "Controls replay package visibility, reconstruction access, and replay lineage authorization."
+        },
+        {
+          "order": 10,
+          "policyId": "audit-compliance",
+          "title": "Audit compliance",
+          "category": "compliance",
+          "version": "2026.05.15",
+          "enforcement": "audit-lineage",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.21,
+          "confidenceBefore": 0.705,
+          "confidenceAfter": 0.842,
+          "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+        }
+      ],
+      "replayPropagation": [
+        {
+          "policyId": "workflow-authorization",
+          "status": "approved-with-checkpoint",
+          "version": "2026.05.15",
+          "explanation": "Validates that the tenant and session can execute the requested orchestration scope."
+        },
+        {
+          "policyId": "orchestration-restrictions",
+          "status": "approved-with-checkpoint",
+          "version": "2026.05.15",
+          "explanation": "Applies domain and lifecycle restrictions before runtime execution proceeds."
+        },
+        {
+          "policyId": "tenant-isolation",
+          "status": "authorized",
+          "version": "2026.05.15",
+          "explanation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+        },
+        {
+          "policyId": "tenant-orchestration-limits",
+          "status": "authorized",
+          "version": "2026.05.15",
+          "explanation": "Checks demo, developer, professional, and enterprise orchestration limits."
+        },
+        {
+          "policyId": "drone-airspace-governance",
+          "status": "restricted-to-sandbox",
+          "version": "2026.05.15",
+          "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+        },
+        {
+          "policyId": "emergency-escalation",
+          "status": "restricted-to-sandbox",
+          "version": "2026.05.15",
+          "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+        },
+        {
+          "policyId": "restricted-zone-governance",
+          "status": "restricted-to-sandbox",
+          "version": "2026.05.15",
+          "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+        },
+        {
+          "policyId": "standards-aware-enforcement",
+          "status": "approved-with-checkpoint",
+          "version": "2026.05.15",
+          "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+        },
+        {
+          "policyId": "replay-authorization",
+          "status": "approved-with-checkpoint",
+          "version": "2026.05.15",
+          "explanation": "Controls replay package visibility, reconstruction access, and replay lineage authorization."
+        },
+        {
+          "policyId": "audit-compliance",
+          "status": "approved-with-checkpoint",
+          "version": "2026.05.15",
+          "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+        }
+      ],
+      "distributedSynchronization": [
+        {
+          "order": 5,
+          "policyId": "drone-airspace-governance",
+          "title": "Drone airspace governance",
+          "category": "domain",
+          "version": "2026.05.15",
+          "enforcement": "airspace-policy",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.52,
+          "confidenceBefore": 0.78,
+          "confidenceAfter": 0.786,
+          "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+        },
+        {
+          "order": 6,
+          "policyId": "emergency-escalation",
+          "title": "Emergency escalation",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "emergency-propagation",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.58,
+          "confidenceBefore": 0.765,
+          "confidenceAfter": 0.776,
+          "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+        },
+        {
+          "order": 7,
+          "policyId": "restricted-zone-governance",
+          "title": "Restricted-zone governance",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "restricted-zone-check",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.54,
+          "confidenceBefore": 0.75,
+          "confidenceAfter": 0.783,
+          "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+        }
+      ]
+    },
+    "governanceFabricRuntime": {
+      "phase": "PHASE-6E-GOVERNANCE-FABRIC",
+      "objective": "Validate governed cognitive orchestration runtime.",
+      "policies": [
+        {
+          "id": "workflow-authorization",
+          "category": "orchestration",
+          "title": "Workflow authorization",
+          "version": "2026.05.15",
+          "domains": [
+            "enterprise-workflow",
+            "robotics",
+            "drone",
+            "digital-twin"
+          ],
+          "enforcement": "approval-checkpoint",
+          "riskWeight": 0.18,
+          "explanation": "Validates that the tenant and session can execute the requested orchestration scope."
+        },
+        {
+          "id": "orchestration-restrictions",
+          "category": "orchestration",
+          "title": "Orchestration restrictions",
+          "version": "2026.05.15",
+          "domains": [
+            "enterprise-workflow",
+            "robotics",
+            "industrial"
+          ],
+          "enforcement": "runtime-restriction",
+          "riskWeight": 0.22,
+          "explanation": "Applies domain and lifecycle restrictions before runtime execution proceeds."
+        },
+        {
+          "id": "tenant-isolation",
+          "category": "tenant",
+          "title": "Tenant isolation",
+          "version": "2026.05.15",
+          "domains": [
+            "all"
+          ],
+          "enforcement": "tenant-boundary",
+          "riskWeight": 0.2,
+          "explanation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+        },
+        {
+          "id": "tenant-orchestration-limits",
+          "category": "tenant",
+          "title": "Tenant orchestration limits",
+          "version": "2026.05.15",
+          "domains": [
+            "all"
+          ],
+          "enforcement": "quota-boundary",
+          "riskWeight": 0.12,
+          "explanation": "Checks demo, developer, professional, and enterprise orchestration limits."
+        },
+        {
+          "id": "drone-airspace-governance",
+          "category": "domain",
+          "title": "Drone airspace governance",
+          "version": "2026.05.15",
+          "domains": [
+            "drone",
+            "uav",
+            "swarm"
+          ],
+          "enforcement": "airspace-policy",
+          "riskWeight": 0.32,
+          "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+        },
+        {
+          "id": "emergency-escalation",
+          "category": "safety",
+          "title": "Emergency escalation",
+          "version": "2026.05.15",
+          "domains": [
+            "robotics",
+            "drone",
+            "industrial",
+            "healthcare"
+          ],
+          "enforcement": "emergency-propagation",
+          "riskWeight": 0.38,
+          "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+        },
+        {
+          "id": "restricted-zone-governance",
+          "category": "safety",
+          "title": "Restricted-zone governance",
+          "version": "2026.05.15",
+          "domains": [
+            "drone",
+            "airport",
+            "robotics",
+            "industrial"
+          ],
+          "enforcement": "restricted-zone-check",
+          "riskWeight": 0.34,
+          "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+        },
+        {
+          "id": "standards-aware-enforcement",
+          "category": "compliance",
+          "title": "Standards-aware enforcement",
+          "version": "2026.05.15",
+          "domains": [
+            "drone",
+            "robotics",
+            "industrial",
+            "standards"
+          ],
+          "enforcement": "standards-readiness-check",
+          "riskWeight": 0.2,
+          "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+        },
+        {
+          "id": "replay-authorization",
+          "category": "replay",
+          "title": "Replay authorization",
+          "version": "2026.05.15",
+          "domains": [
+            "replay",
+            "observability",
+            "memory"
+          ],
+          "enforcement": "read-replay-scope",
+          "riskWeight": 0.16,
+          "explanation": "Controls replay package visibility, reconstruction access, and replay lineage authorization."
+        },
+        {
+          "id": "audit-compliance",
+          "category": "compliance",
+          "title": "Audit compliance",
+          "version": "2026.05.15",
+          "domains": [
+            "enterprise-workflow",
+            "observability",
+            "audit"
+          ],
+          "enforcement": "audit-lineage",
+          "riskWeight": 0.13,
+          "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+        }
+      ],
+      "decisions": [
+        {
+          "order": 1,
+          "policyId": "workflow-authorization",
+          "title": "Workflow authorization",
+          "category": "orchestration",
+          "version": "2026.05.15",
+          "enforcement": "approval-checkpoint",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.26,
+          "confidenceBefore": 0.84,
+          "confidenceAfter": 0.833,
+          "explanation": "Validates that the tenant and session can execute the requested orchestration scope."
+        },
+        {
+          "order": 2,
+          "policyId": "orchestration-restrictions",
+          "title": "Orchestration restrictions",
+          "category": "orchestration",
+          "version": "2026.05.15",
+          "enforcement": "runtime-restriction",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.3,
+          "confidenceBefore": 0.825,
+          "confidenceAfter": 0.826,
+          "explanation": "Applies domain and lifecycle restrictions before runtime execution proceeds."
+        },
+        {
+          "order": 3,
+          "policyId": "tenant-isolation",
+          "title": "Tenant isolation",
+          "category": "tenant",
+          "version": "2026.05.15",
+          "enforcement": "tenant-boundary",
+          "status": "authorized",
+          "approvalRequired": false,
+          "escalation": false,
+          "risk": 0.28,
+          "confidenceBefore": 0.81,
+          "confidenceAfter": 0.83,
+          "explanation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+        },
+        {
+          "order": 4,
+          "policyId": "tenant-orchestration-limits",
+          "title": "Tenant orchestration limits",
+          "category": "tenant",
+          "version": "2026.05.15",
+          "enforcement": "quota-boundary",
+          "status": "authorized",
+          "approvalRequired": false,
+          "escalation": false,
+          "risk": 0.2,
+          "confidenceBefore": 0.795,
+          "confidenceAfter": 0.844,
+          "explanation": "Checks demo, developer, professional, and enterprise orchestration limits."
+        },
+        {
+          "order": 5,
+          "policyId": "drone-airspace-governance",
+          "title": "Drone airspace governance",
+          "category": "domain",
+          "version": "2026.05.15",
+          "enforcement": "airspace-policy",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.52,
+          "confidenceBefore": 0.78,
+          "confidenceAfter": 0.786,
+          "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+        },
+        {
+          "order": 6,
+          "policyId": "emergency-escalation",
+          "title": "Emergency escalation",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "emergency-propagation",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.58,
+          "confidenceBefore": 0.765,
+          "confidenceAfter": 0.776,
+          "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+        },
+        {
+          "order": 7,
+          "policyId": "restricted-zone-governance",
+          "title": "Restricted-zone governance",
+          "category": "safety",
+          "version": "2026.05.15",
+          "enforcement": "restricted-zone-check",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.54,
+          "confidenceBefore": 0.75,
+          "confidenceAfter": 0.783,
+          "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+        },
+        {
+          "order": 8,
+          "policyId": "standards-aware-enforcement",
+          "title": "Standards-aware enforcement",
+          "category": "compliance",
+          "version": "2026.05.15",
+          "enforcement": "standards-readiness-check",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.28,
+          "confidenceBefore": 0.735,
+          "confidenceAfter": 0.83,
+          "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+        },
+        {
+          "order": 9,
+          "policyId": "replay-authorization",
+          "title": "Replay authorization",
+          "category": "replay",
+          "version": "2026.05.15",
+          "enforcement": "read-replay-scope",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.24,
+          "confidenceBefore": 0.72,
+          "confidenceAfter": 0.837,
+          "explanation": "Controls replay package visibility, reconstruction access, and replay lineage authorization."
+        },
+        {
+          "order": 10,
+          "policyId": "audit-compliance",
+          "title": "Audit compliance",
+          "category": "compliance",
+          "version": "2026.05.15",
+          "enforcement": "audit-lineage",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.21,
+          "confidenceBefore": 0.705,
+          "confidenceAfter": 0.842,
+          "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+        }
+      ],
+      "replayAuthorization": [
+        {
+          "policyId": "replay-authorization",
+          "status": "approved-with-checkpoint"
+        }
+      ],
+      "tenantGovernance": [
+        {
+          "order": 3,
+          "policyId": "tenant-isolation",
+          "title": "Tenant isolation",
+          "category": "tenant",
+          "version": "2026.05.15",
+          "enforcement": "tenant-boundary",
+          "status": "authorized",
+          "approvalRequired": false,
+          "escalation": false,
+          "risk": 0.28,
+          "confidenceBefore": 0.81,
+          "confidenceAfter": 0.83,
+          "explanation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+        },
+        {
+          "order": 4,
+          "policyId": "tenant-orchestration-limits",
+          "title": "Tenant orchestration limits",
+          "category": "tenant",
+          "version": "2026.05.15",
+          "enforcement": "quota-boundary",
+          "status": "authorized",
+          "approvalRequired": false,
+          "escalation": false,
+          "risk": 0.2,
+          "confidenceBefore": 0.795,
+          "confidenceAfter": 0.844,
+          "explanation": "Checks demo, developer, professional, and enterprise orchestration limits."
+        }
+      ],
+      "complianceCoordination": [
+        {
+          "order": 5,
+          "policyId": "drone-airspace-governance",
+          "title": "Drone airspace governance",
+          "category": "domain",
+          "version": "2026.05.15",
+          "enforcement": "airspace-policy",
+          "status": "restricted-to-sandbox",
+          "approvalRequired": true,
+          "escalation": true,
+          "risk": 0.52,
+          "confidenceBefore": 0.78,
+          "confidenceAfter": 0.786,
+          "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+        },
+        {
+          "order": 8,
+          "policyId": "standards-aware-enforcement",
+          "title": "Standards-aware enforcement",
+          "category": "compliance",
+          "version": "2026.05.15",
+          "enforcement": "standards-readiness-check",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.28,
+          "confidenceBefore": 0.735,
+          "confidenceAfter": 0.83,
+          "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+        },
+        {
+          "order": 10,
+          "policyId": "audit-compliance",
+          "title": "Audit compliance",
+          "category": "compliance",
+          "version": "2026.05.15",
+          "enforcement": "audit-lineage",
+          "status": "approved-with-checkpoint",
+          "approvalRequired": true,
+          "escalation": false,
+          "risk": 0.21,
+          "confidenceBefore": 0.705,
+          "confidenceAfter": 0.842,
+          "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+        }
+      ],
+      "riskAnalysis": {
+        "score": 0.341,
+        "level": "controlled",
+        "drivers": [
+          "orchestration-restrictions",
+          "drone-airspace-governance",
+          "emergency-escalation",
+          "restricted-zone-governance"
+        ]
+      },
+      "explainability": [
+        "Workflow authorization: Validates that the tenant and session can execute the requested orchestration scope.",
+        "Orchestration restrictions: Applies domain and lifecycle restrictions before runtime execution proceeds.",
+        "Tenant isolation: Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary.",
+        "Tenant orchestration limits: Checks demo, developer, professional, and enterprise orchestration limits.",
+        "Drone airspace governance: Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness.",
+        "Emergency escalation: Routes safety override, operational halt, or emergency escalation through governance checkpoints.",
+        "Restricted-zone governance: Blocks or escalates execution when restricted zones or protected operating envelopes are detected.",
+        "Standards-aware enforcement: Coordinates regulatory and interoperability readiness without claiming formal certification.",
+        "Replay authorization: Controls replay package visibility, reconstruction access, and replay lineage authorization.",
+        "Audit compliance: Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+      ],
+      "policyVersioning": [
+        {
+          "policyId": "workflow-authorization",
+          "version": "2026.05.15",
+          "replayCompatible": true
+        },
+        {
+          "policyId": "orchestration-restrictions",
+          "version": "2026.05.15",
+          "replayCompatible": true
+        },
+        {
+          "policyId": "tenant-isolation",
+          "version": "2026.05.15",
+          "replayCompatible": true
+        },
+        {
+          "policyId": "tenant-orchestration-limits",
+          "version": "2026.05.15",
+          "replayCompatible": true
+        },
+        {
+          "policyId": "drone-airspace-governance",
+          "version": "2026.05.15",
+          "replayCompatible": true
+        },
+        {
+          "policyId": "emergency-escalation",
+          "version": "2026.05.15",
+          "replayCompatible": true
+        },
+        {
+          "policyId": "restricted-zone-governance",
+          "version": "2026.05.15",
+          "replayCompatible": true
+        },
+        {
+          "policyId": "standards-aware-enforcement",
+          "version": "2026.05.15",
+          "replayCompatible": true
+        },
+        {
+          "policyId": "replay-authorization",
+          "version": "2026.05.15",
+          "replayCompatible": true
+        },
+        {
+          "policyId": "audit-compliance",
+          "version": "2026.05.15",
+          "replayCompatible": true
+        }
+      ],
+      "edgeGovernanceReady": false,
+      "crossDomainGovernance": [
+        "enterprise-workflow",
+        "robotics",
+        "drone",
+        "digital-twin",
+        "industrial",
+        "uav",
+        "swarm",
+        "healthcare",
+        "airport",
+        "standards",
+        "replay",
+        "observability",
+        "memory",
+        "audit"
+      ]
+    },
+    "timestamp": "2026-05-15T13:38:07.310Z"
+  },
+  "runtime": {
+    "phase": "PHASE-6E-GOVERNANCE-FABRIC",
+    "objective": "Validate governed cognitive orchestration runtime.",
+    "policies": [
+      {
+        "id": "workflow-authorization",
+        "category": "orchestration",
+        "title": "Workflow authorization",
+        "version": "2026.05.15",
+        "domains": [
+          "enterprise-workflow",
+          "robotics",
+          "drone",
+          "digital-twin"
+        ],
+        "enforcement": "approval-checkpoint",
+        "riskWeight": 0.18,
+        "explanation": "Validates that the tenant and session can execute the requested orchestration scope."
+      },
+      {
+        "id": "orchestration-restrictions",
+        "category": "orchestration",
+        "title": "Orchestration restrictions",
+        "version": "2026.05.15",
+        "domains": [
+          "enterprise-workflow",
+          "robotics",
+          "industrial"
+        ],
+        "enforcement": "runtime-restriction",
+        "riskWeight": 0.22,
+        "explanation": "Applies domain and lifecycle restrictions before runtime execution proceeds."
+      },
+      {
+        "id": "tenant-isolation",
+        "category": "tenant",
+        "title": "Tenant isolation",
+        "version": "2026.05.15",
+        "domains": [
+          "all"
+        ],
+        "enforcement": "tenant-boundary",
+        "riskWeight": 0.2,
+        "explanation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+      },
+      {
+        "id": "tenant-orchestration-limits",
+        "category": "tenant",
+        "title": "Tenant orchestration limits",
+        "version": "2026.05.15",
+        "domains": [
+          "all"
+        ],
+        "enforcement": "quota-boundary",
+        "riskWeight": 0.12,
+        "explanation": "Checks demo, developer, professional, and enterprise orchestration limits."
+      },
+      {
+        "id": "drone-airspace-governance",
+        "category": "domain",
+        "title": "Drone airspace governance",
+        "version": "2026.05.15",
+        "domains": [
+          "drone",
+          "uav",
+          "swarm"
+        ],
+        "enforcement": "airspace-policy",
+        "riskWeight": 0.32,
+        "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+      },
+      {
+        "id": "emergency-escalation",
+        "category": "safety",
+        "title": "Emergency escalation",
+        "version": "2026.05.15",
+        "domains": [
+          "robotics",
+          "drone",
+          "industrial",
+          "healthcare"
+        ],
+        "enforcement": "emergency-propagation",
+        "riskWeight": 0.38,
+        "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+      },
+      {
+        "id": "restricted-zone-governance",
+        "category": "safety",
+        "title": "Restricted-zone governance",
+        "version": "2026.05.15",
+        "domains": [
+          "drone",
+          "airport",
+          "robotics",
+          "industrial"
+        ],
+        "enforcement": "restricted-zone-check",
+        "riskWeight": 0.34,
+        "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+      },
+      {
+        "id": "standards-aware-enforcement",
+        "category": "compliance",
+        "title": "Standards-aware enforcement",
+        "version": "2026.05.15",
+        "domains": [
+          "drone",
+          "robotics",
+          "industrial",
+          "standards"
+        ],
+        "enforcement": "standards-readiness-check",
+        "riskWeight": 0.2,
+        "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+      },
+      {
+        "id": "replay-authorization",
+        "category": "replay",
+        "title": "Replay authorization",
+        "version": "2026.05.15",
+        "domains": [
+          "replay",
+          "observability",
+          "memory"
+        ],
+        "enforcement": "read-replay-scope",
+        "riskWeight": 0.16,
+        "explanation": "Controls replay package visibility, reconstruction access, and replay lineage authorization."
+      },
+      {
+        "id": "audit-compliance",
+        "category": "compliance",
+        "title": "Audit compliance",
+        "version": "2026.05.15",
+        "domains": [
+          "enterprise-workflow",
+          "observability",
+          "audit"
+        ],
+        "enforcement": "audit-lineage",
+        "riskWeight": 0.13,
+        "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+      }
+    ],
+    "decisions": [
+      {
+        "order": 1,
+        "policyId": "workflow-authorization",
+        "title": "Workflow authorization",
+        "category": "orchestration",
+        "version": "2026.05.15",
+        "enforcement": "approval-checkpoint",
+        "status": "approved-with-checkpoint",
+        "approvalRequired": true,
+        "escalation": false,
+        "risk": 0.26,
+        "confidenceBefore": 0.84,
+        "confidenceAfter": 0.833,
+        "explanation": "Validates that the tenant and session can execute the requested orchestration scope."
+      },
+      {
+        "order": 2,
+        "policyId": "orchestration-restrictions",
+        "title": "Orchestration restrictions",
+        "category": "orchestration",
+        "version": "2026.05.15",
+        "enforcement": "runtime-restriction",
+        "status": "approved-with-checkpoint",
+        "approvalRequired": true,
+        "escalation": false,
+        "risk": 0.3,
+        "confidenceBefore": 0.825,
+        "confidenceAfter": 0.826,
+        "explanation": "Applies domain and lifecycle restrictions before runtime execution proceeds."
+      },
+      {
+        "order": 3,
+        "policyId": "tenant-isolation",
+        "title": "Tenant isolation",
+        "category": "tenant",
+        "version": "2026.05.15",
+        "enforcement": "tenant-boundary",
+        "status": "authorized",
+        "approvalRequired": false,
+        "escalation": false,
+        "risk": 0.28,
+        "confidenceBefore": 0.81,
+        "confidenceAfter": 0.83,
+        "explanation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+      },
+      {
+        "order": 4,
+        "policyId": "tenant-orchestration-limits",
+        "title": "Tenant orchestration limits",
+        "category": "tenant",
+        "version": "2026.05.15",
+        "enforcement": "quota-boundary",
+        "status": "authorized",
+        "approvalRequired": false,
+        "escalation": false,
+        "risk": 0.2,
+        "confidenceBefore": 0.795,
+        "confidenceAfter": 0.844,
+        "explanation": "Checks demo, developer, professional, and enterprise orchestration limits."
+      },
+      {
+        "order": 5,
+        "policyId": "drone-airspace-governance",
+        "title": "Drone airspace governance",
+        "category": "domain",
+        "version": "2026.05.15",
+        "enforcement": "airspace-policy",
+        "status": "restricted-to-sandbox",
+        "approvalRequired": true,
+        "escalation": true,
+        "risk": 0.52,
+        "confidenceBefore": 0.78,
+        "confidenceAfter": 0.786,
+        "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+      },
+      {
+        "order": 6,
+        "policyId": "emergency-escalation",
+        "title": "Emergency escalation",
+        "category": "safety",
+        "version": "2026.05.15",
+        "enforcement": "emergency-propagation",
+        "status": "restricted-to-sandbox",
+        "approvalRequired": true,
+        "escalation": true,
+        "risk": 0.58,
+        "confidenceBefore": 0.765,
+        "confidenceAfter": 0.776,
+        "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+      },
+      {
+        "order": 7,
+        "policyId": "restricted-zone-governance",
+        "title": "Restricted-zone governance",
+        "category": "safety",
+        "version": "2026.05.15",
+        "enforcement": "restricted-zone-check",
+        "status": "restricted-to-sandbox",
+        "approvalRequired": true,
+        "escalation": true,
+        "risk": 0.54,
+        "confidenceBefore": 0.75,
+        "confidenceAfter": 0.783,
+        "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+      },
+      {
+        "order": 8,
+        "policyId": "standards-aware-enforcement",
+        "title": "Standards-aware enforcement",
+        "category": "compliance",
+        "version": "2026.05.15",
+        "enforcement": "standards-readiness-check",
+        "status": "approved-with-checkpoint",
+        "approvalRequired": true,
+        "escalation": false,
+        "risk": 0.28,
+        "confidenceBefore": 0.735,
+        "confidenceAfter": 0.83,
+        "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+      },
+      {
+        "order": 9,
+        "policyId": "replay-authorization",
+        "title": "Replay authorization",
+        "category": "replay",
+        "version": "2026.05.15",
+        "enforcement": "read-replay-scope",
+        "status": "approved-with-checkpoint",
+        "approvalRequired": true,
+        "escalation": false,
+        "risk": 0.24,
+        "confidenceBefore": 0.72,
+        "confidenceAfter": 0.837,
+        "explanation": "Controls replay package visibility, reconstruction access, and replay lineage authorization."
+      },
+      {
+        "order": 10,
+        "policyId": "audit-compliance",
+        "title": "Audit compliance",
+        "category": "compliance",
+        "version": "2026.05.15",
+        "enforcement": "audit-lineage",
+        "status": "approved-with-checkpoint",
+        "approvalRequired": true,
+        "escalation": false,
+        "risk": 0.21,
+        "confidenceBefore": 0.705,
+        "confidenceAfter": 0.842,
+        "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+      }
+    ],
+    "replayAuthorization": [
+      {
+        "policyId": "replay-authorization",
+        "status": "approved-with-checkpoint"
+      }
+    ],
+    "tenantGovernance": [
+      {
+        "order": 3,
+        "policyId": "tenant-isolation",
+        "title": "Tenant isolation",
+        "category": "tenant",
+        "version": "2026.05.15",
+        "enforcement": "tenant-boundary",
+        "status": "authorized",
+        "approvalRequired": false,
+        "escalation": false,
+        "risk": 0.28,
+        "confidenceBefore": 0.81,
+        "confidenceAfter": 0.83,
+        "explanation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+      },
+      {
+        "order": 4,
+        "policyId": "tenant-orchestration-limits",
+        "title": "Tenant orchestration limits",
+        "category": "tenant",
+        "version": "2026.05.15",
+        "enforcement": "quota-boundary",
+        "status": "authorized",
+        "approvalRequired": false,
+        "escalation": false,
+        "risk": 0.2,
+        "confidenceBefore": 0.795,
+        "confidenceAfter": 0.844,
+        "explanation": "Checks demo, developer, professional, and enterprise orchestration limits."
+      }
+    ],
+    "complianceCoordination": [
+      {
+        "order": 5,
+        "policyId": "drone-airspace-governance",
+        "title": "Drone airspace governance",
+        "category": "domain",
+        "version": "2026.05.15",
+        "enforcement": "airspace-policy",
+        "status": "restricted-to-sandbox",
+        "approvalRequired": true,
+        "escalation": true,
+        "risk": 0.52,
+        "confidenceBefore": 0.78,
+        "confidenceAfter": 0.786,
+        "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+      },
+      {
+        "order": 8,
+        "policyId": "standards-aware-enforcement",
+        "title": "Standards-aware enforcement",
+        "category": "compliance",
+        "version": "2026.05.15",
+        "enforcement": "standards-readiness-check",
+        "status": "approved-with-checkpoint",
+        "approvalRequired": true,
+        "escalation": false,
+        "risk": 0.28,
+        "confidenceBefore": 0.735,
+        "confidenceAfter": 0.83,
+        "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+      },
+      {
+        "order": 10,
+        "policyId": "audit-compliance",
+        "title": "Audit compliance",
+        "category": "compliance",
+        "version": "2026.05.15",
+        "enforcement": "audit-lineage",
+        "status": "approved-with-checkpoint",
+        "approvalRequired": true,
+        "escalation": false,
+        "risk": 0.21,
+        "confidenceBefore": 0.705,
+        "confidenceAfter": 0.842,
+        "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+      }
+    ],
+    "riskAnalysis": {
+      "score": 0.341,
+      "level": "controlled",
+      "drivers": [
+        "orchestration-restrictions",
+        "drone-airspace-governance",
+        "emergency-escalation",
+        "restricted-zone-governance"
+      ]
+    },
+    "explainability": [
+      "Workflow authorization: Validates that the tenant and session can execute the requested orchestration scope.",
+      "Orchestration restrictions: Applies domain and lifecycle restrictions before runtime execution proceeds.",
+      "Tenant isolation: Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary.",
+      "Tenant orchestration limits: Checks demo, developer, professional, and enterprise orchestration limits.",
+      "Drone airspace governance: Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness.",
+      "Emergency escalation: Routes safety override, operational halt, or emergency escalation through governance checkpoints.",
+      "Restricted-zone governance: Blocks or escalates execution when restricted zones or protected operating envelopes are detected.",
+      "Standards-aware enforcement: Coordinates regulatory and interoperability readiness without claiming formal certification.",
+      "Replay authorization: Controls replay package visibility, reconstruction access, and replay lineage authorization.",
+      "Audit compliance: Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+    ],
+    "policyVersioning": [
+      {
+        "policyId": "workflow-authorization",
+        "version": "2026.05.15",
+        "replayCompatible": true
+      },
+      {
+        "policyId": "orchestration-restrictions",
+        "version": "2026.05.15",
+        "replayCompatible": true
+      },
+      {
+        "policyId": "tenant-isolation",
+        "version": "2026.05.15",
+        "replayCompatible": true
+      },
+      {
+        "policyId": "tenant-orchestration-limits",
+        "version": "2026.05.15",
+        "replayCompatible": true
+      },
+      {
+        "policyId": "drone-airspace-governance",
+        "version": "2026.05.15",
+        "replayCompatible": true
+      },
+      {
+        "policyId": "emergency-escalation",
+        "version": "2026.05.15",
+        "replayCompatible": true
+      },
+      {
+        "policyId": "restricted-zone-governance",
+        "version": "2026.05.15",
+        "replayCompatible": true
+      },
+      {
+        "policyId": "standards-aware-enforcement",
+        "version": "2026.05.15",
+        "replayCompatible": true
+      },
+      {
+        "policyId": "replay-authorization",
+        "version": "2026.05.15",
+        "replayCompatible": true
+      },
+      {
+        "policyId": "audit-compliance",
+        "version": "2026.05.15",
+        "replayCompatible": true
+      }
+    ],
+    "edgeGovernanceReady": false,
+    "crossDomainGovernance": [
+      "enterprise-workflow",
+      "robotics",
+      "drone",
+      "digital-twin",
+      "industrial",
+      "uav",
+      "swarm",
+      "healthcare",
+      "airport",
+      "standards",
+      "replay",
+      "observability",
+      "memory",
+      "audit"
+    ]
+  },
+  "decisions": [
+    {
+      "order": 1,
+      "policyId": "workflow-authorization",
+      "title": "Workflow authorization",
+      "category": "orchestration",
+      "version": "2026.05.15",
+      "enforcement": "approval-checkpoint",
+      "status": "approved-with-checkpoint",
+      "approvalRequired": true,
+      "escalation": false,
+      "risk": 0.26,
+      "confidenceBefore": 0.84,
+      "confidenceAfter": 0.833,
+      "explanation": "Validates that the tenant and session can execute the requested orchestration scope."
+    },
+    {
+      "order": 2,
+      "policyId": "orchestration-restrictions",
+      "title": "Orchestration restrictions",
+      "category": "orchestration",
+      "version": "2026.05.15",
+      "enforcement": "runtime-restriction",
+      "status": "approved-with-checkpoint",
+      "approvalRequired": true,
+      "escalation": false,
+      "risk": 0.3,
+      "confidenceBefore": 0.825,
+      "confidenceAfter": 0.826,
+      "explanation": "Applies domain and lifecycle restrictions before runtime execution proceeds."
+    },
+    {
+      "order": 3,
+      "policyId": "tenant-isolation",
+      "title": "Tenant isolation",
+      "category": "tenant",
+      "version": "2026.05.15",
+      "enforcement": "tenant-boundary",
+      "status": "authorized",
+      "approvalRequired": false,
+      "escalation": false,
+      "risk": 0.28,
+      "confidenceBefore": 0.81,
+      "confidenceAfter": 0.83,
+      "explanation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+    },
+    {
+      "order": 4,
+      "policyId": "tenant-orchestration-limits",
+      "title": "Tenant orchestration limits",
+      "category": "tenant",
+      "version": "2026.05.15",
+      "enforcement": "quota-boundary",
+      "status": "authorized",
+      "approvalRequired": false,
+      "escalation": false,
+      "risk": 0.2,
+      "confidenceBefore": 0.795,
+      "confidenceAfter": 0.844,
+      "explanation": "Checks demo, developer, professional, and enterprise orchestration limits."
+    },
+    {
+      "order": 5,
+      "policyId": "drone-airspace-governance",
+      "title": "Drone airspace governance",
+      "category": "domain",
+      "version": "2026.05.15",
+      "enforcement": "airspace-policy",
+      "status": "restricted-to-sandbox",
+      "approvalRequired": true,
+      "escalation": true,
+      "risk": 0.52,
+      "confidenceBefore": 0.78,
+      "confidenceAfter": 0.786,
+      "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+    },
+    {
+      "order": 6,
+      "policyId": "emergency-escalation",
+      "title": "Emergency escalation",
+      "category": "safety",
+      "version": "2026.05.15",
+      "enforcement": "emergency-propagation",
+      "status": "restricted-to-sandbox",
+      "approvalRequired": true,
+      "escalation": true,
+      "risk": 0.58,
+      "confidenceBefore": 0.765,
+      "confidenceAfter": 0.776,
+      "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+    },
+    {
+      "order": 7,
+      "policyId": "restricted-zone-governance",
+      "title": "Restricted-zone governance",
+      "category": "safety",
+      "version": "2026.05.15",
+      "enforcement": "restricted-zone-check",
+      "status": "restricted-to-sandbox",
+      "approvalRequired": true,
+      "escalation": true,
+      "risk": 0.54,
+      "confidenceBefore": 0.75,
+      "confidenceAfter": 0.783,
+      "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+    },
+    {
+      "order": 8,
+      "policyId": "standards-aware-enforcement",
+      "title": "Standards-aware enforcement",
+      "category": "compliance",
+      "version": "2026.05.15",
+      "enforcement": "standards-readiness-check",
+      "status": "approved-with-checkpoint",
+      "approvalRequired": true,
+      "escalation": false,
+      "risk": 0.28,
+      "confidenceBefore": 0.735,
+      "confidenceAfter": 0.83,
+      "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+    },
+    {
+      "order": 9,
+      "policyId": "replay-authorization",
+      "title": "Replay authorization",
+      "category": "replay",
+      "version": "2026.05.15",
+      "enforcement": "read-replay-scope",
+      "status": "approved-with-checkpoint",
+      "approvalRequired": true,
+      "escalation": false,
+      "risk": 0.24,
+      "confidenceBefore": 0.72,
+      "confidenceAfter": 0.837,
+      "explanation": "Controls replay package visibility, reconstruction access, and replay lineage authorization."
+    },
+    {
+      "order": 10,
+      "policyId": "audit-compliance",
+      "title": "Audit compliance",
+      "category": "compliance",
+      "version": "2026.05.15",
+      "enforcement": "audit-lineage",
+      "status": "approved-with-checkpoint",
+      "approvalRequired": true,
+      "escalation": false,
+      "risk": 0.21,
+      "confidenceBefore": 0.705,
+      "confidenceAfter": 0.842,
+      "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+    }
+  ],
+  "replay": {
+    "replayId": "gov-replay-1778852287310",
+    "policyReplay": [
+      {
+        "policyId": "workflow-authorization",
+        "status": "approved-with-checkpoint",
+        "version": "2026.05.15",
+        "explanation": "Validates that the tenant and session can execute the requested orchestration scope."
+      },
+      {
+        "policyId": "orchestration-restrictions",
+        "status": "approved-with-checkpoint",
+        "version": "2026.05.15",
+        "explanation": "Applies domain and lifecycle restrictions before runtime execution proceeds."
+      },
+      {
+        "policyId": "tenant-isolation",
+        "status": "authorized",
+        "version": "2026.05.15",
+        "explanation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+      },
+      {
+        "policyId": "tenant-orchestration-limits",
+        "status": "authorized",
+        "version": "2026.05.15",
+        "explanation": "Checks demo, developer, professional, and enterprise orchestration limits."
+      },
+      {
+        "policyId": "drone-airspace-governance",
+        "status": "restricted-to-sandbox",
+        "version": "2026.05.15",
+        "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+      },
+      {
+        "policyId": "emergency-escalation",
+        "status": "restricted-to-sandbox",
+        "version": "2026.05.15",
+        "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+      },
+      {
+        "policyId": "restricted-zone-governance",
+        "status": "restricted-to-sandbox",
+        "version": "2026.05.15",
+        "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+      },
+      {
+        "policyId": "standards-aware-enforcement",
+        "status": "approved-with-checkpoint",
+        "version": "2026.05.15",
+        "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+      },
+      {
+        "policyId": "replay-authorization",
+        "status": "approved-with-checkpoint",
+        "version": "2026.05.15",
+        "explanation": "Controls replay package visibility, reconstruction access, and replay lineage authorization."
+      },
+      {
+        "policyId": "audit-compliance",
+        "status": "approved-with-checkpoint",
+        "version": "2026.05.15",
+        "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+      }
+    ],
+    "authorizationReplay": [
+      {
+        "policyId": "workflow-authorization",
+        "approvalRequired": true,
+        "enforcement": "approval-checkpoint"
+      },
+      {
+        "policyId": "orchestration-restrictions",
+        "approvalRequired": true,
+        "enforcement": "runtime-restriction"
+      },
+      {
+        "policyId": "tenant-isolation",
+        "approvalRequired": false,
+        "enforcement": "tenant-boundary"
+      },
+      {
+        "policyId": "tenant-orchestration-limits",
+        "approvalRequired": false,
+        "enforcement": "quota-boundary"
+      },
+      {
+        "policyId": "drone-airspace-governance",
+        "approvalRequired": true,
+        "enforcement": "airspace-policy"
+      },
+      {
+        "policyId": "emergency-escalation",
+        "approvalRequired": true,
+        "enforcement": "emergency-propagation"
+      },
+      {
+        "policyId": "restricted-zone-governance",
+        "approvalRequired": true,
+        "enforcement": "restricted-zone-check"
+      },
+      {
+        "policyId": "standards-aware-enforcement",
+        "approvalRequired": true,
+        "enforcement": "standards-readiness-check"
+      },
+      {
+        "policyId": "replay-authorization",
+        "approvalRequired": true,
+        "enforcement": "read-replay-scope"
+      },
+      {
+        "policyId": "audit-compliance",
+        "approvalRequired": true,
+        "enforcement": "audit-lineage"
+      }
+    ],
+    "escalationReplay": [
+      {
+        "order": 5,
+        "policyId": "drone-airspace-governance",
+        "title": "Drone airspace governance",
+        "category": "domain",
+        "version": "2026.05.15",
+        "enforcement": "airspace-policy",
+        "status": "restricted-to-sandbox",
+        "approvalRequired": true,
+        "escalation": true,
+        "risk": 0.52,
+        "confidenceBefore": 0.78,
+        "confidenceAfter": 0.786,
+        "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+      },
+      {
+        "order": 6,
+        "policyId": "emergency-escalation",
+        "title": "Emergency escalation",
+        "category": "safety",
+        "version": "2026.05.15",
+        "enforcement": "emergency-propagation",
+        "status": "restricted-to-sandbox",
+        "approvalRequired": true,
+        "escalation": true,
+        "risk": 0.58,
+        "confidenceBefore": 0.765,
+        "confidenceAfter": 0.776,
+        "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+      },
+      {
+        "order": 7,
+        "policyId": "restricted-zone-governance",
+        "title": "Restricted-zone governance",
+        "category": "safety",
+        "version": "2026.05.15",
+        "enforcement": "restricted-zone-check",
+        "status": "restricted-to-sandbox",
+        "approvalRequired": true,
+        "escalation": true,
+        "risk": 0.54,
+        "confidenceBefore": 0.75,
+        "confidenceAfter": 0.783,
+        "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+      }
+    ],
+    "complianceReconstruction": [
+      {
+        "order": 5,
+        "policyId": "drone-airspace-governance",
+        "title": "Drone airspace governance",
+        "category": "domain",
+        "version": "2026.05.15",
+        "enforcement": "airspace-policy",
+        "status": "restricted-to-sandbox",
+        "approvalRequired": true,
+        "escalation": true,
+        "risk": 0.52,
+        "confidenceBefore": 0.78,
+        "confidenceAfter": 0.786,
+        "explanation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+      },
+      {
+        "order": 6,
+        "policyId": "emergency-escalation",
+        "title": "Emergency escalation",
+        "category": "safety",
+        "version": "2026.05.15",
+        "enforcement": "emergency-propagation",
+        "status": "restricted-to-sandbox",
+        "approvalRequired": true,
+        "escalation": true,
+        "risk": 0.58,
+        "confidenceBefore": 0.765,
+        "confidenceAfter": 0.776,
+        "explanation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+      },
+      {
+        "order": 7,
+        "policyId": "restricted-zone-governance",
+        "title": "Restricted-zone governance",
+        "category": "safety",
+        "version": "2026.05.15",
+        "enforcement": "restricted-zone-check",
+        "status": "restricted-to-sandbox",
+        "approvalRequired": true,
+        "escalation": true,
+        "risk": 0.54,
+        "confidenceBefore": 0.75,
+        "confidenceAfter": 0.783,
+        "explanation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+      },
+      {
+        "order": 8,
+        "policyId": "standards-aware-enforcement",
+        "title": "Standards-aware enforcement",
+        "category": "compliance",
+        "version": "2026.05.15",
+        "enforcement": "standards-readiness-check",
+        "status": "approved-with-checkpoint",
+        "approvalRequired": true,
+        "escalation": false,
+        "risk": 0.28,
+        "confidenceBefore": 0.735,
+        "confidenceAfter": 0.83,
+        "explanation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+      },
+      {
+        "order": 10,
+        "policyId": "audit-compliance",
+        "title": "Audit compliance",
+        "category": "compliance",
+        "version": "2026.05.15",
+        "enforcement": "audit-lineage",
+        "status": "approved-with-checkpoint",
+        "approvalRequired": true,
+        "escalation": false,
+        "risk": 0.21,
+        "confidenceBefore": 0.705,
+        "confidenceAfter": 0.842,
+        "explanation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+      }
+    ],
+    "confidenceReplay": [
+      {
+        "policyId": "workflow-authorization",
+        "before": 0.84,
+        "score": 0.833
+      },
+      {
+        "policyId": "orchestration-restrictions",
+        "before": 0.825,
+        "score": 0.826
+      },
+      {
+        "policyId": "tenant-isolation",
+        "before": 0.81,
+        "score": 0.83
+      },
+      {
+        "policyId": "tenant-orchestration-limits",
+        "before": 0.795,
+        "score": 0.844
+      },
+      {
+        "policyId": "drone-airspace-governance",
+        "before": 0.78,
+        "score": 0.786
+      },
+      {
+        "policyId": "emergency-escalation",
+        "before": 0.765,
+        "score": 0.776
+      },
+      {
+        "policyId": "restricted-zone-governance",
+        "before": 0.75,
+        "score": 0.783
+      },
+      {
+        "policyId": "standards-aware-enforcement",
+        "before": 0.735,
+        "score": 0.83
+      },
+      {
+        "policyId": "replay-authorization",
+        "before": 0.72,
+        "score": 0.837
+      },
+      {
+        "policyId": "audit-compliance",
+        "before": 0.705,
+        "score": 0.842
+      }
+    ]
+  },
+  "risk": {
+    "score": 0.341,
+    "level": "controlled",
+    "drivers": [
+      "orchestration-restrictions",
+      "drone-airspace-governance",
+      "emergency-escalation",
+      "restricted-zone-governance"
+    ]
+  },
+  "confidenceEvolution": [
+    {
+      "step": "workflow-authorization",
+      "before": 0.84,
+      "score": 0.833,
+      "interpretation": "Validates that the tenant and session can execute the requested orchestration scope."
+    },
+    {
+      "step": "orchestration-restrictions",
+      "before": 0.825,
+      "score": 0.826,
+      "interpretation": "Applies domain and lifecycle restrictions before runtime execution proceeds."
+    },
+    {
+      "step": "tenant-isolation",
+      "before": 0.81,
+      "score": 0.83,
+      "interpretation": "Restricts runtime visibility, replay, metrics, billing, and governance data to the tenant boundary."
+    },
+    {
+      "step": "tenant-orchestration-limits",
+      "before": 0.795,
+      "score": 0.844,
+      "interpretation": "Checks demo, developer, professional, and enterprise orchestration limits."
+    },
+    {
+      "step": "drone-airspace-governance",
+      "before": 0.78,
+      "score": 0.786,
+      "interpretation": "Applies UTM, Remote ID, DGCA, MAVLink, geofence, and mission governance readiness."
+    },
+    {
+      "step": "emergency-escalation",
+      "before": 0.765,
+      "score": 0.776,
+      "interpretation": "Routes safety override, operational halt, or emergency escalation through governance checkpoints."
+    },
+    {
+      "step": "restricted-zone-governance",
+      "before": 0.75,
+      "score": 0.783,
+      "interpretation": "Blocks or escalates execution when restricted zones or protected operating envelopes are detected."
+    },
+    {
+      "step": "standards-aware-enforcement",
+      "before": 0.735,
+      "score": 0.83,
+      "interpretation": "Coordinates regulatory and interoperability readiness without claiming formal certification."
+    },
+    {
+      "step": "replay-authorization",
+      "before": 0.72,
+      "score": 0.837,
+      "interpretation": "Controls replay package visibility, reconstruction access, and replay lineage authorization."
+    },
+    {
+      "step": "audit-compliance",
+      "before": 0.705,
+      "score": 0.842,
+      "interpretation": "Ensures policy, replay, escalation, and runtime decisions remain audit reconstructable."
+    }
+  ]
+}

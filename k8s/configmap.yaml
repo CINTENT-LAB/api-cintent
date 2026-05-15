@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cintent-config
+  namespace: cintent
+data:
+  NODE_ENV: production
+  PORT: "3000"
+  CINTENT_API_RATE_LIMIT_PER_MINUTE: "240"
+  CINTENT_SANDBOX_RATE_LIMIT_PER_MINUTE: "120"
+  CINTENT_SSE_HEARTBEAT_MS: "25000"

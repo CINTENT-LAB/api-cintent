@@ -1,0 +1,45 @@
+name: Production Hardening
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node --check server.js
+      - run: npm audit --audit-level=high
+      - run: npm run check:social-links
+      - run: node server.js &
+        env:
+          PORT: 3000
+          JWT_SECRET: ci-production-hardening-secret
+      - run: |
+          for i in {1..30}; do
+            curl -fsS http://localhost:3000/api/health && exit 0
+            sleep 1
+          done
+          exit 1
+      - run: npm run test:production-hardening -- http://localhost:3000
+      - run: npm run test:orchestration-replay -- http://localhost:3000
+      - run: npm run test:enterprise-ux -- http://localhost:3000
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: cintent-api:ci

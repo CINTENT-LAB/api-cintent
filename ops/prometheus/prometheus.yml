@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: cintent-api
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - cintent-api:3000
+          - trace-streamer:3001

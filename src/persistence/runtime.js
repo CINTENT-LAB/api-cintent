@@ -46,6 +46,26 @@ function createPersistenceRuntime({ pool = null, rootDir = process.cwd(), enable
     return event;
   }
 
+  function readLocalLedger() {
+    if (!fs.existsSync(ledgerPath)) return [];
+    return fs.readFileSync(ledgerPath, 'utf8')
+      .split('\n')
+      .filter(Boolean)
+      .map(line => {
+        try { return JSON.parse(line); } catch (_) { return null; }
+      })
+      .filter(Boolean);
+  }
+
+  async function queryRows(sql, params = []) {
+    const result = await dbQuery(sql, params);
+    return result && Array.isArray(result.rows) ? result.rows : null;
+  }
+
+  function unwrapLocalPayload(event) {
+    return event && event.payload && event.payload.payload ? event.payload.payload : event && event.payload;
+  }
+
   async function persistRuntimeEvent({ type, tenantId = 'anonymous', workspaceId = null, sessionId = null, entityId = null, payload = {}, metadata = {} }) {
     const event = {
       id: stableId('event', `${tenantId}:${type}:${entityId || ''}`),
@@ -103,6 +123,39 @@ function createPersistenceRuntime({ pool = null, rootDir = process.cwd(), enable
     return payload;
   }
 
+  async function listWorkspaceStates(tenantId = 'anonymous') {
+    const rows = await queryRows(
+      `select workspace_id, tenant_id, session_id, domain, application_id, selected_apis,
+              selected_workflow, selected_simulation, state, expires_at, updated_at
+         from workspaces
+        where tenant_id = $1
+        order by updated_at desc
+        limit 50`,
+      [tenantId]
+    );
+    if (rows) return rows;
+    const seen = new Set();
+    return readLocalLedger()
+      .filter(event => event.type === 'workspace_state.upsert')
+      .map(event => event.payload)
+      .filter(payload => payload && payload.tenant_id === tenantId)
+      .sort((a, b) => String(b.updated_at || '').localeCompare(String(a.updated_at || '')))
+      .filter(payload => {
+        if (seen.has(payload.workspace_id)) return false;
+        seen.add(payload.workspace_id);
+        return true;
+      })
+      .slice(0, 50);
+  }
+
+  async function getWorkspaceState({ tenantId = 'anonymous', workspaceId = null, sessionId = null } = {}) {
+    const states = await listWorkspaceStates(tenantId);
+    return states.find(state => workspaceId && state.workspace_id === workspaceId)
+      || states.find(state => sessionId && state.session_id === sessionId)
+      || states[0]
+      || null;
+  }
+
   async function persistAskMemory(memory) {
     appendLocal('ask_memory.persist', memory);
     await dbQuery(
@@ -124,6 +177,35 @@ function createPersistenceRuntime({ pool = null, rootDir = process.cwd(), enable
     );
   }
 
+  async function queryAskMemory({ tenantId = 'anonymous', workspaceId = null, sessionId = null, query = '', limit = 8 } = {}) {
+    const like = `%${String(query || '').slice(0, 120)}%`;
+    const rows = await queryRows(
+      `select memory_id, tenant_id, workspace_id, session_id, context_id, domain, query,
+              response_summary, embedding_text, metadata, created_at
+         from ask_cogni_sessions
+        where tenant_id = $1
+          and ($2::text is null or workspace_id = $2)
+          and ($3::text is null or session_id = $3)
+          and ($4::text = '%%' or query ilike $4 or response_summary ilike $4 or embedding_text ilike $4)
+        order by created_at desc
+        limit $5`,
+      [tenantId, workspaceId, sessionId, like, limit]
+    );
+    if (rows) return rows;
+    return readLocalLedger()
+      .filter(event => event.type === 'ask_memory.persist')
+      .map(event => event.payload)
+      .filter(memory => memory && (memory.tenant_id || memory.tenantId) === tenantId)
+      .filter(memory => !workspaceId || (memory.workspace_id || memory.workspaceId) === workspaceId)
+      .filter(memory => !sessionId || (memory.session_id || memory.sessionId) === sessionId)
+      .map(memory => ({
+        ...memory,
+        semanticScore: tokenScore(`${memory.query || ''} ${memory.response_summary || ''} ${JSON.stringify(memory.metadata || {})}`, query)
+      }))
+      .sort((a, b) => (b.semanticScore || 0) - (a.semanticScore || 0))
+      .slice(0, limit);
+  }
+
   async function persistReplayEvent(event) {
     appendLocal('replay_event.persist', event);
     await dbQuery(
@@ -143,6 +225,26 @@ function createPersistenceRuntime({ pool = null, rootDir = process.cwd(), enable
     );
   }
 
+  async function listReplayEvents({ tenantId = 'anonymous', replayId = null, limit = 100 } = {}) {
+    const rows = await queryRows(
+      `select replay_event_id, tenant_id, workspace_id, session_id, replay_id, event_type,
+              sequence_no, payload, payload_hash, created_at
+         from replay_events
+        where tenant_id = $1
+          and ($2::text is null or replay_id = $2)
+        order by created_at asc, sequence_no asc
+        limit $3`,
+      [tenantId, replayId, limit]
+    );
+    if (rows) return rows;
+    return readLocalLedger()
+      .filter(event => event.type === 'replay_event.persist')
+      .map(event => event.payload)
+      .filter(event => event && (event.tenant_id || event.tenantId) === tenantId)
+      .filter(event => !replayId || (event.replay_id || event.replayId) === replayId || JSON.stringify(event).includes(replayId))
+      .slice(-limit);
+  }
+
   async function persistTelemetry(event) {
     appendLocal('telemetry.persist', event);
     await dbQuery(
@@ -159,6 +261,94 @@ function createPersistenceRuntime({ pool = null, rootDir = process.cwd(), enable
         event.created_at || event.timestamp || now()
       ]
     );
+  }
+
+  async function listTelemetry({ tenantId = 'anonymous', streamType = null, limit = 100 } = {}) {
+    const rows = await queryRows(
+      `select telemetry_id, tenant_id, workspace_id, stream_type, source, sample, anomaly, created_at
+         from telemetry_streams
+        where tenant_id = $1
+          and ($2::text is null or stream_type = $2)
+        order by created_at desc
+        limit $3`,
+      [tenantId, streamType, limit]
+    );
+    if (rows) return rows;
+    return readLocalLedger()
+      .filter(event => event.type === 'telemetry.persist')
+      .map(event => event.payload)
+      .filter(event => event && (event.tenant || event.tenant_id || event.tenantId) === tenantId)
+      .filter(event => !streamType || (event.domain || event.stream_type || event.streamType) === streamType)
+      .slice(-limit)
+      .reverse();
+  }
+
+  async function persistOrchestrationRun(run) {
+    appendLocal('orchestration_run.persist', run);
+    await dbQuery(
+      `insert into orchestration_runs (orchestration_id, tenant_id, workspace_id, session_id, workflow_id,
+              status, current_stage, confidence, input, state, retry_count, created_at, updated_at)
+       values ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10::jsonb,$11,$12,$13)
+       on conflict (orchestration_id) do update set
+         status=excluded.status,
+         current_stage=excluded.current_stage,
+         confidence=excluded.confidence,
+         state=excluded.state,
+         retry_count=excluded.retry_count,
+         updated_at=excluded.updated_at`,
+      [
+        run.orchestrationId || run.orchestration_id,
+        run.tenant || run.tenant_id || 'anonymous',
+        run.workspaceId || run.workspace_id || null,
+        run.sessionId || run.session_id || null,
+        run.workflowId || run.workflow_id || null,
+        run.status || 'running',
+        run.currentStage || run.current_stage || (run.stages && run.stages[0] && (run.stages[0].id || run.stages[0].step)) || null,
+        Number(run.confidence || run.confidenceScore || 0.9),
+        safeJson(run.input || {}),
+        safeJson(run),
+        Number(run.recovery && run.recovery.retryCount || 0),
+        run.createdAt || now(),
+        run.updatedAt || now()
+      ]
+    );
+  }
+
+  async function getOrchestrationRun({ tenantId = 'anonymous', orchestrationId } = {}) {
+    const rows = await queryRows(
+      `select orchestration_id, tenant_id, workspace_id, session_id, workflow_id, status,
+              current_stage, confidence, input, state, retry_count, created_at, updated_at
+         from orchestration_runs
+        where tenant_id = $1 and orchestration_id = $2
+        limit 1`,
+      [tenantId, orchestrationId]
+    );
+    if (rows && rows[0]) return rows[0].state || rows[0];
+    const local = readLocalLedger()
+      .filter(event => event.type === 'orchestration_run.persist')
+      .map(event => event.payload)
+      .reverse()
+      .find(run => (run.tenant || run.tenant_id) === tenantId && (run.orchestrationId || run.orchestration_id) === orchestrationId);
+    return local || null;
+  }
+
+  async function listRuntimeEvents({ tenantId = 'anonymous', typePrefix = '', limit = 100 } = {}) {
+    const rows = await queryRows(
+      `select event_id, tenant_id, workspace_id, session_id, event_type, entity_id, payload, metadata, created_at
+         from runtime_events
+        where tenant_id = $1
+          and ($2::text = '' or event_type like $2)
+        order by created_at desc
+        limit $3`,
+      [tenantId, `${typePrefix}%`, limit]
+    );
+    if (rows) return rows;
+    return readLocalLedger()
+      .filter(local => !typePrefix || String(local.type || local.payload?.type || '').startsWith(typePrefix))
+      .map(local => local.payload)
+      .filter(event => event && (event.tenantId || event.tenant_id || event.tenant) === tenantId)
+      .slice(-limit)
+      .reverse();
   }
 
   async function persistObject(key, payload) {
@@ -190,12 +380,26 @@ function createPersistenceRuntime({ pool = null, rootDir = process.cwd(), enable
     };
   }
 
+  function tokenScore(text = '', query = '') {
+    const terms = String(query || '').toLowerCase().split(/\W+/).filter(token => token.length > 2);
+    const haystack = String(text || '').toLowerCase();
+    return terms.reduce((sum, term) => sum + (haystack.includes(term) ? 1 : 0), 0);
+  }
+
   return {
     persistRuntimeEvent,
     upsertWorkspaceState,
+    listWorkspaceStates,
+    getWorkspaceState,
     persistAskMemory,
+    queryAskMemory,
     persistReplayEvent,
+    listReplayEvents,
     persistTelemetry,
+    listTelemetry,
+    persistOrchestrationRun,
+    getOrchestrationRun,
+    listRuntimeEvents,
     persistObject,
     status
   };

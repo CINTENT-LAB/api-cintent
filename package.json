@@ -12,7 +12,14 @@
     "test:ask-cogni-state": "node scripts/test_ask_cogni_state_engine.js",
     "test:persistence": "node scripts/test_persistence_runtime.js",
     "test:ask-cogni-runtime": "node scripts/test_ask_cogni_runtime.js",
-    "test:orchestration-replay": "node scripts/test_orchestration_replay_runtime.js"
+    "test:orchestration-replay": "node scripts/test_orchestration_replay_runtime.js",
+    "test:enterprise-ux": "node scripts/test_enterprise_ux_runtime.js",
+    "test:production-hardening": "node scripts/test_production_hardening.js",
+    "test:load": "node scripts/load_test_runtime.js",
+    "test:final-qa": "node scripts/test_final_qa_acceptance.js",
+    "test:runtime-integration": "node scripts/test_runtime_integration_x2b.js",
+    "test:canonical-governance": "node scripts/test_canonical_data_governance_x2c.js",
+    "test:workspace-lifecycle": "node scripts/test_workspace_lifecycle.js"
   },
   "dependencies": {
     "express": "^4.18.2",

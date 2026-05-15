@@ -1,0 +1,33 @@
+{
+  "status": "persisted",
+  "state": {
+    "workspace_id": "lifecycle-invalid-drone-healthcare",
+    "domain": "drone",
+    "application_id": "chaxu",
+    "selected_workflow": "multilingual telemedicine workflow",
+    "selected_simulation": "travel-orchestration",
+    "selected_apis": [
+      "healthcare-impl-executable-runtime"
+    ],
+    "state": {
+      "context": {
+        "domain": "drone",
+        "applicationId": "chaxu",
+        "selectedWorkflow": "multilingual telemedicine workflow",
+        "selectedSimulation": "travel-orchestration",
+        "selectedApis": [
+          "healthcare-impl-executable-runtime"
+        ]
+      },
+      "chat": [
+        {
+          "role": "Ask COGNI",
+          "text": "stale restored prompt that should not auto-hydrate"
+        }
+      ]
+    },
+    "tenant_id": "demo-tenant",
+    "session_id": "demo-5416940bea21",
+    "updated_at": "2026-05-15T13:38:00.876Z"
+  }
+}

@@ -1,0 +1,203 @@
+{
+  "api_key": "drone-fleet",
+  "api_name": "Drone Fleet Coordination API",
+  "language": "ts",
+  "schemaVersion": "cintent.cognitive.v1.0.0",
+  "canonicalSdkContract": {
+    "schema_version": "cintent.cognitive.v1.0.0",
+    "entity_type": "sdk",
+    "api": {
+      "api_key": "drone-fleet",
+      "domain": "drone",
+      "orchestration_mapping": [
+        "phase-intent",
+        "phase-domain",
+        "gov-validate",
+        "rbt-fleet-coordinate",
+        "rbt-distributed-coordinate",
+        "rbt-edge-coordinate",
+        "edge-runtime",
+        "edge-synchronize",
+        "edge-replay",
+        "edge-governance",
+        "edge-observability"
+      ],
+      "replay_mapping": [],
+      "telemetry_mapping": [],
+      "governance_requirements": []
+    },
+    "language": "ts",
+    "governance": {
+      "schema_version": "cintent.cognitive.v1.0.0",
+      "governance_id": "governance-e9dd228c68a82e7b",
+      "tenant_id": "demo-tenant",
+      "domain": "drone",
+      "operation": "sdk.generated",
+      "profile": "airspace-safety",
+      "inherited_policies": [
+        "schema-version-required",
+        "tenant-boundary-required",
+        "lineage-required",
+        "geo-boundary",
+        "mission-replay",
+        "edge-telemetry"
+      ],
+      "constraints": [
+        {
+          "id": "tenant-scope",
+          "status": "enforced",
+          "reason": "Every runtime operation must have tenant scope."
+        },
+        {
+          "id": "schema-version",
+          "status": "enforced",
+          "reason": "cintent.cognitive.v1.0.0 attached to operation."
+        },
+        {
+          "id": "replay-lineage",
+          "status": "advisory",
+          "reason": "Replay linkage is required when execution emits replayable state."
+        },
+        {
+          "id": "role-scope",
+          "status": "advisory",
+          "reason": "Role guest mapped to canonical RBAC envelope."
+        }
+      ],
+      "decision": "allowed",
+      "evaluated_at": "2026-05-15T13:38:15.896Z"
+    }
+  },
+  "sdk_url": "https://api-cintent.cognivantalabs.com/sdk/drone-fleet/ts",
+  "package_recommendations": [
+    {
+      "id": "python",
+      "name": "Python SDK",
+      "runtime": "cloud/hybrid",
+      "starter": "pip install cintent-sdk",
+      "visible": true
+    },
+    {
+      "id": "typescript",
+      "name": "TypeScript SDK",
+      "runtime": "cloud/web",
+      "starter": "npm install @cintent/sdk",
+      "visible": true
+    },
+    {
+      "id": "rest",
+      "name": "REST SDK",
+      "runtime": "any",
+      "starter": "OpenAPI + signed tenant token",
+      "visible": true
+    },
+    {
+      "id": "edge",
+      "name": "Edge Runtime SDK",
+      "runtime": "edge/distributed",
+      "starter": "cintent-edge runtime package",
+      "visible": true
+    },
+    {
+      "id": "uav",
+      "name": "UAV / Drone SDK",
+      "runtime": "aerial",
+      "starter": "MAVLink/PX4 mission orchestration adapter",
+      "visible": true
+    },
+    {
+      "id": "replay",
+      "name": "Replay Integration SDK",
+      "runtime": "all",
+      "starter": "Replay hooks and explainability envelope",
+      "visible": true
+    },
+    {
+      "id": "governance",
+      "name": "Governance Hooks SDK",
+      "runtime": "all",
+      "starter": "Tenant governance, RBAC, policy propagation hooks",
+      "visible": true
+    },
+    {
+      "id": "swarm",
+      "name": "Swarm Coordination SDK",
+      "runtime": "distributed",
+      "starter": "Distributed consensus and swarm coordination adapter",
+      "visible": true
+    }
+  ],
+  "standards_recommendations": [
+    {
+      "standard": "ROS2",
+      "recommendedSdk": "Robotics SDK",
+      "reason": "ROS2 compatibility appears in selected context or API metadata."
+    },
+    {
+      "standard": "MAVLink",
+      "recommendedSdk": "UAV SDK",
+      "reason": "MAVLink compatibility appears in selected context or API metadata."
+    },
+    {
+      "standard": "PX4",
+      "recommendedSdk": "Drone SDK",
+      "reason": "PX4 compatibility appears in selected context or API metadata."
+    },
+    {
+      "standard": "DGCA",
+      "recommendedSdk": "UAV Governance SDK",
+      "reason": "DGCA compatibility appears in selected context or API metadata."
+    },
+    {
+      "standard": "UTM",
+      "recommendedSdk": "Airspace SDK",
+      "reason": "UTM compatibility appears in selected context or API metadata."
+    }
+  ],
+  "replay_hooks": [
+    {
+      "api_key": "drone-fleet",
+      "hook": "drone-fleet.replay.capture()"
+    }
+  ],
+  "governance_hooks": [
+    {
+      "api_key": "drone-fleet",
+      "hook": "drone-fleet.governance.validate()"
+    }
+  ],
+  "deployment_guidance": {
+    "mode": "edge",
+    "examples": [
+      "edge authentication bootstrap with tenant-scoped API key",
+      "edge orchestration client with replay capture enabled",
+      "edge governance policy propagation and RBAC scope validation",
+      "edge telemetry, confidence evolution, and observability export"
+    ],
+    "runtimeValidation": [
+      "metadata contract validation",
+      "sandbox execution",
+      "replay package validation",
+      "governance checkpoint validation",
+      "observability metrics validation"
+    ]
+  },
+  "orchestration_dependencies": [
+    "phase-intent",
+    "phase-domain",
+    "gov-validate",
+    "rbt-fleet-coordinate",
+    "rbt-distributed-coordinate",
+    "rbt-edge-coordinate",
+    "edge-runtime",
+    "edge-synchronize",
+    "edge-replay",
+    "edge-governance",
+    "edge-observability"
+  ],
+  "simulation_runtime": null,
+  "generated_at": "2026-05-15T13:38:15.896Z",
+  "session_type": "demo",
+  "source": "cognitive-sdk-intelligence-runtime",
+  "note": "Demo Mode SDK output is sample-only."
+}

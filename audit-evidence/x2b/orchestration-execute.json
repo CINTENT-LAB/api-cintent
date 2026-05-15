@@ -1,0 +1,906 @@
+{
+  "source": "unified-cognitive-orchestration-fabric",
+  "schemaVersion": "cintent.cognitive.v1.0.0",
+  "canonicalRun": {
+    "schema_version": "cintent.cognitive.v1.0.0",
+    "entity_type": "orchestration",
+    "entity_id": "studio-exec-1778852335752",
+    "tenant_id": "demo-tenant",
+    "workspace_id": null,
+    "session_id": "demo-338286d90f99",
+    "domain": "enterprise",
+    "application_id": null,
+    "created_at": "2026-05-15T13:38:55.759Z",
+    "updated_at": "2026-05-15T13:38:55.759Z",
+    "orchestration_id": "studio-exec-1778852335752",
+    "workflow_id": "studio-workflow-1778852332898",
+    "replay_id": "studio-replay-studio-workflow-1778852332898-1778852335752",
+    "state": "simulated-success",
+    "stages": [
+      {
+        "stage_id": "api-drone-fleet",
+        "name": "Stage 1",
+        "type": "api-execution",
+        "status": "completed",
+        "sequence": 1,
+        "checkpoint_id": null
+      },
+      {
+        "stage_id": "api-observe-replay-reconstruct",
+        "name": "Stage 2",
+        "type": "api-execution",
+        "status": "completed",
+        "sequence": 2,
+        "checkpoint_id": null
+      },
+      {
+        "stage_id": "governance-policy-validation",
+        "name": "Stage 3",
+        "type": "governance",
+        "status": "completed",
+        "sequence": 3,
+        "checkpoint_id": null
+      },
+      {
+        "stage_id": "replay-capture-node",
+        "name": "Stage 4",
+        "type": "replay",
+        "status": "completed",
+        "sequence": 4,
+        "checkpoint_id": null
+      },
+      {
+        "stage_id": "multi-agent-coordination",
+        "name": "Stage 5",
+        "type": "multi-agent",
+        "status": "completed",
+        "sequence": 5,
+        "checkpoint_id": null
+      },
+      {
+        "stage_id": "simulation-execution-node",
+        "name": "Stage 6",
+        "type": "simulation",
+        "status": "completed",
+        "sequence": 6,
+        "checkpoint_id": null
+      },
+      {
+        "stage_id": "observability-telemetry-node",
+        "name": "Stage 7",
+        "type": "observability",
+        "status": "completed",
+        "sequence": 7,
+        "checkpoint_id": null
+      },
+      {
+        "stage_id": "human-approval-node",
+        "name": "Stage 8",
+        "type": "human-interaction",
+        "status": "completed",
+        "sequence": 8,
+        "checkpoint_id": null
+      }
+    ],
+    "transitions": [
+      {
+        "from": "api-drone-fleet",
+        "to": "api-observe-replay-reconstruct",
+        "status": "completed"
+      },
+      {
+        "from": "api-observe-replay-reconstruct",
+        "to": "governance-policy-validation",
+        "status": "completed"
+      },
+      {
+        "from": "governance-policy-validation",
+        "to": "replay-capture-node",
+        "status": "completed"
+      },
+      {
+        "from": "replay-capture-node",
+        "to": "multi-agent-coordination",
+        "status": "completed"
+      },
+      {
+        "from": "multi-agent-coordination",
+        "to": "simulation-execution-node",
+        "status": "completed"
+      },
+      {
+        "from": "simulation-execution-node",
+        "to": "observability-telemetry-node",
+        "status": "completed"
+      },
+      {
+        "from": "observability-telemetry-node",
+        "to": "human-approval-node",
+        "status": "completed"
+      }
+    ],
+    "confidence_timeline": [
+      {
+        "step": "api-drone-fleet",
+        "before": 0.66,
+        "score": 0.71
+      },
+      {
+        "step": "api-observe-replay-reconstruct",
+        "before": 0.685,
+        "score": 0.736
+      },
+      {
+        "step": "governance-policy-validation",
+        "before": 0.71,
+        "score": 0.762
+      },
+      {
+        "step": "replay-capture-node",
+        "before": 0.735,
+        "score": 0.788
+      },
+      {
+        "step": "multi-agent-coordination",
+        "before": 0.76,
+        "score": 0.814
+      },
+      {
+        "step": "simulation-execution-node",
+        "before": 0.785,
+        "score": 0.84
+      },
+      {
+        "step": "observability-telemetry-node",
+        "before": 0.81,
+        "score": 0.866
+      },
+      {
+        "step": "human-approval-node",
+        "before": 0.835,
+        "score": 0.892
+      }
+    ],
+    "recovery": {
+      "retryCount": 0,
+      "lastCheckpoint": null,
+      "recoveryReady": true
+    },
+    "governance": {
+      "status": "passed",
+      "interventions": [
+        {
+          "node": "api-drone-fleet",
+          "policy": "tenant-governance-policy",
+          "status": "injected"
+        },
+        {
+          "node": "api-observe-replay-reconstruct",
+          "policy": "tenant-governance-policy",
+          "status": "injected"
+        },
+        {
+          "node": "governance-policy-validation",
+          "policy": "tenant-governance-policy",
+          "status": "injected"
+        }
+      ]
+    }
+  },
+  "run": {
+    "orchestrationId": "studio-exec-1778852335752",
+    "workflowId": "studio-workflow-1778852332898",
+    "tenant": "demo-tenant",
+    "sessionId": "demo-338286d90f99",
+    "mode": "sandbox",
+    "source": "api-orchestration-fabric",
+    "status": "simulated-success",
+    "graph": {
+      "nodes": [
+        {
+          "id": "api-drone-fleet",
+          "type": "api-execution",
+          "label": "Drone Fleet Coordination API",
+          "apiKey": "drone-fleet",
+          "domain": "drone",
+          "replay": true,
+          "governance": true,
+          "order": 1,
+          "runtimeState": "initializing"
+        },
+        {
+          "id": "api-observe-replay-reconstruct",
+          "type": "api-execution",
+          "label": "Replay Reconstruction API",
+          "apiKey": "observe-replay-reconstruct",
+          "domain": "robotics",
+          "replay": true,
+          "governance": true,
+          "order": 2,
+          "runtimeState": "orchestrating"
+        },
+        {
+          "id": "governance-policy-validation",
+          "type": "governance",
+          "label": "Policy validation",
+          "purpose": "policy validation, restriction propagation, escalation handling, compliance enforcement",
+          "order": 3,
+          "runtimeState": "governance-check"
+        },
+        {
+          "id": "replay-capture-node",
+          "type": "replay",
+          "label": "Replay capture",
+          "purpose": "replay capture, reconstruction, orchestration replay, explainability checkpoint",
+          "order": 4,
+          "runtimeState": "replay-capturing"
+        },
+        {
+          "id": "multi-agent-coordination",
+          "type": "multi-agent",
+          "label": "Agent coordination",
+          "purpose": "delegation propagation, collaborative reasoning, distributed cognition",
+          "order": 5,
+          "runtimeState": "orchestrating"
+        },
+        {
+          "id": "simulation-execution-node",
+          "type": "simulation",
+          "label": "Simulation execution",
+          "purpose": "simulation execution, digital twin synchronization, predictive simulation, swarm simulation",
+          "order": 6,
+          "runtimeState": "simulation-executing"
+        },
+        {
+          "id": "observability-telemetry-node",
+          "type": "observability",
+          "label": "Telemetry propagation",
+          "purpose": "confidence tracking, anomaly monitoring, orchestration analytics",
+          "order": 7,
+          "runtimeState": "orchestrating"
+        },
+        {
+          "id": "human-approval-node",
+          "type": "human-interaction",
+          "label": "Human approval",
+          "purpose": "human approval, escalation trigger, override, multilingual interaction",
+          "order": 8,
+          "runtimeState": "orchestrating"
+        }
+      ],
+      "edges": [
+        {
+          "from": "api-drone-fleet",
+          "to": "api-observe-replay-reconstruct",
+          "label": "orchestration-flow"
+        },
+        {
+          "from": "api-observe-replay-reconstruct",
+          "to": "governance-policy-validation",
+          "label": "orchestration-flow"
+        },
+        {
+          "from": "governance-policy-validation",
+          "to": "replay-capture-node",
+          "label": "orchestration-flow"
+        },
+        {
+          "from": "replay-capture-node",
+          "to": "multi-agent-coordination",
+          "label": "orchestration-flow"
+        },
+        {
+          "from": "multi-agent-coordination",
+          "to": "simulation-execution-node",
+          "label": "orchestration-flow"
+        },
+        {
+          "from": "simulation-execution-node",
+          "to": "observability-telemetry-node",
+          "label": "orchestration-flow"
+        },
+        {
+          "from": "observability-telemetry-node",
+          "to": "human-approval-node",
+          "label": "orchestration-flow"
+        }
+      ]
+    },
+    "stages": [
+      {
+        "order": 1,
+        "id": "api-drone-fleet",
+        "label": "Drone Fleet Coordination API",
+        "type": "api-execution",
+        "runtimeState": "initializing",
+        "liveState": "completed",
+        "durationMs": 240,
+        "confidenceBefore": 0.66,
+        "confidenceAfter": 0.71
+      },
+      {
+        "order": 2,
+        "id": "api-observe-replay-reconstruct",
+        "label": "Replay Reconstruction API",
+        "type": "api-execution",
+        "runtimeState": "orchestrating",
+        "liveState": "completed",
+        "durationMs": 285,
+        "confidenceBefore": 0.685,
+        "confidenceAfter": 0.736
+      },
+      {
+        "order": 3,
+        "id": "governance-policy-validation",
+        "label": "Policy validation",
+        "type": "governance",
+        "runtimeState": "governance-check",
+        "liveState": "completed",
+        "durationMs": 330,
+        "confidenceBefore": 0.71,
+        "confidenceAfter": 0.762
+      },
+      {
+        "order": 4,
+        "id": "replay-capture-node",
+        "label": "Replay capture",
+        "type": "replay",
+        "runtimeState": "replay-capturing",
+        "liveState": "completed",
+        "durationMs": 375,
+        "confidenceBefore": 0.735,
+        "confidenceAfter": 0.788
+      },
+      {
+        "order": 5,
+        "id": "multi-agent-coordination",
+        "label": "Agent coordination",
+        "type": "multi-agent",
+        "runtimeState": "orchestrating",
+        "liveState": "completed",
+        "durationMs": 420,
+        "confidenceBefore": 0.76,
+        "confidenceAfter": 0.814
+      },
+      {
+        "order": 6,
+        "id": "simulation-execution-node",
+        "label": "Simulation execution",
+        "type": "simulation",
+        "runtimeState": "simulation-executing",
+        "liveState": "completed",
+        "durationMs": 465,
+        "confidenceBefore": 0.785,
+        "confidenceAfter": 0.84
+      },
+      {
+        "order": 7,
+        "id": "observability-telemetry-node",
+        "label": "Telemetry propagation",
+        "type": "observability",
+        "runtimeState": "orchestrating",
+        "liveState": "completed",
+        "durationMs": 510,
+        "confidenceBefore": 0.81,
+        "confidenceAfter": 0.866
+      },
+      {
+        "order": 8,
+        "id": "human-approval-node",
+        "label": "Human approval",
+        "type": "human-interaction",
+        "runtimeState": "orchestrating",
+        "liveState": "completed",
+        "durationMs": 555,
+        "confidenceBefore": 0.835,
+        "confidenceAfter": 0.892
+      }
+    ],
+    "transitions": [
+      {
+        "from": "api-drone-fleet",
+        "to": "api-observe-replay-reconstruct",
+        "status": "completed"
+      },
+      {
+        "from": "api-observe-replay-reconstruct",
+        "to": "governance-policy-validation",
+        "status": "completed"
+      },
+      {
+        "from": "governance-policy-validation",
+        "to": "replay-capture-node",
+        "status": "completed"
+      },
+      {
+        "from": "replay-capture-node",
+        "to": "multi-agent-coordination",
+        "status": "completed"
+      },
+      {
+        "from": "multi-agent-coordination",
+        "to": "simulation-execution-node",
+        "status": "completed"
+      },
+      {
+        "from": "simulation-execution-node",
+        "to": "observability-telemetry-node",
+        "status": "completed"
+      },
+      {
+        "from": "observability-telemetry-node",
+        "to": "human-approval-node",
+        "status": "completed"
+      }
+    ],
+    "checkpoints": [
+      {
+        "checkpointId": "studio-replay-studio-workflow-1778852332898-1778852335752-checkpoint-1",
+        "stage": "api-drone-fleet",
+        "order": 1,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": false,
+        "timestamp": "2026-05-15T13:38:55.752Z"
+      },
+      {
+        "checkpointId": "studio-replay-studio-workflow-1778852332898-1778852335752-checkpoint-2",
+        "stage": "api-observe-replay-reconstruct",
+        "order": 2,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T13:38:55.852Z"
+      },
+      {
+        "checkpointId": "studio-replay-studio-workflow-1778852332898-1778852335752-checkpoint-3",
+        "stage": "governance-policy-validation",
+        "order": 3,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T13:38:55.952Z"
+      },
+      {
+        "checkpointId": "studio-replay-studio-workflow-1778852332898-1778852335752-checkpoint-4",
+        "stage": "replay-capture-node",
+        "order": 4,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T13:38:56.052Z"
+      },
+      {
+        "checkpointId": "studio-replay-studio-workflow-1778852332898-1778852335752-checkpoint-5",
+        "stage": "multi-agent-coordination",
+        "order": 5,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T13:38:56.152Z"
+      },
+      {
+        "checkpointId": "studio-replay-studio-workflow-1778852332898-1778852335752-checkpoint-6",
+        "stage": "simulation-execution-node",
+        "order": 6,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T13:38:56.252Z"
+      },
+      {
+        "checkpointId": "studio-replay-studio-workflow-1778852332898-1778852335752-checkpoint-7",
+        "stage": "observability-telemetry-node",
+        "order": 7,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T13:38:56.352Z"
+      },
+      {
+        "checkpointId": "studio-replay-studio-workflow-1778852332898-1778852335752-checkpoint-8",
+        "stage": "human-approval-node",
+        "order": 8,
+        "status": "completed",
+        "replayReady": true,
+        "rollbackReady": true,
+        "timestamp": "2026-05-15T13:38:56.452Z"
+      }
+    ],
+    "governance": {
+      "status": "passed",
+      "interventions": [
+        {
+          "node": "api-drone-fleet",
+          "policy": "tenant-governance-policy",
+          "status": "injected"
+        },
+        {
+          "node": "api-observe-replay-reconstruct",
+          "policy": "tenant-governance-policy",
+          "status": "injected"
+        },
+        {
+          "node": "governance-policy-validation",
+          "policy": "tenant-governance-policy",
+          "status": "injected"
+        }
+      ]
+    },
+    "replay": {
+      "replayId": "studio-replay-studio-workflow-1778852332898-1778852335752",
+      "workflowReplay": [
+        {
+          "order": 1,
+          "id": "api-drone-fleet",
+          "label": "Drone Fleet Coordination API",
+          "type": "api-execution",
+          "runtimeState": "initializing",
+          "liveState": "completed",
+          "durationMs": 240,
+          "confidenceBefore": 0.66,
+          "confidenceAfter": 0.71
+        },
+        {
+          "order": 2,
+          "id": "api-observe-replay-reconstruct",
+          "label": "Replay Reconstruction API",
+          "type": "api-execution",
+          "runtimeState": "orchestrating",
+          "liveState": "completed",
+          "durationMs": 285,
+          "confidenceBefore": 0.685,
+          "confidenceAfter": 0.736
+        },
+        {
+          "order": 3,
+          "id": "governance-policy-validation",
+          "label": "Policy validation",
+          "type": "governance",
+          "runtimeState": "governance-check",
+          "liveState": "completed",
+          "durationMs": 330,
+          "confidenceBefore": 0.71,
+          "confidenceAfter": 0.762
+        },
+        {
+          "order": 4,
+          "id": "replay-capture-node",
+          "label": "Replay capture",
+          "type": "replay",
+          "runtimeState": "replay-capturing",
+          "liveState": "completed",
+          "durationMs": 375,
+          "confidenceBefore": 0.735,
+          "confidenceAfter": 0.788
+        },
+        {
+          "order": 5,
+          "id": "multi-agent-coordination",
+          "label": "Agent coordination",
+          "type": "multi-agent",
+          "runtimeState": "orchestrating",
+          "liveState": "completed",
+          "durationMs": 420,
+          "confidenceBefore": 0.76,
+          "confidenceAfter": 0.814
+        },
+        {
+          "order": 6,
+          "id": "simulation-execution-node",
+          "label": "Simulation execution",
+          "type": "simulation",
+          "runtimeState": "simulation-executing",
+          "liveState": "completed",
+          "durationMs": 465,
+          "confidenceBefore": 0.785,
+          "confidenceAfter": 0.84
+        },
+        {
+          "order": 7,
+          "id": "observability-telemetry-node",
+          "label": "Telemetry propagation",
+          "type": "observability",
+          "runtimeState": "orchestrating",
+          "liveState": "completed",
+          "durationMs": 510,
+          "confidenceBefore": 0.81,
+          "confidenceAfter": 0.866
+        },
+        {
+          "order": 8,
+          "id": "human-approval-node",
+          "label": "Human approval",
+          "type": "human-interaction",
+          "runtimeState": "orchestrating",
+          "liveState": "completed",
+          "durationMs": 555,
+          "confidenceBefore": 0.835,
+          "confidenceAfter": 0.892
+        }
+      ],
+      "governanceReplay": [
+        {
+          "node": "api-drone-fleet",
+          "policy": "tenant-governance-policy",
+          "status": "injected"
+        },
+        {
+          "node": "api-observe-replay-reconstruct",
+          "policy": "tenant-governance-policy",
+          "status": "injected"
+        },
+        {
+          "node": "governance-policy-validation",
+          "policy": "tenant-governance-policy",
+          "status": "injected"
+        }
+      ],
+      "distributedReplay": [
+        {
+          "node": "api-drone-fleet",
+          "vectorClock": 1,
+          "status": "synchronized"
+        },
+        {
+          "node": "api-observe-replay-reconstruct",
+          "vectorClock": 2,
+          "status": "synchronized"
+        },
+        {
+          "node": "multi-agent-coordination",
+          "vectorClock": 3,
+          "status": "synchronized"
+        },
+        {
+          "node": "simulation-execution-node",
+          "vectorClock": 4,
+          "status": "synchronized"
+        }
+      ]
+    },
+    "confidenceTimeline": [
+      {
+        "step": "api-drone-fleet",
+        "before": 0.66,
+        "score": 0.71
+      },
+      {
+        "step": "api-observe-replay-reconstruct",
+        "before": 0.685,
+        "score": 0.736
+      },
+      {
+        "step": "governance-policy-validation",
+        "before": 0.71,
+        "score": 0.762
+      },
+      {
+        "step": "replay-capture-node",
+        "before": 0.735,
+        "score": 0.788
+      },
+      {
+        "step": "multi-agent-coordination",
+        "before": 0.76,
+        "score": 0.814
+      },
+      {
+        "step": "simulation-execution-node",
+        "before": 0.785,
+        "score": 0.84
+      },
+      {
+        "step": "observability-telemetry-node",
+        "before": 0.81,
+        "score": 0.866
+      },
+      {
+        "step": "human-approval-node",
+        "before": 0.835,
+        "score": 0.892
+      }
+    ],
+    "telemetry": {},
+    "recovery": {
+      "retryCount": 0,
+      "lastCheckpoint": null,
+      "recoveryReady": true
+    },
+    "createdAt": "2026-05-15T13:38:55.752Z",
+    "updatedAt": "2026-05-15T13:38:55.752Z",
+    "integrity": {
+      "algorithm": "sha256",
+      "digest": "df7b5bd2dc89af",
+      "bytes": 6199,
+      "generatedAt": "2026-05-15T13:38:55.752Z"
+    },
+    "domain": "enterprise",
+    "canonical": {
+      "schema_version": "cintent.cognitive.v1.0.0",
+      "entity_type": "orchestration",
+      "entity_id": "studio-exec-1778852335752",
+      "tenant_id": "demo-tenant",
+      "workspace_id": null,
+      "session_id": "demo-338286d90f99",
+      "domain": "enterprise",
+      "application_id": null,
+      "created_at": "2026-05-15T13:38:55.759Z",
+      "updated_at": "2026-05-15T13:38:55.759Z",
+      "orchestration_id": "studio-exec-1778852335752",
+      "workflow_id": "studio-workflow-1778852332898",
+      "replay_id": "studio-replay-studio-workflow-1778852332898-1778852335752",
+      "state": "simulated-success",
+      "stages": [
+        {
+          "stage_id": "api-drone-fleet",
+          "name": "Stage 1",
+          "type": "api-execution",
+          "status": "completed",
+          "sequence": 1,
+          "checkpoint_id": null
+        },
+        {
+          "stage_id": "api-observe-replay-reconstruct",
+          "name": "Stage 2",
+          "type": "api-execution",
+          "status": "completed",
+          "sequence": 2,
+          "checkpoint_id": null
+        },
+        {
+          "stage_id": "governance-policy-validation",
+          "name": "Stage 3",
+          "type": "governance",
+          "status": "completed",
+          "sequence": 3,
+          "checkpoint_id": null
+        },
+        {
+          "stage_id": "replay-capture-node",
+          "name": "Stage 4",
+          "type": "replay",
+          "status": "completed",
+          "sequence": 4,
+          "checkpoint_id": null
+        },
+        {
+          "stage_id": "multi-agent-coordination",
+          "name": "Stage 5",
+          "type": "multi-agent",
+          "status": "completed",
+          "sequence": 5,
+          "checkpoint_id": null
+        },
+        {
+          "stage_id": "simulation-execution-node",
+          "name": "Stage 6",
+          "type": "simulation",
+          "status": "completed",
+          "sequence": 6,
+          "checkpoint_id": null
+        },
+        {
+          "stage_id": "observability-telemetry-node",
+          "name": "Stage 7",
+          "type": "observability",
+          "status": "completed",
+          "sequence": 7,
+          "checkpoint_id": null
+        },
+        {
+          "stage_id": "human-approval-node",
+          "name": "Stage 8",
+          "type": "human-interaction",
+          "status": "completed",
+          "sequence": 8,
+          "checkpoint_id": null
+        }
+      ],
+      "transitions": [
+        {
+          "from": "api-drone-fleet",
+          "to": "api-observe-replay-reconstruct",
+          "status": "completed"
+        },
+        {
+          "from": "api-observe-replay-reconstruct",
+          "to": "governance-policy-validation",
+          "status": "completed"
+        },
+        {
+          "from": "governance-policy-validation",
+          "to": "replay-capture-node",
+          "status": "completed"
+        },
+        {
+          "from": "replay-capture-node",
+          "to": "multi-agent-coordination",
+          "status": "completed"
+        },
+        {
+          "from": "multi-agent-coordination",
+          "to": "simulation-execution-node",
+          "status": "completed"
+        },
+        {
+          "from": "simulation-execution-node",
+          "to": "observability-telemetry-node",
+          "status": "completed"
+        },
+        {
+          "from": "observability-telemetry-node",
+          "to": "human-approval-node",
+          "status": "completed"
+        }
+      ],
+      "confidence_timeline": [
+        {
+          "step": "api-drone-fleet",
+          "before": 0.66,
+          "score": 0.71
+        },
+        {
+          "step": "api-observe-replay-reconstruct",
+          "before": 0.685,
+          "score": 0.736
+        },
+        {
+          "step": "governance-policy-validation",
+          "before": 0.71,
+          "score": 0.762
+        },
+        {
+          "step": "replay-capture-node",
+          "before": 0.735,
+          "score": 0.788
+        },
+        {
+          "step": "multi-agent-coordination",
+          "before": 0.76,
+          "score": 0.814
+        },
+        {
+          "step": "simulation-execution-node",
+          "before": 0.785,
+          "score": 0.84
+        },
+        {
+          "step": "observability-telemetry-node",
+          "before": 0.81,
+          "score": 0.866
+        },
+        {
+          "step": "human-approval-node",
+          "before": 0.835,
+          "score": 0.892
+        }
+      ],
+      "recovery": {
+        "retryCount": 0,
+        "lastCheckpoint": null,
+        "recoveryReady": true
+      },
+      "governance": {
+        "status": "passed",
+        "interventions": [
+          {
+            "node": "api-drone-fleet",
+            "policy": "tenant-governance-policy",
+            "status": "injected"
+          },
+          {
+            "node": "api-observe-replay-reconstruct",
+            "policy": "tenant-governance-policy",
+            "status": "injected"
+          },
+          {
+            "node": "governance-policy-validation",
+            "policy": "tenant-governance-policy",
+            "status": "injected"
+          }
+        ]
+      }
+    }
+  }
+}

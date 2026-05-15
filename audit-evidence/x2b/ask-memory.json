@@ -1,0 +1,58 @@
+{
+  "source": "stateful-ask-cogni-memory-runtime",
+  "tenant": "demo-tenant",
+  "memories": [
+    {
+      "at": "2026-05-15T13:38:42.844Z",
+      "query": "Build multilingual telemedicine system",
+      "intent": "orchestration",
+      "role": "developer",
+      "domain": "drone",
+      "workspaceId": "x2b-workspace-drone",
+      "contextId": "ctx-a5b7aa959ce060",
+      "recommendation": "Drone Mission Intelligence Assistant: CHAXU drone, autonomous systems, edge, swarm simulation, mission replay, governance, and operational telemetry workflows. Compose the workflow in Orchestration Studio, compile it into a governed runtime graph, then execute with replay and confidence tracking enabled.",
+      "answerFingerprint": "a47254236e8575",
+      "semanticScore": 2,
+      "source": "local-semantic-ledger"
+    },
+    {
+      "at": "2026-05-15T13:38:42.844Z",
+      "query": "Build multilingual telemedicine system",
+      "intent": "orchestration",
+      "role": "developer",
+      "domain": "drone",
+      "workspaceId": "x2b-workspace-drone",
+      "contextId": "ctx-272301c70a0d75",
+      "recommendation": "Drone Mission Intelligence Assistant: CHAXU drone, autonomous systems, edge, swarm simulation, mission replay, governance, and operational telemetry workflows. Compose the workflow in Orchestration Studio, compile it into a governed runtime graph, then execute with replay and confidence tracking enabled. Compared with your previous drone question, the next useful move is to advance the workflow state instead of repeating discovery.",
+      "answerFingerprint": "17d353c5e9a7ed",
+      "semanticScore": 2,
+      "source": "local-semantic-ledger"
+    },
+    {
+      "at": "2026-05-15T13:38:42.844Z",
+      "query": "Generate drone swarm architecture and mission replay plan",
+      "intent": "replay",
+      "role": "developer",
+      "domain": "drone",
+      "workspaceId": "x2b-workspace-drone",
+      "contextId": "ctx-a5b7aa959ce060",
+      "recommendation": "Drone Mission Intelligence Assistant: CHAXU drone, autonomous systems, edge, swarm simulation, mission replay, governance, and operational telemetry workflows. No replay package has been captured in the current session yet. Run a playground execution or simulation to generate replay evidence.",
+      "answerFingerprint": "3275b0dc9e6cc2",
+      "semanticScore": 2,
+      "source": "local-semantic-ledger"
+    },
+    {
+      "at": "2026-05-15T13:38:42.844Z",
+      "query": "Generate drone swarm architecture and mission replay plan",
+      "intent": "replay",
+      "role": "developer",
+      "domain": "drone",
+      "workspaceId": "x2b-workspace-drone",
+      "contextId": "ctx-a5b7aa959ce060",
+      "recommendation": "Drone Mission Intelligence Assistant: CHAXU drone, autonomous systems, edge, swarm simulation, mission replay, governance, and operational telemetry workflows. No replay package has been captured in the current session yet. Run a playground execution or simulation to generate replay evidence. Compared with your previous drone question, the next useful move is to advance the workflow state instead of repeating discovery.",
+      "answerFingerprint": "d1e94559ea9e3c",
+      "semanticScore": 2,
+      "source": "local-semantic-ledger"
+    }
+  ]
+}

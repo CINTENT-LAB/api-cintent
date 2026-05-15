@@ -1,0 +1,8 @@
+{
+  "error": "Not Found",
+  "code": "ROUTE_NOT_FOUND",
+  "requestId": "req-1778840717302-288651e2",
+  "path": "/api/workspace/state",
+  "message": "Endpoint /api/workspace/state does not exist",
+  "suggestion": "Check /api/docs or /api/openapi.json for live endpoint contracts."
+}

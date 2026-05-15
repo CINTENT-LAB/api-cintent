@@ -1,0 +1,38 @@
+{
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "connection": "keep-alive",
+    "content-length": "148",
+    "content-security-policy": "default-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; connect-src 'self' https:; font-src 'self' data:; object-src 'none'; frame-ancestors 'self';",
+    "content-type": "application/json; charset=utf-8",
+    "cross-origin-opener-policy": "same-origin",
+    "cross-origin-resource-policy": "same-origin",
+    "date": "Fri, 15 May 2026 10:25:17 GMT",
+    "etag": "W/\"94-nlIE/9Exc/ecKDqo39Yb2+cdp+4\"",
+    "keep-alive": "timeout=5",
+    "origin-agent-cluster": "?1",
+    "referrer-policy": "no-referrer",
+    "set-cookie": "cintent_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZW1vLTZhNDRlZDlmNTFjNSIsImVtYWlsIjoiZGVtby1kZW1vLTZhNDRlZDlmNTFjNUBjaW50ZW50LmxvY2FsIiwibmFtZSI6IkRlbW8gR3Vlc3QiLCJyb2xlIjoiZ3Vlc3QiLCJ0ZW5hbnQiOiJkZW1vLXRlbmFudCIsInNjb3BlcyI6WyJyZWFkOmFwaSIsInNlYXJjaDphcGkiLCJleGVjdXRlOnNhbmRib3giLCJhc2s6Y29nbml0aXZlIiwicmVhZDpyZXBsYXkiXSwiZGVtbyI6dHJ1ZSwiZW1haWxWZXJpZmllZCI6dHJ1ZSwiaWF0IjoxNzc4ODQwNzE3LCJleHAiOjE3Nzg4NDQzMTd9.rZhYh0k0aDnduHfecTmpg5B6GZw4GuCfRZ9C-ih8WYw; Max-Age=3600; Path=/; Expires=Fri, 15 May 2026 11:25:17 GMT; HttpOnly; SameSite=Lax",
+    "strict-transport-security": "max-age=15552000; includeSubDomains",
+    "vary": "Origin",
+    "x-cintent-request-id": "req-1778840717298-3ba919ab",
+    "x-cintent-runtime": "production-hardened",
+    "x-content-type-options": "nosniff",
+    "x-dns-prefetch-control": "off",
+    "x-download-options": "noopen",
+    "x-frame-options": "SAMEORIGIN",
+    "x-permitted-cross-domain-policies": "none",
+    "x-xss-protection": "0"
+  },
+  "body": {
+    "message": "Demo Mode enabled. Welcome to CINTENT Demo.",
+    "demo": true,
+    "user": {
+      "name": "Demo Guest",
+      "role": "guest",
+      "tenant": "demo-tenant",
+      "demo": true
+    }
+  }
+}

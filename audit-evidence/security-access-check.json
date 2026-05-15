@@ -1,0 +1,17 @@
+[
+  {
+    "path": "/api/orchestration/fabric/execute",
+    "status": 401,
+    "body": "{\"error\":\"Authentication required\"}"
+  },
+  {
+    "path": "/api/replay/export/test",
+    "status": 401,
+    "body": "{\"error\":\"Authentication required\"}"
+  },
+  {
+    "path": "/api/sdk/generate",
+    "status": 401,
+    "body": "{\"error\":\"Authentication required\"}"
+  }
+]

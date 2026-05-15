@@ -1,0 +1,27 @@
+{
+  "status": "persisted",
+  "state": {
+    "workspace_id": "lifecycle-valid-drone",
+    "domain": "drone",
+    "application_id": "chaxu",
+    "selected_workflow": "drone swarm mission replay",
+    "selected_simulation": "drone-fleet-coordination",
+    "selected_apis": [
+      "drone-fleet"
+    ],
+    "state": {
+      "context": {
+        "domain": "drone",
+        "applicationId": "chaxu",
+        "selectedWorkflow": "drone swarm mission replay",
+        "selectedSimulation": "drone-fleet-coordination",
+        "selectedApis": [
+          "drone-fleet"
+        ]
+      }
+    },
+    "tenant_id": "demo-tenant",
+    "session_id": "demo-5416940bea21",
+    "updated_at": "2026-05-15T13:38:00.882Z"
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "status": "ingested",
+  "telemetry": {
+    "id": "telemetry-1778852350586-294f0b",
+    "tenant": "demo-tenant",
+    "domain": "manufacturing",
+    "source": "x2b-press-1",
+    "anomaly": true,
+    "sample": {
+      "domain": "manufacturing",
+      "source": "x2b-press-1",
+      "metrics": {
+        "temperatureC": 91.5,
+        "vibrationMmS": 6.4
+      },
+      "thresholds": {
+        "temperatureC": 85,
+        "vibrationMmS": 5
+      },
+      "workflow": "predictive maintenance"
+    },
+    "timestamp": "2026-05-15T13:39:10.587Z",
+    "canonical": {
+      "schema_version": "cintent.cognitive.v1.0.0",
+      "entity_type": "telemetry",
+      "entity_id": "telemetry-1778852350586-294f0b",
+      "tenant_id": "demo-tenant",
+      "workspace_id": null,
+      "session_id": "demo-338286d90f99",
+      "domain": "manufacturing",
+      "application_id": null,
+      "created_at": "2026-05-15T13:39:10.587Z",
+      "updated_at": "2026-05-15T13:39:10.587Z",
+      "event_type": "telemetry.ingested",
+      "source": "x2b-press-1",
+      "telemetry_category": "industrial-sensor",
+      "metrics": {
+        "temperatureC": 91.5,
+        "vibrationMmS": 6.4
+      },
+      "thresholds": {
+        "temperatureC": 85,
+        "vibrationMmS": 5
+      },
+      "confidence": 0.68,
+      "anomaly_state": "anomaly_detected",
+      "governance_state": "allowed",
+      "links": {
+        "orchestration_id": null,
+        "replay_id": null,
+        "workflow_id": null,
+        "governance_id": "governance-23b0201703348c35"
+      }
+    },
+    "governance": {
+      "schema_version": "cintent.cognitive.v1.0.0",
+      "governance_id": "governance-23b0201703348c35",
+      "tenant_id": "demo-tenant",
+      "domain": "manufacturing",
+      "operation": "telemetry.anomaly.detected",
+      "profile": "industrial-safety",
+      "inherited_policies": [
+        "schema-version-required",
+        "tenant-boundary-required",
+        "lineage-required",
+        "machine-safety",
+        "maintenance-escalation",
+        "operator-audit"
+      ],
+      "constraints": [
+        {
+          "id": "tenant-scope",
+          "status": "enforced",
+          "reason": "Every runtime operation must have tenant scope."
+        },
+        {
+          "id": "schema-version",
+          "status": "enforced",
+          "reason": "cintent.cognitive.v1.0.0 attached to operation."
+        },
+        {
+          "id": "replay-lineage",
+          "status": "advisory",
+          "reason": "Replay linkage is required when execution emits replayable state."
+        },
+        {
+          "id": "role-scope",
+          "status": "advisory",
+          "reason": "Role guest mapped to canonical RBAC envelope."
+        }
+      ],
+      "decision": "allowed",
+      "evaluated_at": "2026-05-15T13:39:10.587Z"
+    }
+  },
+  "canonicalTelemetry": {
+    "schema_version": "cintent.cognitive.v1.0.0",
+    "entity_type": "telemetry",
+    "entity_id": "telemetry-1778852350586-294f0b",
+    "tenant_id": "demo-tenant",
+    "workspace_id": null,
+    "session_id": "demo-338286d90f99",
+    "domain": "manufacturing",
+    "application_id": null,
+    "created_at": "2026-05-15T13:39:10.587Z",
+    "updated_at": "2026-05-15T13:39:10.587Z",
+    "event_type": "telemetry.ingested",
+    "source": "x2b-press-1",
+    "telemetry_category": "industrial-sensor",
+    "metrics": {
+      "temperatureC": 91.5,
+      "vibrationMmS": 6.4
+    },
+    "thresholds": {
+      "temperatureC": 85,
+      "vibrationMmS": 5
+    },
+    "confidence": 0.68,
+    "anomaly_state": "anomaly_detected",
+    "governance_state": "allowed",
+    "links": {
+      "orchestration_id": null,
+      "replay_id": null,
+      "workflow_id": null,
+      "governance_id": "governance-23b0201703348c35"
+    }
+  },
+  "governance": {
+    "schema_version": "cintent.cognitive.v1.0.0",
+    "governance_id": "governance-23b0201703348c35",
+    "tenant_id": "demo-tenant",
+    "domain": "manufacturing",
+    "operation": "telemetry.anomaly.detected",
+    "profile": "industrial-safety",
+    "inherited_policies": [
+      "schema-version-required",
+      "tenant-boundary-required",
+      "lineage-required",
+      "machine-safety",
+      "maintenance-escalation",
+      "operator-audit"
+    ],
+    "constraints": [
+      {
+        "id": "tenant-scope",
+        "status": "enforced",
+        "reason": "Every runtime operation must have tenant scope."
+      },
+      {
+        "id": "schema-version",
+        "status": "enforced",
+        "reason": "cintent.cognitive.v1.0.0 attached to operation."
+      },
+      {
+        "id": "replay-lineage",
+        "status": "advisory",
+        "reason": "Replay linkage is required when execution emits replayable state."
+      },
+      {
+        "id": "role-scope",
+        "status": "advisory",
+        "reason": "Role guest mapped to canonical RBAC envelope."
+      }
+    ],
+    "decision": "allowed",
+    "evaluated_at": "2026-05-15T13:39:10.587Z"
+  },
+  "orchestration": null,
+  "orchestrationTrigger": {
+    "status": "queued",
+    "reason": "telemetry anomaly threshold crossed",
+    "telemetryId": "telemetry-1778852350586-294f0b"
+  },
+  "backpressure": false
+}

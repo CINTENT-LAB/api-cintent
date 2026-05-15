@@ -1,0 +1,242 @@
+{
+  "status": "validated",
+  "source_of_truth": "api-metadata-registry",
+  "schemaVersion": "cintent.cognitive.v1.0.0",
+  "dynamic_rendering": true,
+  "api_count": 437,
+  "domain_count": 12,
+  "canonical": {
+    "primitives": [
+      "workspace",
+      "session",
+      "domain",
+      "application",
+      "workflow",
+      "orchestration",
+      "replay",
+      "telemetry",
+      "simulation",
+      "governance",
+      "deployment",
+      "sdk",
+      "runtime_event",
+      "agent",
+      "context",
+      "memory",
+      "policy",
+      "tenant",
+      "user",
+      "execution_artifact"
+    ],
+    "event_specification": [
+      "workspace.updated",
+      "context.synchronized",
+      "workflow.generated",
+      "orchestration.started",
+      "orchestration.stage.completed",
+      "orchestration.recovered",
+      "replay.generated",
+      "replay.reconstructed",
+      "telemetry.ingested",
+      "telemetry.anomaly.detected",
+      "governance.validated",
+      "simulation.executed",
+      "sdk.generated",
+      "ask_cogni.reasoned",
+      "deployment.prepared"
+    ],
+    "registry_domains": 16,
+    "registry_apis": 437,
+    "registry_simulations": 99,
+    "governance_inheritance": [
+      "global",
+      "tenant",
+      "domain",
+      "application",
+      "workflow",
+      "runtime-operation"
+    ]
+  },
+  "roadmap_domains": [
+    {
+      "domain_key": "travel",
+      "title": "Travel Cognitive Infrastructure",
+      "status": "operational",
+      "api_count": 3
+    },
+    {
+      "domain_key": "healthcare",
+      "title": "Unified Healthcare Economy Cognitive Infrastructure",
+      "status": "operational",
+      "api_count": 155
+    },
+    {
+      "domain_key": "legal",
+      "title": "Legal Cognitive Infrastructure",
+      "status": "coming_soon",
+      "api_count": 0
+    },
+    {
+      "domain_key": "drone",
+      "title": "Drone Cognitive Infrastructure",
+      "status": "operational",
+      "api_count": 13
+    },
+    {
+      "domain_key": "robotics",
+      "title": "Robotics Cognitive Infrastructure",
+      "status": "beta",
+      "api_count": 59
+    },
+    {
+      "domain_key": "cobotics",
+      "title": "Cobotics Cognitive Infrastructure",
+      "status": "beta",
+      "api_count": 27
+    },
+    {
+      "domain_key": "multilingual",
+      "title": "Multilingual Cognitive Infrastructure",
+      "status": "coming_soon",
+      "api_count": 0
+    },
+    {
+      "domain_key": "enterprise-workflow",
+      "title": "Enterprise Workflow Cognitive Infrastructure",
+      "status": "operational",
+      "api_count": 148
+    },
+    {
+      "domain_key": "iot-smart-infrastructure",
+      "title": "IoT & Smart Infrastructure Cognition",
+      "status": "coming_soon",
+      "api_count": 0
+    },
+    {
+      "domain_key": "autonomous-systems",
+      "title": "Autonomous Systems Cognitive Infrastructure",
+      "status": "coming_soon",
+      "api_count": 0
+    },
+    {
+      "domain_key": "education-learning",
+      "title": "Education & Learning Cognitive Infrastructure",
+      "status": "coming_soon",
+      "api_count": 0
+    },
+    {
+      "domain_key": "smart-governance",
+      "title": "Smart Governance & Public Systems Cognition",
+      "status": "operational",
+      "api_count": 17
+    }
+  ],
+  "propagation_targets": [
+    "API catalog",
+    "documentation",
+    "SDK examples",
+    "playground forms",
+    "pricing visibility",
+    "lifecycle states",
+    "Ask COGNI context",
+    "search results",
+    "dashboards",
+    "dependency visibility",
+    "standards and compliance explorer",
+    "protocol compatibility matrix",
+    "ecosystem interoperability matrix",
+    "regulatory readiness visibility"
+  ],
+  "sample_contract": {
+    "api_key": "phase-intent",
+    "endpoint": {
+      "method": "POST",
+      "path": "/api/v1/cognitive/intent/parse",
+      "request_schema": {
+        "input": "object",
+        "tenantId": "string",
+        "replayRequested": "boolean",
+        "mode": "sandbox | production | simulated",
+        "governanceContext": "object"
+      },
+      "response_schema": {
+        "confidenceEvolution": "array",
+        "outputs": [
+          "IntentGraph",
+          "confidenceEvolution",
+          "orchestrationHints"
+        ],
+        "cognitiveArtifact": "object",
+        "governanceTrace": "array",
+        "replayRef": "string",
+        "status": "ok | rejected | needs_review"
+      }
+    },
+    "sdk_examples": {
+      "ts": "await cintent.execute({ api: \"phase-intent\", mode: \"sandbox\" });",
+      "py": "client.execute(api=\"phase-intent\", mode=\"sandbox\")",
+      "rest": "POST /api/v1/cognitive/intent/parse"
+    },
+    "pricing_visibility": {
+      "min_tier": "developer",
+      "quota_limit": "10000 requests/hour",
+      "billing_model": "Usage and subscription ready"
+    },
+    "access_policy": {
+      "session_type": "demo",
+      "tenant": "demo-tenant",
+      "scopes": [
+        "read:api",
+        "search:api",
+        "execute:sandbox",
+        "ask:cognitive",
+        "read:replay"
+      ],
+      "entitlement": {
+        "tier": "demo",
+        "status": "demo",
+        "active": true,
+        "quota": "sandbox-only",
+        "locked": false
+      },
+      "required_tier": "developer",
+      "locked": false,
+      "can_execute_sandbox": true,
+      "can_execute_production": false,
+      "demo_restricted": false,
+      "allowed_modes": [
+        "sandbox"
+      ],
+      "note": "Session can use documentation and permitted sandbox/simulated execution paths."
+    },
+    "compliance_metadata": {
+      "standards_supported": [
+        "Vision-Language-Action orchestration",
+        "Multimodal synchronization",
+        "Edge AI orchestration",
+        "Distributed inference compatibility"
+      ],
+      "protocols_supported": [
+        "CRL multimodal normalization",
+        "contextual signal synchronization",
+        "Vision-Language-Action orchestration",
+        "Multimodal synchronization",
+        "Edge AI orchestration",
+        "Distributed inference compatibility"
+      ],
+      "ecosystem_compatibility": [],
+      "regulatory_alignment": [],
+      "replay_compliance": false,
+      "governance_compliance": false,
+      "edge_compatibility": true,
+      "simulation_compatibility": true,
+      "VLA_compatibility": true,
+      "ROS2_compatibility": false,
+      "MAVLink_compatibility": false,
+      "DigitalTwin_compatibility": false,
+      "UTM_compatibility": false,
+      "compatibility_claim": "integration-ready / orchestration-ready / standards-aware",
+      "certification_claim": false
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "user": {
+    "id": "demo-6a44ed9f51c5",
+    "email": "demo-demo-6a44ed9f51c5@cintent.local",
+    "name": "Demo Guest",
+    "role": "guest",
+    "tenant": "demo-tenant",
+    "demo": true,
+    "scopes": [
+      "read:api",
+      "search:api",
+      "execute:sandbox",
+      "ask:cognitive",
+      "read:replay"
+    ],
+    "subscription": {
+      "tier": "demo",
+      "status": "demo",
+      "active": true,
+      "quota": "sandbox-only",
+      "locked": false
+    }
+  },
+  "session": {
+    "type": "demo",
+    "rbac": "guest",
+    "tenant": "demo-tenant",
+    "entitlement": {
+      "tier": "demo",
+      "status": "demo",
+      "active": true,
+      "quota": "sandbox-only",
+      "locked": false
+    },
+    "apiKeys": [],
+    "future_ready": [
+      "phone-verification",
+      "otp",
+      "payment-verification",
+      "enterprise-sso",
+      "mfa"
+    ]
+  }
+}

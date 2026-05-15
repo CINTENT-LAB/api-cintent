@@ -401,7 +401,7 @@
       z-index: 20;
       min-height: 70px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(260px, 0.8fr) minmax(320px, 1.2fr) auto;
       gap: 14px;
       align-items: center;
       padding: 12px 24px;
@@ -437,6 +437,46 @@
     .pill.active { background: var(--blue-soft); color: #174ea6; border-color: #b8cef9; }
     .pill.status { background: var(--green-soft); color: var(--green); border-color: #bce7cb; }
     .pill.status.active { background: var(--green); color: #fff; border-color: var(--green); }
+    .enterprise-status-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(92px, 1fr));
+      gap: 7px;
+      align-items: stretch;
+      min-width: 0;
+    }
+    .runtime-chip {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+      padding: 7px 9px;
+      min-height: 44px;
+      display: grid;
+      align-content: center;
+      gap: 2px;
+    }
+    .runtime-chip span {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .runtime-chip strong {
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .runtime-chip[data-state="operational"],
+    .runtime-chip[data-state="active"],
+    .runtime-chip[data-state="streaming"],
+    .runtime-chip[data-state="available"],
+    .runtime-chip[data-state="completed"] { border-color: #bce7cb; background: var(--green-soft); }
+    .runtime-chip[data-state="warning"],
+    .runtime-chip[data-state="degraded"],
+    .runtime-chip[data-state="active-pending"] { border-color: #fed7aa; background: #fff7ed; }
     .filter-status {
       align-self: center;
       color: var(--muted);
@@ -457,6 +497,100 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
+    }
+    .enterprise-workspace-shell {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.7fr) minmax(460px, 1.45fr) minmax(300px, 0.85fr);
+      gap: 14px;
+      align-items: start;
+    }
+    .enterprise-rail {
+      display: grid;
+      gap: 12px;
+    }
+    .enterprise-main {
+      display: grid;
+      gap: 14px;
+    }
+    .enterprise-assistant {
+      position: sticky;
+      top: 92px;
+      display: grid;
+      gap: 12px;
+    }
+    .workflow-progress {
+      display: grid;
+      gap: 8px;
+    }
+    .workflow-progress-step {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) auto;
+      gap: 9px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+      padding: 9px;
+    }
+    .workflow-progress-step .step-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: #dbe4f0;
+      color: #39506d;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .workflow-progress-step[data-state="completed"] .step-dot { background: var(--green); color: #fff; }
+    .workflow-progress-step[data-state="active"] .step-dot { background: var(--blue); color: #fff; }
+    .workflow-progress-step strong { font-size: 12px; }
+    .workflow-progress-step span { color: var(--muted); font-size: 11px; }
+    .runtime-board {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .runtime-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+      padding: 12px;
+      min-height: 104px;
+    }
+    .runtime-card h3 { margin: 0; font-size: 13px; }
+    .runtime-card .runtime-number { margin-top: 8px; font-size: 25px; font-weight: 950; line-height: 1; }
+    .runtime-card p { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .notification-stack {
+      display: grid;
+      gap: 8px;
+      max-height: 420px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+    .notification-item {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+      padding: 10px;
+    }
+    .notification-item[data-severity="warning"] { border-color: #fed7aa; background: #fff7ed; }
+    .notification-item strong { display: block; font-size: 12px; text-transform: capitalize; }
+    .notification-item span { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.4; }
+    .enterprise-context-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .quick-action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .quick-action-grid button {
+      justify-content: center;
+      min-height: 38px;
     }
     .hero-card { padding: 22px; }
     .eyebrow {
@@ -909,6 +1043,10 @@
       .hero, .two-col { grid-template-columns: 1fr; }
       .metrics, .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .three-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .topbar { grid-template-columns: 1fr; }
+      .enterprise-status-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .enterprise-workspace-shell { grid-template-columns: 1fr; }
+      .enterprise-assistant { position: relative; top: auto; }
     }
     @media (max-width: 760px) {
       .topbar { grid-template-columns: 1fr; padding: 12px 14px; }
@@ -918,6 +1056,7 @@
       .hero, .content { padding-left: 14px; padding-right: 14px; }
       .site-footer { grid-template-columns: 1fr; margin: 0 14px 14px; }
       .nav-list, .domain-list, .metrics, .stat-grid, .info-grid, .form-grid, .three-col { grid-template-columns: 1fr; }
+      .enterprise-status-strip, .runtime-board, .enterprise-context-grid, .quick-action-grid { grid-template-columns: 1fr; }
       .detail-head { grid-template-columns: 1fr; }
       .endpoint-box { min-width: 0; }
       h1 { font-size: 28px; }
@@ -983,6 +1122,13 @@
           </svg>
           <input id="globalSearch" class="search" type="search" placeholder="Search APIs, workflows, billing, governance, replay, Ask COGNI, SDKs..." aria-label="Search platform">
         </div>
+        <div class="enterprise-status-strip" id="enterpriseStatusStrip" aria-label="Live runtime status">
+          <div class="runtime-chip" data-state="standby"><span>Workspace</span><strong>Initializing</strong></div>
+          <div class="runtime-chip" data-state="standby"><span>Orchestration</span><strong>Ready</strong></div>
+          <div class="runtime-chip" data-state="standby"><span>Replay</span><strong>Ready</strong></div>
+          <div class="runtime-chip" data-state="standby"><span>Telemetry</span><strong>Standby</strong></div>
+          <div class="runtime-chip" data-state="standby"><span>Governance</span><strong>Guarded</strong></div>
+        </div>
         <div class="top-actions">
           <button class="pill status" type="button" id="sandboxBtn">Enterprise sandbox</button>
           <button class="pill" type="button" data-context-learn>Ask COGNI About This Page</button>
@@ -1026,6 +1172,7 @@
 
       <section class="content">
         <div id="view-learn" class="view"></div>
+        <div id="view-operating" class="view"></div>
         <div id="view-docs" class="view active"></div>
         <div id="view-discovery" class="view"></div>
         <div id="view-playground" class="view"></div>
@@ -1115,6 +1262,7 @@
   <script>
     const modules = [
       { id: 'learn', mark: 'L', title: 'Learn CINTENT', sub: 'Guided platform mentor' },
+      { id: 'operating', mark: 'C', title: 'Operating Workspace', sub: 'Live cognitive runtime' },
       { id: 'docs', mark: 'D', title: 'API Documentation', sub: 'Complete API reference' },
       { id: 'discovery', mark: 'F', title: 'Discovery', sub: 'Find by problem' },
       { id: 'playground', mark: 'P', title: 'Playground', sub: 'Live sandbox simulation' },
@@ -1270,19 +1418,28 @@
       healthcareHardeningValidation: null,
       healthcareHardeningDashboard: null,
       platformRuntimeStatus: null,
+      enterpriseUxStatus: null,
+      enterpriseNotifications: [],
+      enterpriseEventSource: null,
+      onboardingSeen: sessionStorage.getItem('cintentEnterpriseOnboardingSeen') === 'true',
+      workspaceLifecycle: 'initializing',
+      workspaceInitialized: false,
+      workspaceInitChoice: '',
+      workspaceCandidates: [],
+      workspaceLifecycleMessage: '',
       executionStream: null,
       executionPoller: null,
       apiKeys: [],
       domainDetails: {},
       selectedApplicationId: '',
-      askDomain: 'healthcare',
-      askApplicationId: 'smart-hospital',
+      askDomain: '',
+      askApplicationId: 'platform',
       askMode: 'beginner',
       askEnvironment: 'sandbox',
-      askSelectedApis: ['healthcare-impl-executable-runtime', 'healthcare-impl-streaming-runtime', 'healthcare-impl-governance-runtime'],
-      askSelectedSimulation: 'hospital-operations',
-      askSelectedWorkflow: 'multilingual telemedicine workflow',
-      askDraftQuestion: 'I want to build a multilingual telemedicine platform. What should I do first?',
+      askSelectedApis: [],
+      askSelectedSimulation: '',
+      askSelectedWorkflow: '',
+      askDraftQuestion: '',
       askLastResponse: null,
       askWorkspaceSessions: {},
       askWorkspaceId: '',
@@ -1292,7 +1449,7 @@
       askOverrideMismatch: false,
       askWorkflowState: { stage: 'select-apis', completed: [], lastAction: '', runtimeState: 'idle', artifacts: {} },
       chat: [
-        { role: 'Ask COGNI', text: 'Choose a domain, application, and mode. I will guide the workspace with simple next actions, not metadata dumps.' }
+        { role: 'Ask COGNI', text: 'What would you like to build today?' }
       ]
     };
 
@@ -1309,6 +1466,7 @@
       cartCount: document.getElementById('cartCount'),
       sandboxBtn: document.getElementById('sandboxBtn'),
       filterStatus: document.getElementById('filterStatus'),
+      enterpriseStatusStrip: document.getElementById('enterpriseStatusStrip'),
       heroSection: document.getElementById('heroSection'),
       applicationGrid: document.getElementById('applicationGrid'),
       hideHero: document.getElementById('hideHeroBtn'),
@@ -1480,6 +1638,68 @@
       return state.platformRuntimeStatus;
     }
 
+    async function loadEnterpriseUxStatus() {
+      const params = new URLSearchParams({
+        domain: state.domain,
+        application: state.selectedApplicationId || state.askApplicationId || 'CINTENT'
+      });
+      const response = await fetch(`/api/enterprise-ux/status?${params}`, { credentials: 'include' });
+      if (response.ok) {
+        state.enterpriseUxStatus = await response.json();
+        state.enterpriseNotifications = state.enterpriseUxStatus.notifications || state.enterpriseNotifications || [];
+      }
+      return state.enterpriseUxStatus;
+    }
+
+    function renderEnterpriseStatusStrip() {
+      if (!els.enterpriseStatusStrip) return;
+      const ux = state.enterpriseUxStatus || {};
+      const workspace = ux.workspace || {};
+      const runtime = ux.runtime || {};
+      const chips = [
+        ['Workspace', state.workspaceInitialized ? 'Session Active' : 'Needs Setup', state.workspaceInitialized ? 'operational' : 'standby'],
+        ['Orchestration', state.workspaceInitialized ? (runtime.orchestrationState || 'Ready') : 'Not started', runtime.orchestrationState || 'standby'],
+        ['Replay', state.workspaceInitialized ? (runtime.replayState || 'Ready') : 'Not started', runtime.replayState || 'standby'],
+        ['Telemetry', state.workspaceInitialized ? (runtime.telemetryState || 'Standby') : 'Not started', runtime.telemetryState || 'standby'],
+        ['Governance', runtime.governanceState || 'guarded', runtime.governanceState || 'active']
+      ];
+      els.enterpriseStatusStrip.innerHTML = chips.map(([label, value, status]) => `<div class="runtime-chip" data-state="${escapeHtml(String(status).toLowerCase())}"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join('');
+    }
+
+    function connectEnterpriseEventStream() {
+      if (state.enterpriseEventSource || typeof EventSource === 'undefined') return;
+      try {
+        state.enterpriseEventSource = new EventSource('/api/event-bus/stream', { withCredentials: true });
+        state.enterpriseEventSource.addEventListener('hello', event => {
+          const payload = JSON.parse(event.data || '{}');
+          state.enterpriseNotifications = (payload.recent || []).slice(0, 12).map(item => ({
+            id: item.id,
+            type: item.type,
+            title: item.type,
+            message: item.payload && (item.payload.orchestrationId || item.payload.replayId || item.payload.domain || item.payload.source) || 'Runtime event synchronized',
+            timestamp: item.timestamp,
+            severity: /anomaly|failed|recovery/i.test(item.type) ? 'warning' : 'info'
+          }));
+          if (state.module === 'operating') renderOperatingWorkspace();
+        });
+        state.enterpriseEventSource.addEventListener('runtime-event', event => {
+          const item = JSON.parse(event.data || '{}');
+          state.enterpriseNotifications = [{
+            id: item.id,
+            type: item.type,
+            title: item.type,
+            message: item.payload && (item.payload.orchestrationId || item.payload.replayId || item.payload.domain || item.payload.source) || 'Runtime event synchronized',
+            timestamp: item.timestamp,
+            severity: /anomaly|failed|recovery/i.test(item.type) ? 'warning' : 'info'
+          }, ...(state.enterpriseNotifications || [])].slice(0, 16);
+          if (state.module === 'operating') renderOperatingWorkspace();
+          renderEnterpriseStatusStrip();
+        });
+      } catch (error) {
+        console.warn('Enterprise event stream unavailable', error);
+      }
+    }
+
     function renderShell() {
       els.moduleNav.innerHTML = modules.map(m => `
         <button class="nav-btn ${state.module === m.id ? 'active' : ''}" type="button" data-module="${m.id}">
@@ -1499,10 +1719,11 @@
       els.metricModules.textContent = modules.length;
       els.metricCart.textContent = state.cart.length;
       els.cartCount.textContent = state.cart.length;
+      renderEnterpriseStatusStrip();
       const visibleCount = filteredApis().length;
       const stageLabel = state.stage === 'all' ? 'All APIs' : `${state.stage.charAt(0).toUpperCase()}${state.stage.slice(1)} APIs`;
       els.filterStatus.textContent = `${stageLabel}: ${visibleCount}`;
-      const introModules = new Set(['learn', 'docs', 'discovery', 'readiness']);
+      const introModules = new Set(['learn', 'operating', 'docs', 'discovery', 'readiness']);
       els.heroSection.classList.toggle('hidden', state.introHidden || !introModules.has(state.module));
       renderApplicationShowcase();
     }
@@ -2173,6 +2394,169 @@
       return `<div class="cogni-section"><h4>Workflow Continuity</h4><div class="agent-strip">${askWorkflowStages.map(([id, label]) => `<span class="agent-chip ${current.completed && current.completed.includes(id) ? 'ok' : id === current.stage ? 'active' : ''}">${escapeHtml(label)}</span>`).join('')}</div></div>`;
     }
 
+    function cleanWorkspaceChat() {
+      return [{ role: 'Ask COGNI', text: 'What would you like to build today?' }];
+    }
+
+    function resetActiveWorkspaceState(options = {}) {
+      state.workspaceInitialized = Boolean(options.initialized);
+      state.workspaceLifecycle = options.lifecycle || (options.initialized ? 'active' : 'initializing');
+      state.workspaceInitChoice = options.choice || '';
+      state.domain = 'all';
+      state.module = options.module || (options.initialized ? 'ask' : 'workspace-init');
+      state.selectedApplicationId = '';
+      state.askDomain = options.domain || '';
+      state.askApplicationId = options.applicationId || 'platform';
+      state.askMode = options.mode || 'beginner';
+      state.askEnvironment = options.environment || 'sandbox';
+      state.askSelectedApis = Array.isArray(options.selectedApis) ? options.selectedApis : [];
+      state.askSelectedSimulation = options.selectedSimulation || '';
+      state.askSelectedWorkflow = options.selectedWorkflow || '';
+      state.askDraftQuestion = options.question || '';
+      state.askLastResponse = null;
+      state.askWorkspaceSessions = {};
+      state.askWorkspaceId = '';
+      state.askSessionId = '';
+      state.askContextId = '';
+      state.askContextValidation = { valid: true, mismatches: [], actions: [] };
+      state.askOverrideMismatch = false;
+      state.askWorkflowState = { stage: 'select-apis', completed: [], lastAction: '', runtimeState: 'idle', artifacts: {} };
+      state.chat = options.chat || cleanWorkspaceChat();
+      state.executionRuntime = null;
+      state.simulationRuntime = null;
+      state.replayRecording = null;
+      state.healthcareImplExecution = null;
+      state.healthcareImplReplay = null;
+      state.memorySearchResults = null;
+      stopExecutionSubscription();
+    }
+
+    function humanWorkspaceLabel(workspace = {}) {
+      const domain = workspace.domain || workspace.state?.context?.domain || 'Unselected domain';
+      const app = workspace.application_id || workspace.state?.context?.applicationName || workspace.state?.context?.applicationId || 'Platform';
+      const workflow = workspace.selected_workflow || workspace.state?.context?.selectedWorkflow || 'No workflow selected';
+      return `${String(domain).replace(/[-_]/g, ' ')} / ${String(app).replace(/[-_]/g, ' ')} / ${workflow}`;
+    }
+
+    function workspacePayloadContext(workspace = {}) {
+      const statePayload = workspace.state || {};
+      return statePayload.context || statePayload.composed_context || {};
+    }
+
+    function validateWorkspacePayload(workspace = {}) {
+      const context = workspacePayloadContext(workspace);
+      const domain = workspace.domain || context.domain || '';
+      const workflow = workspace.selected_workflow || context.selectedWorkflow || '';
+      const appId = workspace.application_id || context.applicationId || 'platform';
+      const simulationId = workspace.selected_simulation || context.selectedSimulation || '';
+      const mismatches = [];
+      const workflowDomain = detectAskDomainFromText(workflow);
+      if (domain && workflowDomain && workflowDomain !== domain) mismatches.push(`Workflow appears to belong to ${workflowDomain}, not ${domain}.`);
+      const appDomain = applicationDomainMap[appId];
+      if (domain && appDomain && appDomain !== domain) mismatches.push(`${appId} belongs to ${appDomain}, not ${domain}.`);
+      if (domain && simulationId) {
+        const sim = state.simulations.find(item => item.id === simulationId);
+        if (sim && sim.domain && sim.domain !== domain && !(sim.domains || []).includes(domain)) mismatches.push(`${sim.title || simulationId} does not match ${domain}.`);
+      }
+      return { valid: mismatches.length === 0, mismatches };
+    }
+
+    async function loadWorkspaceCandidates() {
+      try {
+        const response = await fetch('/api/workspaces/state', { credentials: 'include' });
+        if (!response.ok) return [];
+        const payload = await response.json();
+        state.workspaceCandidates = (payload.workspaces || []).map(workspace => ({
+          ...workspace,
+          lifecycleValidation: validateWorkspacePayload(workspace)
+        }));
+        return state.workspaceCandidates;
+      } catch (_) {
+        state.workspaceCandidates = [];
+        return [];
+      }
+    }
+
+    async function startFreshWorkspace() {
+      resetActiveWorkspaceState({ initialized: true, lifecycle: 'fresh', choice: 'fresh', module: 'ask', question: 'What would you like to build today?' });
+      state.workspaceLifecycleMessage = 'Fresh workspace started. No previous domain, APIs, workflow, replay, telemetry, or Ask COGNI prompt was hydrated.';
+      await fetch('/api/traces/event', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'workspace.lifecycle.fresh_started', payload: { clean: true }, decision: { autoHydration: false } })
+      }).catch(() => {});
+      state.workspaceInitialized = true;
+      state.workspaceLifecycle = 'fresh';
+      state.module = 'ask';
+      render();
+    }
+
+    async function openSandboxExample() {
+      resetActiveWorkspaceState({
+        initialized: true,
+        lifecycle: 'sandbox',
+        choice: 'sandbox',
+        module: 'ask',
+        domain: 'drone',
+        applicationId: 'chaxu',
+        selectedWorkflow: 'drone swarm mission replay',
+        selectedSimulation: 'drone-fleet-coordination',
+        selectedApis: ['drone-fleet', 'observe-replay-reconstruct'].filter(Boolean),
+        question: 'Guide me through this sandbox drone swarm runtime with orchestration, replay, telemetry, governance, and SDK next steps.',
+        chat: [{ role: 'Ask COGNI', text: 'Sandbox example loaded. This workspace is isolated and can be reset at any time.' }]
+      });
+      ensureAskWorkspaceSession();
+      await persistBackendWorkspaceSession('workspace.lifecycle.sandbox-started').catch(() => {});
+      state.workspaceInitialized = true;
+      state.workspaceLifecycle = 'sandbox';
+      state.module = 'ask';
+      state.workspaceLifecycleMessage = 'Sandbox example loaded with isolated replay and runtime context.';
+      render();
+    }
+
+    async function loadTemplateWorkspace(template = 'airport') {
+      const templates = {
+        airport: { domain: 'airport', applicationId: 'platform', selectedWorkflow: 'airport baggage orchestration', selectedSimulation: 'airport-flow', selectedApis: [], question: 'Help me build an airport baggage orchestration workflow with replay and governance.' },
+        manufacturing: { domain: 'manufacturing', applicationId: 'manufacturing', selectedWorkflow: 'predictive maintenance workflow', selectedSimulation: 'manufacturing-line-orchestration', selectedApis: [], question: 'Help me build a manufacturing telemetry and maintenance workflow.' }
+      };
+      const selected = templates[template] || templates.airport;
+      resetActiveWorkspaceState({ initialized: true, lifecycle: 'template', choice: 'template', module: 'ask', ...selected, chat: [{ role: 'Ask COGNI', text: 'Template loaded. Review the selections before running orchestration.' }] });
+      state.askSelectedApis = effectiveAskSelectedApis(state.askDomain).slice(0, 3);
+      ensureAskWorkspaceSession();
+      await persistBackendWorkspaceSession('workspace.lifecycle.template-loaded').catch(() => {});
+      state.workspaceInitialized = true;
+      state.workspaceLifecycle = 'template';
+      state.module = 'ask';
+      state.workspaceLifecycleMessage = 'Template loaded intentionally. Nothing was hydrated from stale state.';
+      render();
+    }
+
+    async function resumePreviousWorkspace(workspaceId = '') {
+      const candidates = state.workspaceCandidates.length ? state.workspaceCandidates : await loadWorkspaceCandidates();
+      const selected = workspaceId ? candidates.find(item => (item.workspace_id || item.workspaceId) === workspaceId) : candidates.find(item => item.lifecycleValidation && item.lifecycleValidation.valid);
+      if (!selected) {
+        state.workspaceLifecycleMessage = 'No compatible workspace is available to resume. Start fresh or open a sandbox example.';
+        render();
+        return false;
+      }
+      if (selected.lifecycleValidation && !selected.lifecycleValidation.valid) {
+        state.workspaceLifecycleMessage = `Workspace was not resumed: ${selected.lifecycleValidation.mismatches.join(' ')}`;
+        render();
+        return false;
+      }
+      const restored = await restoreBackendWorkspaceSession(selected.workspace_id || selected.workspaceId, { explicit: true });
+      if (restored) {
+        state.workspaceInitialized = true;
+        state.workspaceLifecycle = 'resumed';
+        state.workspaceInitChoice = 'resume';
+        state.module = 'ask';
+        state.workspaceLifecycleMessage = 'Previous workspace resumed after compatibility validation.';
+        render();
+      }
+      return restored;
+    }
+
     function ensureAskWorkspaceSession() {
       const key = askWorkspaceKey();
       const existing = state.askWorkspaceSessions[key] || {};
@@ -2214,6 +2598,7 @@
     }
 
     function saveAskWorkspaceSession() {
+      if (!state.workspaceInitialized) return;
       const key = askWorkspaceKey();
       state.askWorkspaceSessions[key] = {
         ...(state.askWorkspaceSessions[key] || {}),
@@ -2230,6 +2615,92 @@
         chat: state.chat,
         validation: state.askContextValidation
       };
+      persistBackendWorkspaceSession('workspace.local-saved').catch(() => {});
+    }
+
+    async function persistBackendWorkspaceSession(eventType = 'workspace.context.changed') {
+      if (!state.session || !state.workspaceInitialized) return null;
+      const context = askWorkspaceContext();
+      const payload = {
+        workspace_id: context.workspaceId,
+        session_id: context.sessionId,
+        context_id: context.contextId,
+        domain: context.domain,
+        application_id: context.applicationId,
+        selected_apis: context.selectedApis,
+        selected_workflow: context.selectedWorkflow,
+        selected_simulation: context.selectedSimulation,
+        user_mode: context.mode,
+        runtime_environment: context.environment,
+        workflow_state: context.workflowState,
+        orchestration_state: context.activeRuntime ? { id: context.activeRuntime } : null,
+        state: {
+          context,
+          chat: state.chat,
+          validation: state.askContextValidation,
+          eventType,
+          savedAt: new Date().toISOString()
+        }
+      };
+      const [stateResponse, syncResponse] = await Promise.all([
+        fetch('/api/workspaces/state', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }),
+        fetch('/api/ask/context/sync', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ eventType, query: state.askDraftQuestion || '', context })
+        })
+      ]);
+      if (syncResponse.ok) {
+        const sync = await syncResponse.json();
+        if (sync.context) {
+          state.askWorkspaceId = sync.context.workspace_id || state.askWorkspaceId;
+          state.askSessionId = sync.context.session_id || state.askSessionId;
+          state.askContextId = sync.context.context_id || state.askContextId;
+        }
+        if (sync.validation) state.askContextValidation = sync.validation;
+        if (sync.workflowState) state.askWorkflowState = sync.workflowState;
+      }
+      return stateResponse.ok;
+    }
+
+    async function restoreBackendWorkspaceSession(workspaceId = '', options = {}) {
+      if (!options.explicit) return false;
+      const route = workspaceId ? `/api/workspace/restore?workspaceId=${encodeURIComponent(workspaceId)}` : '/api/workspace/restore';
+      const response = await fetch(route, { credentials: 'include' });
+      if (!response.ok) return false;
+      const restored = await response.json();
+      const workspace = restored.workspace || {};
+      const statePayload = workspace.state || {};
+      const context = statePayload.context || statePayload.composed_context || {};
+      const validation = validateWorkspacePayload(workspace);
+      if (!validation.valid) {
+        state.backendRestoration = restored;
+        state.workspaceLifecycleMessage = `Workspace was not hydrated because it failed compatibility checks: ${validation.mismatches.join(' ')}`;
+        return false;
+      }
+      state.backendRestoration = restored;
+      state.askWorkspaceId = workspace.workspace_id || context.workspaceId || state.askWorkspaceId;
+      state.askSessionId = workspace.session_id || context.sessionId || state.askSessionId;
+      state.askContextId = statePayload.context_id || context.contextId || state.askContextId;
+      state.askDomain = workspace.domain || context.domain || state.askDomain;
+      state.domain = state.askDomain || state.domain;
+      state.askApplicationId = workspace.application_id || context.applicationId || state.askApplicationId;
+      state.askSelectedApis = Array.isArray(workspace.selected_apis) ? workspace.selected_apis : (context.selectedApis || state.askSelectedApis);
+      state.askSelectedWorkflow = workspace.selected_workflow || context.selectedWorkflow || state.askSelectedWorkflow;
+      state.askSelectedSimulation = workspace.selected_simulation || context.selectedSimulation || state.askSelectedSimulation;
+      state.askMode = context.mode || statePayload.user_mode || state.askMode;
+      state.askEnvironment = context.environment || statePayload.runtime_environment || state.askEnvironment;
+      state.askWorkflowState = statePayload.workflow_state || context.workflowState || state.askWorkflowState;
+      state.askContextValidation = statePayload.validation || state.askContextValidation;
+      if (Array.isArray(statePayload.chat) && statePayload.chat.length) state.chat = statePayload.chat;
+      ensureAskWorkspaceSession();
+      return true;
     }
 
     function validateAskContext(query = state.askDraftQuestion) {
@@ -2329,6 +2800,7 @@
     }
 
     function effectiveAskSelectedApis(domain = state.askDomain) {
+      if (!domain) return [];
       const options = askApiOptionsForDomain(domain);
       const validKeys = new Set(options.map(api => api.api_key).filter(Boolean));
       const selected = (state.askSelectedApis || []).filter(key => validKeys.has(key));
@@ -2336,6 +2808,7 @@
     }
 
     function effectiveAskSimulation(domain = state.askDomain) {
+      if (!domain) return '';
       const options = askSimulationOptionsForDomain(domain);
       if (options.some(sim => sim.id === state.askSelectedSimulation)) return state.askSelectedSimulation;
       return options[0] ? options[0].id : '';
@@ -2381,16 +2854,28 @@
         sessionId: session.sessionId,
         contextId: session.contextId,
         domain: state.askDomain,
+        active_domain: state.askDomain,
         applicationId: state.askApplicationId,
+        application_id: state.askApplicationId,
+        active_application: state.askApplicationId,
         applicationName: app ? app.name : state.askApplicationId,
         selectedApis,
+        selected_apis: selectedApis,
+        active_apis: selectedApis,
         selectedApiNames,
         selectedSimulation: effectiveAskSimulation(),
+        selected_simulation: effectiveAskSimulation(),
+        active_simulation: effectiveAskSimulation(),
         selectedWorkflow: state.askSelectedWorkflow,
+        selected_workflow: state.askSelectedWorkflow,
+        active_workflow: state.askSelectedWorkflow,
         workflowState: state.askWorkflowState,
+        workflow_state: state.askWorkflowState,
         activeRuntime: state.executionRuntime && state.executionRuntime.executionId || state.healthcareImplExecution && state.healthcareImplExecution.id || '',
         environment: state.askEnvironment,
+        runtime_environment: state.askEnvironment,
         mode: state.askMode,
+        user_mode: state.askMode,
         overrideMismatch: state.askOverrideMismatch,
         subscriptionTier: currentEntitlement().tier
       };
@@ -2411,8 +2896,8 @@
       const active = runtime && runtime.activeRuntime || {};
       const layers = runtime && runtime.coreLayers || [];
       return `<div class="cogni-section"><h4>Runtime Proof</h4><div class="mini-metrics">${[
-        ['Session', state.askSessionId || 'initializing'],
-        ['Context', state.askContextId || 'pending'],
+        ['Session', state.workspaceInitialized ? 'Session Active' : 'Not started'],
+        ['Context', state.askDomain ? 'Context Ready' : 'Needs setup'],
         ['Execution', active.latestExecution ? active.latestExecution.status : 'idle'],
         ['Simulation', active.latestSimulation ? 'replay-ready' : 'idle'],
         ['Core Layers', layers.filter(layer => layer.status === 'operational').length || 0]
@@ -2424,7 +2909,7 @@
       return `<div class="cogni-response">
         <div class="cogni-mode"><span class="tag prod">${escapeHtml(response.assistantName || 'Ask COGNI')}</span><span class="tag blue">${escapeHtml(response.workspaceMode || response.mode || 'guided')} mode</span><span class="tag">${escapeHtml(response.intent || 'general')}</span><span class="tag">${escapeHtml(response.domain || 'platform')}</span></div>
         ${response.contextValidation && !response.contextValidation.valid ? renderAskValidation(response.contextValidation) : ''}
-        ${response.currentContext ? `<div class="cogni-section"><h4>Current Context</h4><p>${Object.entries(response.currentContext).map(([key, value]) => `<strong>${escapeHtml(key)}:</strong> ${escapeHtml(Array.isArray(value) ? value.join(', ') || 'None selected' : String(value || 'Not selected'))}`).join(' &nbsp; ')}</p></div>` : ''}
+        ${response.currentContext ? `<div class="cogni-section"><h4>Current Context</h4><p>${Object.entries(response.currentContext).filter(([key]) => !/id$/i.test(key) && !/workspace|session|context/i.test(key)).map(([key, value]) => `<strong>${escapeHtml(key)}:</strong> ${escapeHtml(Array.isArray(value) ? value.join(', ') || 'None selected' : String(value || 'Not selected'))}`).join(' &nbsp; ')}</p></div>` : ''}
         ${renderAskWorkflowState()}
         <div class="cogni-section"><h4>Simple Summary</h4><p>${escapeHtml(response.directAnswer || '')}</p></div>
         ${renderQuickActions(response.quickActions || [])}
@@ -2466,8 +2951,8 @@
       const context = askWorkspaceContext();
       document.getElementById('view-ask').innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Ask COGNI Workspace</h2><div class="sub">Context-aware multi-domain cognitive workspace intelligence. Choose the operational context first, then ask for guidance.</div></div><span class="tag prod">${escapeHtml(profile.title)}</span></div><div class="panel-body">
         <div class="stat-grid">${[
-          ['Workspace', session.workspaceId],
-          ['Domain', context.domain],
+          ['Workspace', state.workspaceLifecycle === 'sandbox' ? 'Sandbox Active' : 'Session Active'],
+          ['Domain', context.domain || 'Not selected'],
           ['Application', context.applicationName || 'Not selected'],
           ['Environment', context.environment],
           ['Mode', context.mode],
@@ -2479,7 +2964,7 @@
       <div style="display:grid;grid-template-columns:minmax(220px,0.85fr) minmax(360px,1.45fr) minmax(300px,1fr);gap:18px;margin-top:18px;align-items:start;">
         <div class="panel"><div class="panel-head"><div><h2>Workspace Context</h2><div class="sub">Ask COGNI synchronizes with these selections without a page refresh.</div></div></div><div class="panel-body">
           ${renderAskValidation()}
-          <div class="field"><label>Domain</label><select class="select" id="askDomain">${domainOptions.map(item => `<option value="${item}" ${state.askDomain === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
+          <div class="field"><label>Domain</label><select class="select" id="askDomain"><option value="" ${!state.askDomain ? 'selected' : ''}>Select a domain</option>${domainOptions.map(item => `<option value="${item}" ${state.askDomain === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
           <div class="field" style="margin-top:10px;"><label>Application</label><select class="select" id="askApplicationId">${appOptions.map(app => `<option value="${app.id}" ${state.askApplicationId === app.id ? 'selected' : ''}>${app.name}</option>`).join('')}</select></div>
           <div class="field" style="margin-top:10px;"><label>User mode</label><select class="select" id="askMode">${['beginner','business','technical','engineering','diagnostic'].map(item => `<option value="${item}" ${state.askMode === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
           <div class="field" style="margin-top:10px;"><label>Environment</label><select class="select" id="askEnvironment">${['sandbox','production','edge','hybrid','sovereign'].map(item => `<option value="${item}" ${state.askEnvironment === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
@@ -3424,10 +3909,113 @@
         });
     }
 
+    function renderWorkflowProgressSteps(steps = []) {
+      const fallback = [
+        { id: 'select-domain', label: 'Select Domain', state: 'completed' },
+        { id: 'select-application', label: 'Select Application', state: 'completed' },
+        { id: 'select-apis', label: 'Select APIs', state: 'active' },
+        { id: 'generate-workflow', label: 'Generate Workflow', state: 'pending' },
+        { id: 'run-orchestration', label: 'Run Orchestration', state: 'pending' },
+        { id: 'observe-telemetry', label: 'Observe Telemetry', state: 'pending' },
+        { id: 'inspect-replay', label: 'Inspect Replay', state: 'pending' },
+        { id: 'generate-sdk', label: 'Generate SDK', state: 'pending' },
+        { id: 'deploy-runtime', label: 'Deploy Runtime', state: 'pending' }
+      ];
+      return (steps.length ? steps : fallback).map((step, index) => `<div class="workflow-progress-step" data-state="${escapeHtml(step.state || 'pending')}"><span class="step-dot">${index + 1}</span><strong>${escapeHtml(step.label)}</strong><span>${escapeHtml(step.state || 'pending')}</span></div>`).join('');
+    }
+
+    function renderEnterpriseNotifications(items = state.enterpriseNotifications || []) {
+      if (!items.length) return empty('No runtime notifications yet. Run an orchestration, simulation, or telemetry event to populate this center.');
+      return `<div class="notification-stack">${items.map(item => `<button class="notification-item" type="button" data-severity="${escapeHtml(item.severity || 'info')}" data-notification-id="${escapeHtml(item.id || '')}"><strong>${escapeHtml(item.title || item.type || 'Runtime event')}</strong><span>${escapeHtml(item.message || 'Runtime event synchronized')}</span><span>${escapeHtml(item.timestamp || '')}</span></button>`).join('')}</div>`;
+    }
+
+    function renderOperatingWorkspace() {
+      const target = document.getElementById('view-operating');
+      if (!target) return;
+      const ux = state.enterpriseUxStatus || {};
+      const workspace = ux.workspace || {};
+      const runtime = ux.runtime || {};
+      const dashboards = ux.dashboards || {};
+      const contextRows = [
+        ['Workspace', workspace.id || state.askWorkspaceId || 'Initializing'],
+        ['Domain', workspace.domain || state.domain],
+        ['Application', workspace.application || state.selectedApplicationId || state.askApplicationId || 'CINTENT'],
+        ['Environment', workspace.environment || state.playgroundMode],
+        ['Tenant', workspace.tenant || (state.session && state.session.user && state.session.user.tenant) || 'tenant'],
+        ['Mode', ux.userMode || state.askMode],
+        ['Orchestration', runtime.latestOrchestrationId || runtime.orchestrationState || 'ready'],
+        ['Replay', runtime.latestReplayId || runtime.replayState || 'ready']
+      ];
+      target.innerHTML = `<div class="enterprise-workspace-shell">
+        <aside class="enterprise-rail">
+          <div class="panel"><div class="panel-head"><div><h2>Workspace Context</h2><div class="sub">Persistent tenant-aware runtime context.</div></div></div><div class="panel-body"><div class="enterprise-context-grid">${contextRows.map(row => `<div class="mini-metric"><strong>${escapeHtml(row[0])}</strong><span>${escapeHtml(row[1])}</span></div>`).join('')}</div></div></div>
+          <div class="panel"><div class="panel-head"><div><h2>Guided Workflow</h2><div class="sub">Enterprise execution path from context to deployment.</div></div></div><div class="panel-body"><div class="workflow-progress">${renderWorkflowProgressSteps(ux.workflowProgress || [])}</div></div></div>
+        </aside>
+        <main class="enterprise-main">
+          <div class="panel"><div class="panel-head"><div><h2>Enterprise Operating Workspace</h2><div class="sub">Live orchestration, replay, telemetry, governance, and deployment visibility.</div></div><span class="tag prod">Operational</span></div><div class="panel-body">
+            <div class="runtime-board">
+              <div class="runtime-card"><h3>Orchestration Throughput</h3><div class="runtime-number">${Number(dashboards.orchestrationThroughput || 0)}</div><p>Runtime events through the unified orchestration fabric.</p></div>
+              <div class="runtime-card"><h3>Telemetry Activity</h3><div class="runtime-number">${Number(dashboards.telemetryActivity || 0)}</div><p>Live telemetry events available to orchestration, replay, and Ask COGNI.</p></div>
+              <div class="runtime-card"><h3>Replay Generation</h3><div class="runtime-number">${Number(dashboards.replayGeneration || 0)}</div><p>Replay-capable artifacts ready for reconstruction or export.</p></div>
+              <div class="runtime-card"><h3>Governance Events</h3><div class="runtime-number">${Number(dashboards.governanceEvents || 0)}</div><p>Runtime policy, authorization, and traceability signals.</p></div>
+              <div class="runtime-card"><h3>Workflow Activity</h3><div class="runtime-number">${Number(dashboards.workflowActivity || 0)}</div><p>Stages persisted in the active workflow state machine.</p></div>
+              <div class="runtime-card"><h3>Runtime Events</h3><div class="runtime-number">${Number(dashboards.runtimeEvents || 0)}</div><p>Event bus visibility for operational transparency.</p></div>
+            </div>
+          </div></div>
+          <div class="two-col">
+            <div class="panel"><div class="panel-head"><div><h2>Live Orchestration Graph</h2><div class="sub">Execution nodes, checkpoints, and confidence visibility.</div></div></div><div class="panel-body" id="enterpriseGraphPreview">${renderRuntimeStages(state.executionRuntime || state.studioExecution || { stages: [] }) || empty('Run orchestration to populate graph checkpoints.')}</div></div>
+            <div class="panel"><div class="panel-head"><div><h2>Replay & Telemetry</h2><div class="sub">Replay state, telemetry state, and synchronization status.</div></div></div><div class="panel-body">${infoList('Runtime synchronization', [`Replay: ${runtime.latestReplayId || runtime.replayState || 'ready'}`, `Telemetry: ${runtime.telemetryState || 'standby'}`, `Governance: ${runtime.governanceState || 'guarded'}`, `Deployment: ${runtime.deploymentState || 'sandbox-ready'}`])}</div></div>
+          </div>
+        </main>
+        <aside class="enterprise-assistant">
+          <div class="panel"><div class="panel-head"><div><h2>Ask COGNI Guidance</h2><div class="sub">Contextual intelligence with action-first guidance.</div></div></div><div class="panel-body">
+            <p class="sub">Ask COGNI uses the active workspace, orchestration, replay, telemetry, and governance state before recommending the next step.</p>
+            <div class="quick-action-grid">
+              <button class="secondary-btn" type="button" data-ask-quick="run-simulation">Run Simulation</button>
+              <button class="secondary-btn" type="button" data-ask-quick="create-workflow">Create Workflow</button>
+              <button class="secondary-btn" type="button" data-ask-quick="open-replay">Open Replay</button>
+              <button class="secondary-btn" type="button" data-ask-quick="generate-sdk">Generate SDK</button>
+              <button class="secondary-btn" type="button" data-module="observability">Open Observability</button>
+              <button class="secondary-btn" type="button" data-module="governance">Inspect Governance</button>
+            </div>
+          </div></div>
+          <div class="panel"><div class="panel-head"><div><h2>Notifications</h2><div class="sub">Enterprise event notifications from the runtime event bus.</div></div></div><div class="panel-body">${renderEnterpriseNotifications()}</div></div>
+          <div class="panel"><div class="panel-head"><div><h2>Onboarding</h2><div class="sub">First-time workspace guidance persists in this browser session.</div></div></div><div class="panel-body">${state.onboardingSeen ? '<span class="tag prod">Walkthrough completed</span>' : '<button class="action-btn" type="button" id="startEnterpriseTour">Start guided tour</button>'}</div></div>
+        </aside>
+      </div>`;
+    }
+
+    function renderWorkspaceInitialization() {
+      const target = document.getElementById('view-workspace');
+      const candidates = state.workspaceCandidates || [];
+      const validCandidates = candidates.filter(item => item.lifecycleValidation && item.lifecycleValidation.valid).slice(0, 5);
+      const invalidCandidates = candidates.filter(item => item.lifecycleValidation && !item.lifecycleValidation.valid).slice(0, 4);
+      target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Workspace Initialization</h2><div class="sub">Choose how this enterprise session should begin. CINTENT will not auto-hydrate previous domains, workflows, APIs, simulations, replay, or Ask COGNI prompts.</div></div><span class="tag ${state.workspaceInitialized ? 'prod' : 'warn'}">${state.workspaceInitialized ? 'Session Active' : 'Setup Required'}</span></div><div class="panel-body">
+        ${state.workspaceLifecycleMessage ? `<div class="lock-banner" style="margin-bottom:14px;">${escapeHtml(state.workspaceLifecycleMessage)}</div>` : ''}
+        <div class="three-col">
+          <button class="tile" type="button" data-workspace-lifecycle="fresh"><h3>Start Fresh Workspace</h3><p>Begin with empty context. No domain, workflow, APIs, simulation, replay, telemetry, or Ask COGNI prompt is restored.</p><span class="tag prod">Clean state</span></button>
+          <button class="tile" type="button" data-workspace-lifecycle="resume"><h3>Resume Previous Workspace</h3><p>Load a compatible saved workspace only after validation. Invalid combinations stay blocked.</p><span class="tag blue">${validCandidates.length} compatible</span></button>
+          <button class="tile" type="button" data-workspace-lifecycle="sandbox"><h3>Open Sandbox Example</h3><p>Open an isolated guided drone swarm example with clear sandbox status, reset support, and temporary runtime context.</p><span class="tag warn">TTL isolated</span></button>
+          <button class="tile" type="button" data-workspace-lifecycle="template" data-template="airport"><h3>Load Template</h3><p>Start from an airport baggage orchestration template. Review selections before execution.</p><span class="tag">Template</span></button>
+        </div>
+      </div></div>
+      <div class="two-col" style="margin-top:18px;">
+        <div class="panel"><div class="panel-head"><div><h2>Compatible Workspaces</h2><div class="sub">Only these can hydrate into the active workspace.</div></div></div><div class="panel-body"><div class="api-list">${validCandidates.length ? validCandidates.map(workspace => `<button class="api-card" type="button" data-workspace-resume="${escapeHtml(workspace.workspace_id || workspace.workspaceId)}"><span class="api-top"><span class="api-name">${escapeHtml(humanWorkspaceLabel(workspace))}</span><span class="stage active">Validated</span></span><span class="api-desc">Compatible domain, application, workflow, simulation, and API context.</span></button>`).join('') : empty('No compatible saved workspace is available. Start fresh or open a sandbox example.')}</div></div></div>
+        <div class="detail"><h2>Blocked Restorations</h2>${invalidCandidates.length ? `<ul>${invalidCandidates.map(workspace => `<li><strong>${escapeHtml(humanWorkspaceLabel(workspace))}</strong><br>${escapeHtml(workspace.lifecycleValidation.mismatches.join(' '))}</li>`).join('')}</ul>` : '<p>No incompatible saved workspaces detected.</p>'}</div>
+      </div>
+      <div class="detail" style="margin-top:18px;"><h2>Lifecycle Rules</h2><ul><li>Login never auto-loads previous workspace state.</li><li>Fresh workspace starts empty and Ask COGNI begins with: What would you like to build today?</li><li>Resume requires compatibility validation before hydration.</li><li>Sandbox examples are isolated and can be reset without logout.</li><li>Runtime IDs remain hidden behind human-readable status labels.</li></ul></div>`;
+    }
+
     function renderCurrentView() {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      if (!state.workspaceInitialized) {
+        document.getElementById('view-workspace').classList.add('active');
+        renderWorkspaceInitialization();
+        return;
+      }
       document.getElementById(`view-${state.module}`).classList.add('active');
       if (state.module === 'learn') renderLearn();
+      if (state.module === 'operating') renderOperatingWorkspace();
       if (state.module === 'docs') renderDocs();
       if (state.module === 'discovery') renderDiscovery();
       if (state.module === 'playground') renderPlayground();
@@ -3463,8 +4051,22 @@
     }
 
     document.addEventListener('click', event => {
+      const lifecycleBtn = event.target.closest('[data-workspace-lifecycle]');
+      if (lifecycleBtn) {
+        const action = lifecycleBtn.dataset.workspaceLifecycle;
+        if (action === 'fresh') startFreshWorkspace();
+        if (action === 'resume') resumePreviousWorkspace();
+        if (action === 'sandbox') openSandboxExample();
+        if (action === 'template') loadTemplateWorkspace(lifecycleBtn.dataset.template || 'airport');
+        return;
+      }
+      const resumeBtn = event.target.closest('[data-workspace-resume]');
+      if (resumeBtn) {
+        resumePreviousWorkspace(resumeBtn.dataset.workspaceResume);
+        return;
+      }
       const moduleBtn = event.target.closest('[data-module]');
-      if (moduleBtn) { state.module = moduleBtn.dataset.module; if (state.module === 'billing') state.cartOpen = false; render(); return; }
+      if (moduleBtn) { state.module = moduleBtn.dataset.module; if (!state.workspaceInitialized && state.module !== 'workspace') state.workspaceLifecycleMessage = 'Initialize a workspace before opening platform runtimes.'; if (state.module === 'billing') state.cartOpen = false; render(); return; }
       const domainBtn = event.target.closest('[data-domain]');
       if (domainBtn) {
         const previousDomain = state.domain;
@@ -3472,6 +4074,7 @@
         els.search.value = '';
         state.module = domains.find(d => d.id === state.domain && d.status === 'coming_soon') ? 'docs' : state.module;
         fetch('/api/traces/event', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'workspace.domain.changed', payload: { previousDomain, domain: state.domain }, decision: { contextSync: 'Ask COGNI, API filters, simulations, and replay context must refresh' } }) }).catch(() => {});
+        loadEnterpriseUxStatus().then(() => { renderEnterpriseStatusStrip(); if (state.module === 'operating') renderOperatingWorkspace(); }).catch(() => {});
         render();
         return;
       }
@@ -3556,6 +4159,24 @@
         });
         return;
       }
+      const enterpriseQuickBtn = event.target.closest('[data-ask-quick]');
+      if (enterpriseQuickBtn) {
+        executeAskQuickAction(enterpriseQuickBtn.dataset.askQuick).then(async () => {
+          await loadEnterpriseUxStatus();
+          render();
+        }).catch(error => {
+          state.enterpriseNotifications = [{ id: `ux-error-${Date.now()}`, title: 'quick action failed', message: error.message, timestamp: new Date().toISOString(), severity: 'warning' }, ...(state.enterpriseNotifications || [])];
+          renderOperatingWorkspace();
+        });
+        return;
+      }
+      if (event.target.id === 'startEnterpriseTour') {
+        state.onboardingSeen = true;
+        sessionStorage.setItem('cintentEnterpriseOnboardingSeen', 'true');
+        state.enterpriseNotifications = [{ id: `tour-${Date.now()}`, title: 'guided tour started', message: 'Use the left navigation, live status strip, center runtime workspace, and Ask COGNI action panel to execute the platform flow.', timestamp: new Date().toISOString(), severity: 'info' }, ...(state.enterpriseNotifications || [])];
+        renderOperatingWorkspace();
+        return;
+      }
       const learningQueryBtn = event.target.closest('[data-learning-query]');
       if (learningQueryBtn) { state.askDraftQuestion = `Learning Mode: ${learningQueryBtn.dataset.learningQuery}`; state.askLastResponse = null; state.module = 'ask'; render(); return; }
       const learningSectionBtn = event.target.closest('[data-learning-section]');
@@ -3626,9 +4247,15 @@
 
     els.search.addEventListener('input', () => { state.domain = 'all'; render(); });
     els.cartBtn.addEventListener('click', () => { state.cartOpen = true; state.module = 'billing'; render(); });
-    els.sandboxBtn.addEventListener('click', () => { state.playgroundMode = 'sandbox'; state.module = 'playground'; render(); });
+    els.sandboxBtn.addEventListener('click', () => { openSandboxExample(); });
     els.hideHero.addEventListener('click', () => { state.introHidden = true; renderShell(); });
-    els.reset.addEventListener('click', () => { state.module = 'docs'; state.domain = 'all'; state.stage = 'all'; state.introHidden = false; state.selectedApiId = apiCatalog.some(api => api.id === 'rbt-workflow') ? 'rbt-workflow' : (apiCatalog[0] && apiCatalog[0].id); state.cartOpen = false; state.cart = ['rbt-workflow', 'gov-validate'].filter(id => apiCatalog.some(api => api.id === id)); els.search.value = ''; render(); });
+    els.reset.addEventListener('click', async () => {
+      await fetch('/api/workspace/reset', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason: 'user-reset' }) }).catch(() => {});
+      resetActiveWorkspaceState({ initialized: false, lifecycle: 'initializing', module: 'workspace-init' });
+      state.workspaceLifecycleMessage = 'Workspace reset complete. Active orchestration, replay, telemetry, workflow, simulation, and Ask COGNI context were cleared.';
+      await loadWorkspaceCandidates();
+      render();
+    });
 
     document.addEventListener('change', event => {
       if (event.target.id === 'playApi') { state.selectedApiId = event.target.value; state.executionRuntime = null; stopExecutionSubscription(); render(); }
@@ -4602,9 +5229,16 @@
         await loadBackendBilling();
         await loadBackendSimulations();
         await loadPlatformRuntimeStatus();
-        applyBootstrapContext();
+        await loadEnterpriseUxStatus();
+        await loadWorkspaceCandidates();
+        resetActiveWorkspaceState({ initialized: false, lifecycle: 'initializing', module: 'workspace-init' });
+        if (window.__CINTENT_BOOTSTRAP__ && window.__CINTENT_BOOTSTRAP__.preload && location.pathname.includes('/sandbox')) {
+          await openSandboxExample();
+          return;
+        }
         render();
         initExecutionTracePanel();
+        connectEnterpriseEventStream();
       } catch (error) {
         location.href = '/login';
       }

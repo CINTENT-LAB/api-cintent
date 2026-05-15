@@ -1,0 +1,30 @@
+{
+  "status": 200,
+  "body": {
+    "status": "ingested",
+    "telemetry": {
+      "id": "telemetry-1778841163665-1f3cc7",
+      "tenant": "demo-tenant",
+      "domain": "manufacturing",
+      "source": "audit-sensor-press-9",
+      "anomaly": true,
+      "sample": {
+        "domain": "manufacturing",
+        "source": "audit-sensor-press-9",
+        "metric": "temperature",
+        "value": 92.2,
+        "threshold": 85,
+        "anomaly": true,
+        "workflow": "predictive maintenance"
+      },
+      "timestamp": "2026-05-15T10:32:43.665Z"
+    },
+    "orchestration": null,
+    "orchestrationTrigger": {
+      "status": "queued",
+      "reason": "telemetry anomaly threshold crossed",
+      "telemetryId": "telemetry-1778841163665-1f3cc7"
+    },
+    "backpressure": false
+  }
+}

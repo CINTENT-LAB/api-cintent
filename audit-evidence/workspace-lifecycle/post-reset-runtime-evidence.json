@@ -1,0 +1,3382 @@
+{
+  "source": "phase-x2b-runtime-integration-evidence",
+  "tenant": "demo-tenant",
+  "persistenceSource": "local-runtime-ledger-fallback",
+  "backendDriven": true,
+  "databaseWrites": {
+    "workspaces": 12,
+    "telemetry": 25,
+    "replayEvents": 50,
+    "runtimeEvents": 50,
+    "askMemory": 10
+  },
+  "replayPersistence": [
+    {
+      "replay_event_id": "trace-1778848693457-bd0822b0",
+      "tenant_id": "demo-tenant",
+      "session_id": "demo-5d2dcd86110e",
+      "replay_id": "studio-replay-studio-workflow-1778848690579-1778848693450",
+      "event_type": "orchestration.fabric.executed",
+      "payload": {
+        "id": "trace-1778848693457-bd0822b0",
+        "type": "orchestration.fabric.executed",
+        "canonicalEventType": "orchestration.started",
+        "schemaVersion": "cintent.cognitive.v1.0.0",
+        "tenant": "demo-tenant",
+        "session": "demo-5d2dcd86110e",
+        "actor": {
+          "role": "guest",
+          "demo": true,
+          "sandbox": false
+        },
+        "payload": {
+          "orchestrationId": "studio-exec-1778848693450",
+          "replayId": "studio-replay-studio-workflow-1778848690579-1778848693450",
+          "stages": 8
+        },
+        "canonical": {
+          "schema_version": "cintent.cognitive.v1.0.0",
+          "entity_type": "runtime_event",
+          "entity_id": "runtime_event-e5df4ec8b4328d11",
+          "tenant_id": "demo-tenant",
+          "workspace_id": null,
+          "session_id": "demo-5d2dcd86110e",
+          "domain": "enterprise",
+          "application_id": null,
+          "created_at": "2026-05-15T12:38:13.457Z",
+          "updated_at": "2026-05-15T12:38:13.457Z",
+          "event_type": "orchestration.started",
+          "source_event_type": "orchestration.fabric.executed",
+          "payload": {
+            "orchestrationId": "studio-exec-1778848693450",
+            "replayId": "studio-replay-studio-workflow-1778848690579-1778848693450",
+            "stages": 8
+          },
+          "metadata": {
+            "trace": true,
+            "decision": {
+              "governance": {
+                "status": "passed",
+                "interventions": [
+                  {
+                    "node": "api-drone-fleet",
+                    "policy": "tenant-governance-policy",
+                    "status": "injected"
+                  },
+                  {
+                    "node": "api-observe-replay-reconstruct",
+                    "policy": "tenant-governance-policy",
+                    "status": "injected"
+                  },
+                  {
+                    "node": "governance-policy-validation",
+                    "policy": "tenant-governance-policy",
+                    "status": "injected"
+                  }
+                ]
+              },
+              "confidence": [
+                {
+                  "step": "api-drone-fleet",
+                  "before": 0.66,
+                  "score": 0.71
+                },
+                {
+                  "step": "api-observe-replay-reconstruct",
+                  "before": 0.685,
+                  "score": 0.736
+                },
+                {
+                  "step": "governance-policy-validation",
+                  "before": 0.71,
+                  "score": 0.762
+                },
+                {
+                  "step": "replay-capture-node",
+                  "before": 0.735,
+                  "score": 0.788
+                },
+                {
+                  "step": "multi-agent-coordination",
+                  "before": 0.76,
+                  "score": 0.814
+                },
+                {
+                  "step": "simulation-execution-node",
+                  "before": 0.785,
+                  "score": 0.84
+                },
+                {
+                  "step": "observability-telemetry-node",
+                  "before": 0.81,
+                  "score": 0.866
+                },
+                {
+                  "step": "human-approval-node",
+                  "before": 0.835,
+                  "score": 0.892
+                }
+              ]
+            }
+          },
+          "governance": {
+            "schema_version": "cintent.cognitive.v1.0.0",
+            "governance_id": "governance-fa0495c50313df00",
+            "tenant_id": "demo-tenant",
+            "domain": "enterprise",
+            "operation": "orchestration.started",
+            "profile": "enterprise-controls",
+            "inherited_policies": [
+              "schema-version-required",
+              "tenant-boundary-required",
+              "lineage-required",
+              "rbac",
+              "audit-lineage",
+              "tenant-boundary"
+            ],
+            "constraints": [
+              {
+                "id": "tenant-scope",
+                "status": "enforced",
+                "reason": "Every runtime operation must have tenant scope."
+              },
+              {
+                "id": "schema-version",
+                "status": "enforced",
+                "reason": "cintent.cognitive.v1.0.0 attached to operation."
+              },
+              {
+                "id": "replay-lineage",
+                "status": "enforced",
+                "reason": "Replay linkage is required when execution emits replayable state."
+              },
+              {
+                "id": "role-scope",
+                "status": "advisory",
+                "reason": "Role guest mapped to canonical RBAC envelope."
+              }
+            ],
+            "decision": "allowed",
+            "evaluated_at": "2026-05-15T12:38:13.457Z"
+          },
+          "lineage": {
+            "nodes": [
+              {
+                "id": "demo-tenant",
+                "type": "tenant"
+              },
+              {
+                "id": "enterprise",
+                "type": "domain"
+              },
+              {
+                "id": "studio-exec-1778848693450",
+                "type": "orchestration"
+              },
+              {
+                "id": "studio-replay-studio-workflow-1778848690579-1778848693450",
+                "type": "replay"
+              }
+            ],
+            "edges": [
+              {
+                "from": "demo-tenant",
+                "to": "enterprise",
+                "relation": "tenant_to_domain"
+              },
+              {
+                "from": "enterprise",
+                "to": "studio-exec-1778848693450",
+                "relation": "domain_to_orchestration"
+              },
+              {
+                "from": "studio-exec-1778848693450",
+                "to": "studio-replay-studio-workflow-1778848690579-1778848693450",
+                "relation": "orchestration_to_replay"
+              }
+            ]
+          }
+        },
+        "decision": {
+          "governance": {
+            "status": "passed",
+            "interventions": [
+              {
+                "node": "api-drone-fleet",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              },
+              {
+                "node": "api-observe-replay-reconstruct",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              },
+              {
+                "node": "governance-policy-validation",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              }
+            ]
+          },
+          "confidence": [
+            {
+              "step": "api-drone-fleet",
+              "before": 0.66,
+              "score": 0.71
+            },
+            {
+              "step": "api-observe-replay-reconstruct",
+              "before": 0.685,
+              "score": 0.736
+            },
+            {
+              "step": "governance-policy-validation",
+              "before": 0.71,
+              "score": 0.762
+            },
+            {
+              "step": "replay-capture-node",
+              "before": 0.735,
+              "score": 0.788
+            },
+            {
+              "step": "multi-agent-coordination",
+              "before": 0.76,
+              "score": 0.814
+            },
+            {
+              "step": "simulation-execution-node",
+              "before": 0.785,
+              "score": 0.84
+            },
+            {
+              "step": "observability-telemetry-node",
+              "before": 0.81,
+              "score": 0.866
+            },
+            {
+              "step": "human-approval-node",
+              "before": 0.835,
+              "score": 0.892
+            }
+          ]
+        },
+        "timestamp": "2026-05-15T12:38:13.457Z"
+      },
+      "created_at": "2026-05-15T12:38:13.457Z"
+    },
+    {
+      "replay_event_id": "trace-1778848699655-ebe836ea",
+      "tenant_id": "demo-tenant",
+      "session_id": "demo-5d2dcd86110e",
+      "replay_id": null,
+      "event_type": "telemetry.triggered.orchestration.queued",
+      "payload": {
+        "id": "trace-1778848699655-ebe836ea",
+        "type": "telemetry.triggered.orchestration.queued",
+        "canonicalEventType": "telemetry.ingested",
+        "schemaVersion": "cintent.cognitive.v1.0.0",
+        "tenant": "demo-tenant",
+        "session": "demo-5d2dcd86110e",
+        "actor": {
+          "role": "guest",
+          "demo": true,
+          "sandbox": false
+        },
+        "payload": {
+          "telemetry": {
+            "id": "telemetry-1778848699654-6f5932",
+            "tenant": "demo-tenant",
+            "domain": "manufacturing",
+            "source": "x2b-press-1",
+            "anomaly": true,
+            "sample": {
+              "domain": "manufacturing",
+              "source": "x2b-press-1",
+              "metrics": {
+                "temperatureC": 91.5,
+                "vibrationMmS": 6.4
+              },
+              "thresholds": {
+                "temperatureC": 85,
+                "vibrationMmS": 5
+              },
+              "workflow": "predictive maintenance"
+            },
+            "timestamp": "2026-05-15T12:38:19.654Z",
+            "canonical": {
+              "schema_version": "cintent.cognitive.v1.0.0",
+              "entity_type": "telemetry",
+              "entity_id": "telemetry-1778848699654-6f5932",
+              "tenant_id": "demo-tenant",
+              "workspace_id": null,
+              "session_id": "demo-5d2dcd86110e",
+              "domain": "manufacturing",
+              "application_id": null,
+              "created_at": "2026-05-15T12:38:19.654Z",
+              "updated_at": "2026-05-15T12:38:19.654Z",
+              "event_type": "telemetry.ingested",
+              "source": "x2b-press-1",
+              "telemetry_category": "industrial-sensor",
+              "metrics": {
+                "temperatureC": 91.5,
+                "vibrationMmS": 6.4
+              },
+              "thresholds": {
+                "temperatureC": 85,
+                "vibrationMmS": 5
+              },
+              "confidence": 0.68,
+              "anomaly_state": "anomaly_detected",
+              "governance_state": "allowed",
+              "links": {
+                "orchestration_id": null,
+                "replay_id": null,
+                "workflow_id": null,
+                "governance_id": "governance-a7d8c8c16f8e36c2"
+              }
+            },
+            "governance": {
+              "schema_version": "cintent.cognitive.v1.0.0",
+              "governance_id": "governance-a7d8c8c16f8e36c2",
+              "tenant_id": "demo-tenant",
+              "domain": "manufacturing",
+              "operation": "telemetry.anomaly.detected",
+              "profile": "industrial-safety",
+              "inherited_policies": [
+                "schema-version-required",
+                "tenant-boundary-required",
+                "lineage-required",
+                "machine-safety",
+                "maintenance-escalation",
+                "operator-audit"
+              ],
+              "constraints": [
+                {
+                  "id": "tenant-scope",
+                  "status": "enforced",
+                  "reason": "Every runtime operation must have tenant scope."
+                },
+                {
+                  "id": "schema-version",
+                  "status": "enforced",
+                  "reason": "cintent.cognitive.v1.0.0 attached to operation."
+                },
+                {
+                  "id": "replay-lineage",
+                  "status": "advisory",
+                  "reason": "Replay linkage is required when execution emits replayable state."
+                },
+                {
+                  "id": "role-scope",
+                  "status": "advisory",
+                  "reason": "Role guest mapped to canonical RBAC envelope."
+                }
+              ],
+              "decision": "allowed",
+              "evaluated_at": "2026-05-15T12:38:19.654Z"
+            }
+          },
+          "queue": "cintent-orchestration-workers"
+        },
+        "canonical": {
+          "schema_version": "cintent.cognitive.v1.0.0",
+          "entity_type": "runtime_event",
+          "entity_id": "runtime_event-e5df4ec8b4328d11",
+          "tenant_id": "demo-tenant",
+          "workspace_id": null,
+          "session_id": "demo-5d2dcd86110e",
+          "domain": "enterprise",
+          "application_id": null,
+          "created_at": "2026-05-15T12:38:19.655Z",
+          "updated_at": "2026-05-15T12:38:19.655Z",
+          "event_type": "telemetry.ingested",
+          "source_event_type": "telemetry.triggered.orchestration.queued",
+          "payload": {
+            "telemetry": {
+              "id": "telemetry-1778848699654-6f5932",
+              "tenant": "demo-tenant",
+              "domain": "manufacturing",
+              "source": "x2b-press-1",
+              "anomaly": true,
+              "sample": {
+                "domain": "manufacturing",
+                "source": "x2b-press-1",
+                "metrics": {
+                  "temperatureC": 91.5,
+                  "vibrationMmS": 6.4
+                },
+                "thresholds": {
+                  "temperatureC": 85,
+                  "vibrationMmS": 5
+                },
+                "workflow": "predictive maintenance"
+              },
+              "timestamp": "2026-05-15T12:38:19.654Z",
+              "canonical": {
+                "schema_version": "cintent.cognitive.v1.0.0",
+                "entity_type": "telemetry",
+                "entity_id": "telemetry-1778848699654-6f5932",
+                "tenant_id": "demo-tenant",
+                "workspace_id": null,
+                "session_id": "demo-5d2dcd86110e",
+                "domain": "manufacturing",
+                "application_id": null,
+                "created_at": "2026-05-15T12:38:19.654Z",
+                "updated_at": "2026-05-15T12:38:19.654Z",
+                "event_type": "telemetry.ingested",
+                "source": "x2b-press-1",
+                "telemetry_category": "industrial-sensor",
+                "metrics": {
+                  "temperatureC": 91.5,
+                  "vibrationMmS": 6.4
+                },
+                "thresholds": {
+                  "temperatureC": 85,
+                  "vibrationMmS": 5
+                },
+                "confidence": 0.68,
+                "anomaly_state": "anomaly_detected",
+                "governance_state": "allowed",
+                "links": {
+                  "orchestration_id": null,
+                  "replay_id": null,
+                  "workflow_id": null,
+                  "governance_id": "governance-a7d8c8c16f8e36c2"
+                }
+              },
+              "governance": {
+                "schema_version": "cintent.cognitive.v1.0.0",
+                "governance_id": "governance-a7d8c8c16f8e36c2",
+                "tenant_id": "demo-tenant",
+                "domain": "manufacturing",
+                "operation": "telemetry.anomaly.detected",
+                "profile": "industrial-safety",
+                "inherited_policies": [
+                  "schema-version-required",
+                  "tenant-boundary-required",
+                  "lineage-required",
+                  "machine-safety",
+                  "maintenance-escalation",
+                  "operator-audit"
+                ],
+                "constraints": [
+                  {
+                    "id": "tenant-scope",
+                    "status": "enforced",
+                    "reason": "Every runtime operation must have tenant scope."
+                  },
+                  {
+                    "id": "schema-version",
+                    "status": "enforced",
+                    "reason": "cintent.cognitive.v1.0.0 attached to operation."
+                  },
+                  {
+                    "id": "replay-lineage",
+                    "status": "advisory",
+                    "reason": "Replay linkage is required when execution emits replayable state."
+                  },
+                  {
+                    "id": "role-scope",
+                    "status": "advisory",
+                    "reason": "Role guest mapped to canonical RBAC envelope."
+                  }
+                ],
+                "decision": "allowed",
+                "evaluated_at": "2026-05-15T12:38:19.654Z"
+              }
+            },
+            "queue": "cintent-orchestration-workers"
+          },
+          "metadata": {
+            "trace": true,
+            "decision": {
+              "anomaly": true,
+              "asyncQueue": true
+            }
+          },
+          "governance": {
+            "schema_version": "cintent.cognitive.v1.0.0",
+            "governance_id": "governance-d65bfdd305a95374",
+            "tenant_id": "demo-tenant",
+            "domain": "enterprise",
+            "operation": "telemetry.ingested",
+            "profile": "enterprise-controls",
+            "inherited_policies": [
+              "schema-version-required",
+              "tenant-boundary-required",
+              "lineage-required",
+              "rbac",
+              "audit-lineage",
+              "tenant-boundary"
+            ],
+            "constraints": [
+              {
+                "id": "tenant-scope",
+                "status": "enforced",
+                "reason": "Every runtime operation must have tenant scope."
+              },
+              {
+                "id": "schema-version",
+                "status": "enforced",
+                "reason": "cintent.cognitive.v1.0.0 attached to operation."
+              },
+              {
+                "id": "replay-lineage",
+                "status": "advisory",
+                "reason": "Replay linkage is required when execution emits replayable state."
+              },
+              {
+                "id": "role-scope",
+                "status": "advisory",
+                "reason": "Role guest mapped to canonical RBAC envelope."
+              }
+            ],
+            "decision": "allowed",
+            "evaluated_at": "2026-05-15T12:38:19.655Z"
+          },
+          "lineage": {
+            "nodes": [
+              {
+                "id": "demo-tenant",
+                "type": "tenant"
+              },
+              {
+                "id": "enterprise",
+                "type": "domain"
+              }
+            ],
+            "edges": [
+              {
+                "from": "demo-tenant",
+                "to": "enterprise",
+                "relation": "tenant_to_domain"
+              }
+            ]
+          }
+        },
+        "decision": {
+          "anomaly": true,
+          "asyncQueue": true
+        },
+        "timestamp": "2026-05-15T12:38:19.655Z"
+      },
+      "created_at": "2026-05-15T12:38:19.655Z"
+    },
+    {
+      "replay_event_id": "trace-1778848896183-2622cd29",
+      "tenant_id": "demo-tenant",
+      "session_id": "demo-762c6c905650",
+      "replay_id": null,
+      "event_type": "telemetry.triggered.orchestration.queued",
+      "payload": {
+        "id": "trace-1778848896183-2622cd29",
+        "type": "telemetry.triggered.orchestration.queued",
+        "canonicalEventType": "telemetry.ingested",
+        "schemaVersion": "cintent.cognitive.v1.0.0",
+        "tenant": "demo-tenant",
+        "session": "demo-762c6c905650",
+        "actor": {
+          "role": "guest",
+          "demo": true,
+          "sandbox": false
+        },
+        "payload": {
+          "telemetry": {
+            "id": "x2c-manufacturing-telemetry",
+            "tenant": "demo-tenant",
+            "domain": "manufacturing",
+            "source": "x2c-validation-sensor",
+            "anomaly": true,
+            "sample": {
+              "id": "x2c-manufacturing-telemetry",
+              "domain": "manufacturing",
+              "source": "x2c-validation-sensor",
+              "metrics": {
+                "temperatureC": 92,
+                "vibrationMmS": 6.1
+              },
+              "thresholds": {
+                "temperatureC": 85,
+                "vibrationMmS": 5
+              }
+            },
+            "timestamp": "2026-05-15T12:41:36.182Z",
+            "canonical": {
+              "schema_version": "cintent.cognitive.v1.0.0",
+              "entity_type": "telemetry",
+              "entity_id": "x2c-manufacturing-telemetry",
+              "tenant_id": "demo-tenant",
+              "workspace_id": null,
+              "session_id": "demo-762c6c905650",
+              "domain": "manufacturing",
+              "application_id": null,
+              "created_at": "2026-05-15T12:41:36.182Z",
+              "updated_at": "2026-05-15T12:41:36.182Z",
+              "event_type": "telemetry.ingested",
+              "source": "x2c-validation-sensor",
+              "telemetry_category": "industrial-sensor",
+              "metrics": {
+                "temperatureC": 92,
+                "vibrationMmS": 6.1
+              },
+              "thresholds": {
+                "temperatureC": 85,
+                "vibrationMmS": 5
+              },
+              "confidence": 0.68,
+              "anomaly_state": "anomaly_detected",
+              "governance_state": "allowed",
+              "links": {
+                "orchestration_id": null,
+                "replay_id": null,
+                "workflow_id": null,
+                "governance_id": "governance-4c5c62c0928da488"
+              }
+            },
+            "governance": {
+              "schema_version": "cintent.cognitive.v1.0.0",
+              "governance_id": "governance-4c5c62c0928da488",
+              "tenant_id": "demo-tenant",
+              "domain": "manufacturing",
+              "operation": "telemetry.anomaly.detected",
+              "profile": "industrial-safety",
+              "inherited_policies": [
+                "schema-version-required",
+                "tenant-boundary-required",
+                "lineage-required",
+                "machine-safety",
+                "maintenance-escalation",
+                "operator-audit"
+              ],
+              "constraints": [
+                {
+                  "id": "tenant-scope",
+                  "status": "enforced",
+                  "reason": "Every runtime operation must have tenant scope."
+                },
+                {
+                  "id": "schema-version",
+                  "status": "enforced",
+                  "reason": "cintent.cognitive.v1.0.0 attached to operation."
+                },
+                {
+                  "id": "replay-lineage",
+                  "status": "advisory",
+                  "reason": "Replay linkage is required when execution emits replayable state."
+                },
+                {
+                  "id": "role-scope",
+                  "status": "advisory",
+                  "reason": "Role guest mapped to canonical RBAC envelope."
+                }
+              ],
+              "decision": "allowed",
+              "evaluated_at": "2026-05-15T12:41:36.182Z"
+            }
+          },
+          "queue": "cintent-orchestration-workers"
+        },
+        "canonical": {
+          "schema_version": "cintent.cognitive.v1.0.0",
+          "entity_type": "runtime_event",
+          "entity_id": "runtime_event-d3a1cb66c3d952f9",
+          "tenant_id": "demo-tenant",
+          "workspace_id": null,
+          "session_id": "demo-762c6c905650",
+          "domain": "enterprise",
+          "application_id": null,
+          "created_at": "2026-05-15T12:41:36.183Z",
+          "updated_at": "2026-05-15T12:41:36.183Z",
+          "event_type": "telemetry.ingested",
+          "source_event_type": "telemetry.triggered.orchestration.queued",
+          "payload": {
+            "telemetry": {
+              "id": "x2c-manufacturing-telemetry",
+              "tenant": "demo-tenant",
+              "domain": "manufacturing",
+              "source": "x2c-validation-sensor",
+              "anomaly": true,
+              "sample": {
+                "id": "x2c-manufacturing-telemetry",
+                "domain": "manufacturing",
+                "source": "x2c-validation-sensor",
+                "metrics": {
+                  "temperatureC": 92,
+                  "vibrationMmS": 6.1
+                },
+                "thresholds": {
+                  "temperatureC": 85,
+                  "vibrationMmS": 5
+                }
+              },
+              "timestamp": "2026-05-15T12:41:36.182Z",
+              "canonical": {
+                "schema_version": "cintent.cognitive.v1.0.0",
+                "entity_type": "telemetry",
+                "entity_id": "x2c-manufacturing-telemetry",
+                "tenant_id": "demo-tenant",
+                "workspace_id": null,
+                "session_id": "demo-762c6c905650",
+                "domain": "manufacturing",
+                "application_id": null,
+                "created_at": "2026-05-15T12:41:36.182Z",
+                "updated_at": "2026-05-15T12:41:36.182Z",
+                "event_type": "telemetry.ingested",
+                "source": "x2c-validation-sensor",
+                "telemetry_category": "industrial-sensor",
+                "metrics": {
+                  "temperatureC": 92,
+                  "vibrationMmS": 6.1
+                },
+                "thresholds": {
+                  "temperatureC": 85,
+                  "vibrationMmS": 5
+                },
+                "confidence": 0.68,
+                "anomaly_state": "anomaly_detected",
+                "governance_state": "allowed",
+                "links": {
+                  "orchestration_id": null,
+                  "replay_id": null,
+                  "workflow_id": null,
+                  "governance_id": "governance-4c5c62c0928da488"
+                }
+              },
+              "governance": {
+                "schema_version": "cintent.cognitive.v1.0.0",
+                "governance_id": "governance-4c5c62c0928da488",
+                "tenant_id": "demo-tenant",
+                "domain": "manufacturing",
+                "operation": "telemetry.anomaly.detected",
+                "profile": "industrial-safety",
+                "inherited_policies": [
+                  "schema-version-required",
+                  "tenant-boundary-required",
+                  "lineage-required",
+                  "machine-safety",
+                  "maintenance-escalation",
+                  "operator-audit"
+                ],
+                "constraints": [
+                  {
+                    "id": "tenant-scope",
+                    "status": "enforced",
+                    "reason": "Every runtime operation must have tenant scope."
+                  },
+                  {
+                    "id": "schema-version",
+                    "status": "enforced",
+                    "reason": "cintent.cognitive.v1.0.0 attached to operation."
+                  },
+                  {
+                    "id": "replay-lineage",
+                    "status": "advisory",
+                    "reason": "Replay linkage is required when execution emits replayable state."
+                  },
+                  {
+                    "id": "role-scope",
+                    "status": "advisory",
+                    "reason": "Role guest mapped to canonical RBAC envelope."
+                  }
+                ],
+                "decision": "allowed",
+                "evaluated_at": "2026-05-15T12:41:36.182Z"
+              }
+            },
+            "queue": "cintent-orchestration-workers"
+          },
+          "metadata": {
+            "trace": true,
+            "decision": {
+              "anomaly": true,
+              "asyncQueue": true
+            }
+          },
+          "governance": {
+            "schema_version": "cintent.cognitive.v1.0.0",
+            "governance_id": "governance-f0865d044f2e0c00",
+            "tenant_id": "demo-tenant",
+            "domain": "enterprise",
+            "operation": "telemetry.ingested",
+            "profile": "enterprise-controls",
+            "inherited_policies": [
+              "schema-version-required",
+              "tenant-boundary-required",
+              "lineage-required",
+              "rbac",
+              "audit-lineage",
+              "tenant-boundary"
+            ],
+            "constraints": [
+              {
+                "id": "tenant-scope",
+                "status": "enforced",
+                "reason": "Every runtime operation must have tenant scope."
+              },
+              {
+                "id": "schema-version",
+                "status": "enforced",
+                "reason": "cintent.cognitive.v1.0.0 attached to operation."
+              },
+              {
+                "id": "replay-lineage",
+                "status": "advisory",
+                "reason": "Replay linkage is required when execution emits replayable state."
+              },
+              {
+                "id": "role-scope",
+                "status": "advisory",
+                "reason": "Role guest mapped to canonical RBAC envelope."
+              }
+            ],
+            "decision": "allowed",
+            "evaluated_at": "2026-05-15T12:41:36.183Z"
+          },
+          "lineage": {
+            "nodes": [
+              {
+                "id": "demo-tenant",
+                "type": "tenant"
+              },
+              {
+                "id": "enterprise",
+                "type": "domain"
+              }
+            ],
+            "edges": [
+              {
+                "from": "demo-tenant",
+                "to": "enterprise",
+                "relation": "tenant_to_domain"
+              }
+            ]
+          }
+        },
+        "decision": {
+          "anomaly": true,
+          "asyncQueue": true
+        },
+        "timestamp": "2026-05-15T12:41:36.184Z"
+      },
+      "created_at": "2026-05-15T12:41:36.184Z"
+    },
+    {
+      "tenant_id": "demo-tenant",
+      "session_id": "demo-762c6c905650",
+      "replay_id": "studio-replay-studio-workflow-1778848899090-1778848901968",
+      "event_type": "orchestration.stage.completed",
+      "sequence_no": 1,
+      "payload": {
+        "stage": {
+          "order": 1,
+          "id": "api-drone-fleet",
+          "label": "Drone Fleet Coordination API",
+          "type": "api-execution",
+          "runtimeState": "initializing",
+          "liveState": "completed",
+          "durationMs": 240,
+          "confidenceBefore": 0.66,
+          "confidenceAfter": 0.71
+        },
+        "checkpoint": {
+          "checkpointId": "studio-replay-studio-workflow-1778848899090-1778848901968-checkpoint-1",
+          "stage": "api-drone-fleet",
+          "order": 1,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": false,
+          "timestamp": "2026-05-15T12:41:41.968Z"
+        }
+      }
+    },
+    {
+      "tenant_id": "demo-tenant",
+      "session_id": "demo-762c6c905650",
+      "replay_id": "studio-replay-studio-workflow-1778848899090-1778848901968",
+      "event_type": "orchestration.stage.completed",
+      "sequence_no": 2,
+      "payload": {
+        "stage": {
+          "order": 2,
+          "id": "api-observe-replay-reconstruct",
+          "label": "Replay Reconstruction API",
+          "type": "api-execution",
+          "runtimeState": "orchestrating",
+          "liveState": "completed",
+          "durationMs": 285,
+          "confidenceBefore": 0.685,
+          "confidenceAfter": 0.736
+        },
+        "checkpoint": {
+          "checkpointId": "studio-replay-studio-workflow-1778848899090-1778848901968-checkpoint-2",
+          "stage": "api-observe-replay-reconstruct",
+          "order": 2,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": true,
+          "timestamp": "2026-05-15T12:41:42.068Z"
+        }
+      }
+    },
+    {
+      "tenant_id": "demo-tenant",
+      "session_id": "demo-762c6c905650",
+      "replay_id": "studio-replay-studio-workflow-1778848899090-1778848901968",
+      "event_type": "orchestration.stage.completed",
+      "sequence_no": 3,
+      "payload": {
+        "stage": {
+          "order": 3,
+          "id": "governance-policy-validation",
+          "label": "Policy validation",
+          "type": "governance",
+          "runtimeState": "governance-check",
+          "liveState": "completed",
+          "durationMs": 330,
+          "confidenceBefore": 0.71,
+          "confidenceAfter": 0.762
+        },
+        "checkpoint": {
+          "checkpointId": "studio-replay-studio-workflow-1778848899090-1778848901968-checkpoint-3",
+          "stage": "governance-policy-validation",
+          "order": 3,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": true,
+          "timestamp": "2026-05-15T12:41:42.168Z"
+        }
+      }
+    },
+    {
+      "tenant_id": "demo-tenant",
+      "session_id": "demo-762c6c905650",
+      "replay_id": "studio-replay-studio-workflow-1778848899090-1778848901968",
+      "event_type": "orchestration.stage.completed",
+      "sequence_no": 4,
+      "payload": {
+        "stage": {
+          "order": 4,
+          "id": "replay-capture-node",
+          "label": "Replay capture",
+          "type": "replay",
+          "runtimeState": "replay-capturing",
+          "liveState": "completed",
+          "durationMs": 375,
+          "confidenceBefore": 0.735,
+          "confidenceAfter": 0.788
+        },
+        "checkpoint": {
+          "checkpointId": "studio-replay-studio-workflow-1778848899090-1778848901968-checkpoint-4",
+          "stage": "replay-capture-node",
+          "order": 4,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": true,
+          "timestamp": "2026-05-15T12:41:42.268Z"
+        }
+      }
+    },
+    {
+      "tenant_id": "demo-tenant",
+      "session_id": "demo-762c6c905650",
+      "replay_id": "studio-replay-studio-workflow-1778848899090-1778848901968",
+      "event_type": "orchestration.stage.completed",
+      "sequence_no": 5,
+      "payload": {
+        "stage": {
+          "order": 5,
+          "id": "multi-agent-coordination",
+          "label": "Agent coordination",
+          "type": "multi-agent",
+          "runtimeState": "orchestrating",
+          "liveState": "completed",
+          "durationMs": 420,
+          "confidenceBefore": 0.76,
+          "confidenceAfter": 0.814
+        },
+        "checkpoint": {
+          "checkpointId": "studio-replay-studio-workflow-1778848899090-1778848901968-checkpoint-5",
+          "stage": "multi-agent-coordination",
+          "order": 5,
+          "status": "completed",
+          "replayReady": true,
+          "rollbackReady": true,
+          "timestamp": "2026-05-15T12:41:42.368Z"
+        }
+      }
+    }
+  ],
+  "telemetryPersistence": [
+    {
+      "id": "x2c-manufacturing-telemetry",
+      "tenant": "demo-tenant",
+      "domain": "manufacturing",
+      "source": "x2c-validation-sensor",
+      "anomaly": true,
+      "sample": {
+        "id": "x2c-manufacturing-telemetry",
+        "domain": "manufacturing",
+        "source": "x2c-validation-sensor",
+        "metrics": {
+          "temperatureC": 92,
+          "vibrationMmS": 6.1
+        },
+        "thresholds": {
+          "temperatureC": 85,
+          "vibrationMmS": 5
+        }
+      },
+      "timestamp": "2026-05-15T12:41:36.182Z",
+      "canonical": {
+        "schema_version": "cintent.cognitive.v1.0.0",
+        "entity_type": "telemetry",
+        "entity_id": "x2c-manufacturing-telemetry",
+        "tenant_id": "demo-tenant",
+        "workspace_id": null,
+        "session_id": "demo-762c6c905650",
+        "domain": "manufacturing",
+        "application_id": null,
+        "created_at": "2026-05-15T12:41:36.182Z",
+        "updated_at": "2026-05-15T12:41:36.182Z",
+        "event_type": "telemetry.ingested",
+        "source": "x2c-validation-sensor",
+        "telemetry_category": "industrial-sensor",
+        "metrics": {
+          "temperatureC": 92,
+          "vibrationMmS": 6.1
+        },
+        "thresholds": {
+          "temperatureC": 85,
+          "vibrationMmS": 5
+        },
+        "confidence": 0.68,
+        "anomaly_state": "anomaly_detected",
+        "governance_state": "allowed",
+        "links": {
+          "orchestration_id": null,
+          "replay_id": null,
+          "workflow_id": null,
+          "governance_id": "governance-4c5c62c0928da488"
+        }
+      },
+      "governance": {
+        "schema_version": "cintent.cognitive.v1.0.0",
+        "governance_id": "governance-4c5c62c0928da488",
+        "tenant_id": "demo-tenant",
+        "domain": "manufacturing",
+        "operation": "telemetry.anomaly.detected",
+        "profile": "industrial-safety",
+        "inherited_policies": [
+          "schema-version-required",
+          "tenant-boundary-required",
+          "lineage-required",
+          "machine-safety",
+          "maintenance-escalation",
+          "operator-audit"
+        ],
+        "constraints": [
+          {
+            "id": "tenant-scope",
+            "status": "enforced",
+            "reason": "Every runtime operation must have tenant scope."
+          },
+          {
+            "id": "schema-version",
+            "status": "enforced",
+            "reason": "cintent.cognitive.v1.0.0 attached to operation."
+          },
+          {
+            "id": "replay-lineage",
+            "status": "advisory",
+            "reason": "Replay linkage is required when execution emits replayable state."
+          },
+          {
+            "id": "role-scope",
+            "status": "advisory",
+            "reason": "Role guest mapped to canonical RBAC envelope."
+          }
+        ],
+        "decision": "allowed",
+        "evaluated_at": "2026-05-15T12:41:36.182Z"
+      }
+    },
+    {
+      "id": "telemetry-1778848699654-6f5932",
+      "tenant": "demo-tenant",
+      "domain": "manufacturing",
+      "source": "x2b-press-1",
+      "anomaly": true,
+      "sample": {
+        "domain": "manufacturing",
+        "source": "x2b-press-1",
+        "metrics": {
+          "temperatureC": 91.5,
+          "vibrationMmS": 6.4
+        },
+        "thresholds": {
+          "temperatureC": 85,
+          "vibrationMmS": 5
+        },
+        "workflow": "predictive maintenance"
+      },
+      "timestamp": "2026-05-15T12:38:19.654Z",
+      "canonical": {
+        "schema_version": "cintent.cognitive.v1.0.0",
+        "entity_type": "telemetry",
+        "entity_id": "telemetry-1778848699654-6f5932",
+        "tenant_id": "demo-tenant",
+        "workspace_id": null,
+        "session_id": "demo-5d2dcd86110e",
+        "domain": "manufacturing",
+        "application_id": null,
+        "created_at": "2026-05-15T12:38:19.654Z",
+        "updated_at": "2026-05-15T12:38:19.654Z",
+        "event_type": "telemetry.ingested",
+        "source": "x2b-press-1",
+        "telemetry_category": "industrial-sensor",
+        "metrics": {
+          "temperatureC": 91.5,
+          "vibrationMmS": 6.4
+        },
+        "thresholds": {
+          "temperatureC": 85,
+          "vibrationMmS": 5
+        },
+        "confidence": 0.68,
+        "anomaly_state": "anomaly_detected",
+        "governance_state": "allowed",
+        "links": {
+          "orchestration_id": null,
+          "replay_id": null,
+          "workflow_id": null,
+          "governance_id": "governance-a7d8c8c16f8e36c2"
+        }
+      },
+      "governance": {
+        "schema_version": "cintent.cognitive.v1.0.0",
+        "governance_id": "governance-a7d8c8c16f8e36c2",
+        "tenant_id": "demo-tenant",
+        "domain": "manufacturing",
+        "operation": "telemetry.anomaly.detected",
+        "profile": "industrial-safety",
+        "inherited_policies": [
+          "schema-version-required",
+          "tenant-boundary-required",
+          "lineage-required",
+          "machine-safety",
+          "maintenance-escalation",
+          "operator-audit"
+        ],
+        "constraints": [
+          {
+            "id": "tenant-scope",
+            "status": "enforced",
+            "reason": "Every runtime operation must have tenant scope."
+          },
+          {
+            "id": "schema-version",
+            "status": "enforced",
+            "reason": "cintent.cognitive.v1.0.0 attached to operation."
+          },
+          {
+            "id": "replay-lineage",
+            "status": "advisory",
+            "reason": "Replay linkage is required when execution emits replayable state."
+          },
+          {
+            "id": "role-scope",
+            "status": "advisory",
+            "reason": "Role guest mapped to canonical RBAC envelope."
+          }
+        ],
+        "decision": "allowed",
+        "evaluated_at": "2026-05-15T12:38:19.654Z"
+      }
+    },
+    {
+      "id": "x2c-manufacturing-telemetry",
+      "tenant": "demo-tenant",
+      "domain": "manufacturing",
+      "source": "x2c-validation-sensor",
+      "anomaly": true,
+      "sample": {
+        "id": "x2c-manufacturing-telemetry",
+        "domain": "manufacturing",
+        "source": "x2c-validation-sensor",
+        "metrics": {
+          "temperatureC": 92,
+          "vibrationMmS": 6.1
+        },
+        "thresholds": {
+          "temperatureC": 85,
+          "vibrationMmS": 5
+        }
+      },
+      "timestamp": "2026-05-15T12:37:29.767Z",
+      "canonical": {
+        "schema_version": "cintent.cognitive.v1.0.0",
+        "entity_type": "telemetry",
+        "entity_id": "x2c-manufacturing-telemetry",
+        "tenant_id": "demo-tenant",
+        "workspace_id": null,
+        "session_id": "demo-7ee492760c03",
+        "domain": "manufacturing",
+        "application_id": null,
+        "created_at": "2026-05-15T12:37:29.767Z",
+        "updated_at": "2026-05-15T12:37:29.767Z",
+        "event_type": "telemetry.ingested",
+        "source": "x2c-validation-sensor",
+        "telemetry_category": "industrial-sensor",
+        "metrics": {
+          "temperatureC": 92,
+          "vibrationMmS": 6.1
+        },
+        "thresholds": {
+          "temperatureC": 85,
+          "vibrationMmS": 5
+        },
+        "confidence": 0.68,
+        "anomaly_state": "anomaly_detected",
+        "governance_state": "allowed",
+        "links": {
+          "orchestration_id": null,
+          "replay_id": null,
+          "workflow_id": null,
+          "governance_id": "governance-4c5c62c0928da488"
+        }
+      },
+      "governance": {
+        "schema_version": "cintent.cognitive.v1.0.0",
+        "governance_id": "governance-4c5c62c0928da488",
+        "tenant_id": "demo-tenant",
+        "domain": "manufacturing",
+        "operation": "telemetry.anomaly.detected",
+        "profile": "industrial-safety",
+        "inherited_policies": [
+          "schema-version-required",
+          "tenant-boundary-required",
+          "lineage-required",
+          "machine-safety",
+          "maintenance-escalation",
+          "operator-audit"
+        ],
+        "constraints": [
+          {
+            "id": "tenant-scope",
+            "status": "enforced",
+            "reason": "Every runtime operation must have tenant scope."
+          },
+          {
+            "id": "schema-version",
+            "status": "enforced",
+            "reason": "cintent.cognitive.v1.0.0 attached to operation."
+          },
+          {
+            "id": "replay-lineage",
+            "status": "advisory",
+            "reason": "Replay linkage is required when execution emits replayable state."
+          },
+          {
+            "id": "role-scope",
+            "status": "advisory",
+            "reason": "Role guest mapped to canonical RBAC envelope."
+          }
+        ],
+        "decision": "allowed",
+        "evaluated_at": "2026-05-15T12:37:29.767Z"
+      }
+    },
+    {
+      "id": "x2c-manufacturing-telemetry",
+      "tenant": "demo-tenant",
+      "domain": "manufacturing",
+      "source": "x2c-validation-sensor",
+      "anomaly": true,
+      "sample": {
+        "id": "x2c-manufacturing-telemetry",
+        "domain": "manufacturing",
+        "source": "x2c-validation-sensor",
+        "metrics": {
+          "temperatureC": 92,
+          "vibrationMmS": 6.1
+        },
+        "thresholds": {
+          "temperatureC": 85,
+          "vibrationMmS": 5
+        }
+      },
+      "timestamp": "2026-05-15T12:36:33.800Z",
+      "canonical": {
+        "schema_version": "cintent.cognitive.v1.0.0",
+        "entity_type": "telemetry",
+        "entity_id": "x2c-manufacturing-telemetry",
+        "tenant_id": "demo-tenant",
+        "workspace_id": null,
+        "session_id": "demo-ca43002f93bc",
+        "domain": "manufacturing",
+        "application_id": null,
+        "created_at": "2026-05-15T12:36:33.800Z",
+        "updated_at": "2026-05-15T12:36:33.800Z",
+        "event_type": "telemetry.ingested",
+        "source": "x2c-validation-sensor",
+        "telemetry_category": "industrial-sensor",
+        "metrics": {
+          "temperatureC": 92,
+          "vibrationMmS": 6.1
+        },
+        "thresholds": {
+          "temperatureC": 85,
+          "vibrationMmS": 5
+        },
+        "confidence": 0.68,
+        "anomaly_state": "anomaly_detected",
+        "governance_state": "allowed",
+        "links": {
+          "orchestration_id": null,
+          "replay_id": null,
+          "workflow_id": null,
+          "governance_id": "governance-4c5c62c0928da488"
+        }
+      },
+      "governance": {
+        "schema_version": "cintent.cognitive.v1.0.0",
+        "governance_id": "governance-4c5c62c0928da488",
+        "tenant_id": "demo-tenant",
+        "domain": "manufacturing",
+        "operation": "telemetry.anomaly.detected",
+        "profile": "industrial-safety",
+        "inherited_policies": [
+          "schema-version-required",
+          "tenant-boundary-required",
+          "lineage-required",
+          "machine-safety",
+          "maintenance-escalation",
+          "operator-audit"
+        ],
+        "constraints": [
+          {
+            "id": "tenant-scope",
+            "status": "enforced",
+            "reason": "Every runtime operation must have tenant scope."
+          },
+          {
+            "id": "schema-version",
+            "status": "enforced",
+            "reason": "cintent.cognitive.v1.0.0 attached to operation."
+          },
+          {
+            "id": "replay-lineage",
+            "status": "advisory",
+            "reason": "Replay linkage is required when execution emits replayable state."
+          },
+          {
+            "id": "role-scope",
+            "status": "advisory",
+            "reason": "Role guest mapped to canonical RBAC envelope."
+          }
+        ],
+        "decision": "allowed",
+        "evaluated_at": "2026-05-15T12:36:33.800Z"
+      }
+    },
+    {
+      "id": "telemetry-1778848051084-d1e76d",
+      "tenant": "demo-tenant",
+      "domain": "manufacturing",
+      "source": "x2b-press-1",
+      "anomaly": true,
+      "sample": {
+        "domain": "manufacturing",
+        "source": "x2b-press-1",
+        "metrics": {
+          "temperatureC": 91.5,
+          "vibrationMmS": 6.4
+        },
+        "thresholds": {
+          "temperatureC": 85,
+          "vibrationMmS": 5
+        },
+        "workflow": "predictive maintenance"
+      },
+      "timestamp": "2026-05-15T12:27:31.084Z"
+    },
+    {
+      "id": "telemetry-1778847654692-c7c228",
+      "tenant": "demo-tenant",
+      "domain": "manufacturing",
+      "source": "x2b-press-1",
+      "anomaly": true,
+      "sample": {
+        "domain": "manufacturing",
+        "source": "x2b-press-1",
+        "metrics": {
+          "temperatureC": 91.5,
+          "vibrationMmS": 6.4
+        },
+        "thresholds": {
+          "temperatureC": 85,
+          "vibrationMmS": 5
+        },
+        "workflow": "predictive maintenance"
+      },
+      "timestamp": "2026-05-15T12:20:54.692Z"
+    },
+    {
+      "id": "telemetry-1778841163665-1f3cc7",
+      "tenant": "demo-tenant",
+      "domain": "manufacturing",
+      "source": "audit-sensor-press-9",
+      "anomaly": true,
+      "sample": {
+        "domain": "manufacturing",
+        "source": "audit-sensor-press-9",
+        "metric": "temperature",
+        "value": 92.2,
+        "threshold": 85,
+        "anomaly": true,
+        "workflow": "predictive maintenance"
+      },
+      "timestamp": "2026-05-15T10:32:43.665Z"
+    },
+    {
+      "id": "telemetry-1778841058382-9d15a8",
+      "tenant": "demo-tenant",
+      "domain": "manufacturing",
+      "source": "audit-sensor-press-7",
+      "anomaly": true,
+      "sample": {
+        "domain": "manufacturing",
+        "source": "audit-sensor-press-7",
+        "metric": "temperature",
+        "value": 91.4,
+        "threshold": 85,
+        "anomaly": true,
+        "workflow": "predictive maintenance"
+      },
+      "timestamp": "2026-05-15T10:30:58.382Z"
+    }
+  ],
+  "neo4jGraphEvidence": {
+    "source": "local-graph-ledger",
+    "graphEvents": [
+      {
+        "id": "event-bb3fe7d4cee5c7c3",
+        "type": "unified_orchestration_run.persisted",
+        "tenantId": "demo-tenant",
+        "workspaceId": null,
+        "sessionId": "demo-e8a6278d6903",
+        "entityId": "studio-exec-1778849627837",
+        "payload": {
+          "orchestrationId": "studio-exec-1778849627837",
+          "workflowId": "studio-workflow-1778849627837",
+          "tenant": "demo-tenant",
+          "sessionId": "demo-e8a6278d6903",
+          "mode": "sandbox",
+          "source": "simulation-synchronization",
+          "status": "simulated-success",
+          "graph": {
+            "nodes": [
+              {
+                "id": "api-phase-intent",
+                "type": "api-execution",
+                "label": "Phase Intent Engine API",
+                "apiKey": "phase-intent",
+                "domain": "enterprise-workflow",
+                "replay": false,
+                "governance": false,
+                "order": 1,
+                "runtimeState": "initializing"
+              },
+              {
+                "id": "api-phase-domain",
+                "type": "api-execution",
+                "label": "Domain Taxonomy API",
+                "apiKey": "phase-domain",
+                "domain": "enterprise-workflow",
+                "replay": false,
+                "governance": false,
+                "order": 2,
+                "runtimeState": "orchestrating"
+              },
+              {
+                "id": "api-phase-routing",
+                "type": "api-execution",
+                "label": "Cognitive Routing API",
+                "apiKey": "phase-routing",
+                "domain": "enterprise-workflow",
+                "replay": false,
+                "governance": true,
+                "order": 3,
+                "runtimeState": "orchestrating"
+              },
+              {
+                "id": "api-cef-registry",
+                "type": "api-execution",
+                "label": "CEF Registry API",
+                "apiKey": "cef-registry",
+                "domain": "enterprise-workflow",
+                "replay": false,
+                "governance": false,
+                "order": 4,
+                "runtimeState": "orchestrating"
+              },
+              {
+                "id": "api-cef-execution",
+                "type": "api-execution",
+                "label": "CEF Execution Lifecycle API",
+                "apiKey": "cef-execution",
+                "domain": "enterprise-workflow",
+                "replay": false,
+                "governance": true,
+                "order": 5,
+                "runtimeState": "orchestrating"
+              },
+              {
+                "id": "api-cef-metadata",
+                "type": "api-execution",
+                "label": "Cognitive Metadata Contract API",
+                "apiKey": "cef-metadata",
+                "domain": "enterprise-workflow",
+                "replay": true,
+                "governance": false,
+                "order": 6,
+                "runtimeState": "orchestrating"
+              },
+              {
+                "id": "api-travel-intent",
+                "type": "api-execution",
+                "label": "Travel Intent Cognition API",
+                "apiKey": "travel-intent",
+                "domain": "travel",
+                "replay": true,
+                "governance": false,
+                "order": 7,
+                "runtimeState": "orchestrating"
+              },
+              {
+                "id": "api-travel-decision",
+                "type": "api-execution",
+                "label": "Travel Decision Graph API",
+                "apiKey": "travel-decision",
+                "domain": "travel",
+                "replay": true,
+                "governance": false,
+                "order": 8,
+                "runtimeState": "orchestrating"
+              }
+            ],
+            "edges": [
+              {
+                "from": "api-phase-intent",
+                "to": "api-phase-domain",
+                "label": "orchestration-flow"
+              },
+              {
+                "from": "api-phase-domain",
+                "to": "api-phase-routing",
+                "label": "orchestration-flow"
+              },
+              {
+                "from": "api-phase-routing",
+                "to": "api-cef-registry",
+                "label": "orchestration-flow"
+              },
+              {
+                "from": "api-cef-registry",
+                "to": "api-cef-execution",
+                "label": "orchestration-flow"
+              },
+              {
+                "from": "api-cef-execution",
+                "to": "api-cef-metadata",
+                "label": "orchestration-flow"
+              },
+              {
+                "from": "api-cef-metadata",
+                "to": "api-travel-intent",
+                "label": "orchestration-flow"
+              },
+              {
+                "from": "api-travel-intent",
+                "to": "api-travel-decision",
+                "label": "orchestration-flow"
+              }
+            ]
+          },
+          "stages": [
+            {
+              "order": 1,
+              "id": "api-phase-intent",
+              "label": "Phase Intent Engine API",
+              "type": "api-execution",
+              "runtimeState": "initializing",
+              "liveState": "completed",
+              "durationMs": 240,
+              "confidenceBefore": 0.66,
+              "confidenceAfter": 0.71
+            },
+            {
+              "order": 2,
+              "id": "api-phase-domain",
+              "label": "Domain Taxonomy API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 285,
+              "confidenceBefore": 0.685,
+              "confidenceAfter": 0.736
+            },
+            {
+              "order": 3,
+              "id": "api-phase-routing",
+              "label": "Cognitive Routing API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 330,
+              "confidenceBefore": 0.71,
+              "confidenceAfter": 0.762
+            },
+            {
+              "order": 4,
+              "id": "api-cef-registry",
+              "label": "CEF Registry API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 375,
+              "confidenceBefore": 0.735,
+              "confidenceAfter": 0.788
+            },
+            {
+              "order": 5,
+              "id": "api-cef-execution",
+              "label": "CEF Execution Lifecycle API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 420,
+              "confidenceBefore": 0.76,
+              "confidenceAfter": 0.814
+            },
+            {
+              "order": 6,
+              "id": "api-cef-metadata",
+              "label": "Cognitive Metadata Contract API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 465,
+              "confidenceBefore": 0.785,
+              "confidenceAfter": 0.84
+            },
+            {
+              "order": 7,
+              "id": "api-travel-intent",
+              "label": "Travel Intent Cognition API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 510,
+              "confidenceBefore": 0.81,
+              "confidenceAfter": 0.866
+            },
+            {
+              "order": 8,
+              "id": "api-travel-decision",
+              "label": "Travel Decision Graph API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 555,
+              "confidenceBefore": 0.835,
+              "confidenceAfter": 0.892
+            }
+          ],
+          "transitions": [
+            {
+              "from": "api-phase-intent",
+              "to": "api-phase-domain",
+              "status": "completed"
+            },
+            {
+              "from": "api-phase-domain",
+              "to": "api-phase-routing",
+              "status": "completed"
+            },
+            {
+              "from": "api-phase-routing",
+              "to": "api-cef-registry",
+              "status": "completed"
+            },
+            {
+              "from": "api-cef-registry",
+              "to": "api-cef-execution",
+              "status": "completed"
+            },
+            {
+              "from": "api-cef-execution",
+              "to": "api-cef-metadata",
+              "status": "completed"
+            },
+            {
+              "from": "api-cef-metadata",
+              "to": "api-travel-intent",
+              "status": "completed"
+            },
+            {
+              "from": "api-travel-intent",
+              "to": "api-travel-decision",
+              "status": "completed"
+            }
+          ],
+          "checkpoints": [
+            {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-1",
+              "stage": "api-phase-intent",
+              "order": 1,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": false,
+              "timestamp": "2026-05-15T12:53:47.837Z"
+            },
+            {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-2",
+              "stage": "api-phase-domain",
+              "order": 2,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": true,
+              "timestamp": "2026-05-15T12:53:47.937Z"
+            },
+            {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-3",
+              "stage": "api-phase-routing",
+              "order": 3,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": true,
+              "timestamp": "2026-05-15T12:53:48.037Z"
+            },
+            {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-4",
+              "stage": "api-cef-registry",
+              "order": 4,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": true,
+              "timestamp": "2026-05-15T12:53:48.137Z"
+            },
+            {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-5",
+              "stage": "api-cef-execution",
+              "order": 5,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": true,
+              "timestamp": "2026-05-15T12:53:48.237Z"
+            },
+            {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-6",
+              "stage": "api-cef-metadata",
+              "order": 6,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": true,
+              "timestamp": "2026-05-15T12:53:48.337Z"
+            },
+            {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-7",
+              "stage": "api-travel-intent",
+              "order": 7,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": true,
+              "timestamp": "2026-05-15T12:53:48.437Z"
+            },
+            {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-8",
+              "stage": "api-travel-decision",
+              "order": 8,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": true,
+              "timestamp": "2026-05-15T12:53:48.537Z"
+            }
+          ],
+          "governance": {
+            "status": "passed",
+            "interventions": [
+              {
+                "node": "api-phase-routing",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              },
+              {
+                "node": "api-cef-execution",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              }
+            ]
+          },
+          "replay": {
+            "replayId": "studio-replay-studio-workflow-1778849627837-1778849627837",
+            "workflowReplay": [
+              {
+                "order": 1,
+                "id": "api-phase-intent",
+                "label": "Phase Intent Engine API",
+                "type": "api-execution",
+                "runtimeState": "initializing",
+                "liveState": "completed",
+                "durationMs": 240,
+                "confidenceBefore": 0.66,
+                "confidenceAfter": 0.71
+              },
+              {
+                "order": 2,
+                "id": "api-phase-domain",
+                "label": "Domain Taxonomy API",
+                "type": "api-execution",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 285,
+                "confidenceBefore": 0.685,
+                "confidenceAfter": 0.736
+              },
+              {
+                "order": 3,
+                "id": "api-phase-routing",
+                "label": "Cognitive Routing API",
+                "type": "api-execution",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 330,
+                "confidenceBefore": 0.71,
+                "confidenceAfter": 0.762
+              },
+              {
+                "order": 4,
+                "id": "api-cef-registry",
+                "label": "CEF Registry API",
+                "type": "api-execution",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 375,
+                "confidenceBefore": 0.735,
+                "confidenceAfter": 0.788
+              },
+              {
+                "order": 5,
+                "id": "api-cef-execution",
+                "label": "CEF Execution Lifecycle API",
+                "type": "api-execution",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 420,
+                "confidenceBefore": 0.76,
+                "confidenceAfter": 0.814
+              },
+              {
+                "order": 6,
+                "id": "api-cef-metadata",
+                "label": "Cognitive Metadata Contract API",
+                "type": "api-execution",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 465,
+                "confidenceBefore": 0.785,
+                "confidenceAfter": 0.84
+              },
+              {
+                "order": 7,
+                "id": "api-travel-intent",
+                "label": "Travel Intent Cognition API",
+                "type": "api-execution",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 510,
+                "confidenceBefore": 0.81,
+                "confidenceAfter": 0.866
+              },
+              {
+                "order": 8,
+                "id": "api-travel-decision",
+                "label": "Travel Decision Graph API",
+                "type": "api-execution",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 555,
+                "confidenceBefore": 0.835,
+                "confidenceAfter": 0.892
+              }
+            ],
+            "governanceReplay": [
+              {
+                "node": "api-phase-routing",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              },
+              {
+                "node": "api-cef-execution",
+                "policy": "tenant-governance-policy",
+                "status": "injected"
+              }
+            ],
+            "distributedReplay": [
+              {
+                "node": "api-phase-intent",
+                "vectorClock": 1,
+                "status": "synchronized"
+              },
+              {
+                "node": "api-phase-domain",
+                "vectorClock": 2,
+                "status": "synchronized"
+              },
+              {
+                "node": "api-phase-routing",
+                "vectorClock": 3,
+                "status": "synchronized"
+              },
+              {
+                "node": "api-cef-registry",
+                "vectorClock": 4,
+                "status": "synchronized"
+              },
+              {
+                "node": "api-cef-execution",
+                "vectorClock": 5,
+                "status": "synchronized"
+              },
+              {
+                "node": "api-cef-metadata",
+                "vectorClock": 6,
+                "status": "synchronized"
+              },
+              {
+                "node": "api-travel-intent",
+                "vectorClock": 7,
+                "status": "synchronized"
+              },
+              {
+                "node": "api-travel-decision",
+                "vectorClock": 8,
+                "status": "synchronized"
+              }
+            ]
+          },
+          "confidenceTimeline": [
+            {
+              "step": "api-phase-intent",
+              "before": 0.66,
+              "score": 0.71
+            },
+            {
+              "step": "api-phase-domain",
+              "before": 0.685,
+              "score": 0.736
+            },
+            {
+              "step": "api-phase-routing",
+              "before": 0.71,
+              "score": 0.762
+            },
+            {
+              "step": "api-cef-registry",
+              "before": 0.735,
+              "score": 0.788
+            },
+            {
+              "step": "api-cef-execution",
+              "before": 0.76,
+              "score": 0.814
+            },
+            {
+              "step": "api-cef-metadata",
+              "before": 0.785,
+              "score": 0.84
+            },
+            {
+              "step": "api-travel-intent",
+              "before": 0.81,
+              "score": 0.866
+            },
+            {
+              "step": "api-travel-decision",
+              "before": 0.835,
+              "score": 0.892
+            }
+          ],
+          "telemetry": {},
+          "recovery": {
+            "retryCount": 0,
+            "lastCheckpoint": null,
+            "recoveryReady": true
+          },
+          "createdAt": "2026-05-15T12:53:47.837Z",
+          "updatedAt": "2026-05-15T12:53:47.837Z",
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "a8f0fa84adff65",
+            "bytes": 6238,
+            "generatedAt": "2026-05-15T12:53:47.837Z"
+          }
+        },
+        "metadata": {
+          "workflowId": "studio-workflow-1778849627837",
+          "replayId": "studio-replay-studio-workflow-1778849627837-1778849627837"
+        },
+        "timestamp": "2026-05-15T12:53:47.844Z"
+      },
+      {
+        "tenant_id": "demo-tenant",
+        "session_id": "demo-e8a6278d6903",
+        "replay_id": "studio-replay-studio-workflow-1778849627837-1778849627837",
+        "event_type": "orchestration.stage.completed",
+        "sequence_no": 8,
+        "payload": {
+          "stage": {
+            "order": 8,
+            "id": "api-travel-decision",
+            "label": "Travel Decision Graph API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 555,
+            "confidenceBefore": 0.835,
+            "confidenceAfter": 0.892
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-8",
+            "stage": "api-travel-decision",
+            "order": 8,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T12:53:48.537Z"
+          }
+        }
+      },
+      {
+        "id": "event-711f0f59c62a4b50",
+        "type": "eventbus.orchestration.stage.completed",
+        "tenantId": "demo-tenant",
+        "workspaceId": null,
+        "sessionId": "demo-e8a6278d6903",
+        "entityId": "bus-1778849627844-c347a976",
+        "payload": {
+          "id": "bus-1778849627844-c347a976",
+          "type": "orchestration.stage.completed",
+          "canonicalEventType": "orchestration.stage.completed",
+          "schemaVersion": "cintent.cognitive.v1.0.0",
+          "tenant": "demo-tenant",
+          "sessionId": "demo-e8a6278d6903",
+          "payload": {
+            "orchestrationId": "studio-exec-1778849627837",
+            "stage": {
+              "order": 8,
+              "id": "api-travel-decision",
+              "label": "Travel Decision Graph API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 555,
+              "confidenceBefore": 0.835,
+              "confidenceAfter": 0.892
+            },
+            "checkpoint": {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-8",
+              "stage": "api-travel-decision",
+              "order": 8,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": true,
+              "timestamp": "2026-05-15T12:53:48.537Z"
+            }
+          },
+          "canonical": {
+            "schema_version": "cintent.cognitive.v1.0.0",
+            "entity_type": "runtime_event",
+            "entity_id": "runtime_event-f3440fb7e47c7f41",
+            "tenant_id": "demo-tenant",
+            "workspace_id": null,
+            "session_id": "demo-e8a6278d6903",
+            "domain": "enterprise",
+            "application_id": null,
+            "created_at": "2026-05-15T12:53:47.844Z",
+            "updated_at": "2026-05-15T12:53:47.844Z",
+            "event_type": "orchestration.stage.completed",
+            "source_event_type": "orchestration.stage.completed",
+            "payload": {
+              "orchestrationId": "studio-exec-1778849627837",
+              "stage": {
+                "order": 8,
+                "id": "api-travel-decision",
+                "label": "Travel Decision Graph API",
+                "type": "api-execution",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 555,
+                "confidenceBefore": 0.835,
+                "confidenceAfter": 0.892
+              },
+              "checkpoint": {
+                "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-8",
+                "stage": "api-travel-decision",
+                "order": 8,
+                "status": "completed",
+                "replayReady": true,
+                "rollbackReady": true,
+                "timestamp": "2026-05-15T12:53:48.537Z"
+              }
+            },
+            "metadata": {
+              "order": 8
+            },
+            "governance": {
+              "schema_version": "cintent.cognitive.v1.0.0",
+              "governance_id": "governance-ac5c186ac182fed7",
+              "tenant_id": "demo-tenant",
+              "domain": "enterprise",
+              "operation": "orchestration.stage.completed",
+              "profile": "enterprise-controls",
+              "inherited_policies": [
+                "schema-version-required",
+                "tenant-boundary-required",
+                "lineage-required",
+                "rbac",
+                "audit-lineage",
+                "tenant-boundary"
+              ],
+              "constraints": [
+                {
+                  "id": "tenant-scope",
+                  "status": "enforced",
+                  "reason": "Every runtime operation must have tenant scope."
+                },
+                {
+                  "id": "schema-version",
+                  "status": "enforced",
+                  "reason": "cintent.cognitive.v1.0.0 attached to operation."
+                },
+                {
+                  "id": "replay-lineage",
+                  "status": "advisory",
+                  "reason": "Replay linkage is required when execution emits replayable state."
+                },
+                {
+                  "id": "role-scope",
+                  "status": "advisory",
+                  "reason": "Role guest mapped to canonical RBAC envelope."
+                }
+              ],
+              "decision": "allowed",
+              "evaluated_at": "2026-05-15T12:53:47.844Z"
+            },
+            "lineage": {
+              "nodes": [
+                {
+                  "id": "demo-tenant",
+                  "type": "tenant"
+                },
+                {
+                  "id": "enterprise",
+                  "type": "domain"
+                },
+                {
+                  "id": "studio-exec-1778849627837",
+                  "type": "orchestration"
+                }
+              ],
+              "edges": [
+                {
+                  "from": "demo-tenant",
+                  "to": "enterprise",
+                  "relation": "tenant_to_domain"
+                },
+                {
+                  "from": "enterprise",
+                  "to": "studio-exec-1778849627837",
+                  "relation": "domain_to_orchestration"
+                }
+              ]
+            }
+          },
+          "metadata": {
+            "order": 8
+          },
+          "timestamp": "2026-05-15T12:53:47.844Z"
+        },
+        "metadata": {
+          "eventBus": "in-process-with-redis-stream-contract",
+          "canonicalEventType": "orchestration.stage.completed",
+          "schemaVersion": "cintent.cognitive.v1.0.0",
+          "order": 8
+        },
+        "timestamp": "2026-05-15T12:53:47.844Z"
+      },
+      {
+        "tenant_id": "demo-tenant",
+        "session_id": "demo-e8a6278d6903",
+        "replay_id": "studio-replay-studio-workflow-1778849627837-1778849627837",
+        "event_type": "orchestration.stage.completed",
+        "sequence_no": 7,
+        "payload": {
+          "stage": {
+            "order": 7,
+            "id": "api-travel-intent",
+            "label": "Travel Intent Cognition API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 510,
+            "confidenceBefore": 0.81,
+            "confidenceAfter": 0.866
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-7",
+            "stage": "api-travel-intent",
+            "order": 7,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T12:53:48.437Z"
+          }
+        }
+      },
+      {
+        "id": "event-ccdf4f3136cbab5e",
+        "type": "eventbus.orchestration.stage.completed",
+        "tenantId": "demo-tenant",
+        "workspaceId": null,
+        "sessionId": "demo-e8a6278d6903",
+        "entityId": "bus-1778849627843-f92a0488",
+        "payload": {
+          "id": "bus-1778849627843-f92a0488",
+          "type": "orchestration.stage.completed",
+          "canonicalEventType": "orchestration.stage.completed",
+          "schemaVersion": "cintent.cognitive.v1.0.0",
+          "tenant": "demo-tenant",
+          "sessionId": "demo-e8a6278d6903",
+          "payload": {
+            "orchestrationId": "studio-exec-1778849627837",
+            "stage": {
+              "order": 7,
+              "id": "api-travel-intent",
+              "label": "Travel Intent Cognition API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 510,
+              "confidenceBefore": 0.81,
+              "confidenceAfter": 0.866
+            },
+            "checkpoint": {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-7",
+              "stage": "api-travel-intent",
+              "order": 7,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": true,
+              "timestamp": "2026-05-15T12:53:48.437Z"
+            }
+          },
+          "canonical": {
+            "schema_version": "cintent.cognitive.v1.0.0",
+            "entity_type": "runtime_event",
+            "entity_id": "runtime_event-f3440fb7e47c7f41",
+            "tenant_id": "demo-tenant",
+            "workspace_id": null,
+            "session_id": "demo-e8a6278d6903",
+            "domain": "enterprise",
+            "application_id": null,
+            "created_at": "2026-05-15T12:53:47.843Z",
+            "updated_at": "2026-05-15T12:53:47.843Z",
+            "event_type": "orchestration.stage.completed",
+            "source_event_type": "orchestration.stage.completed",
+            "payload": {
+              "orchestrationId": "studio-exec-1778849627837",
+              "stage": {
+                "order": 7,
+                "id": "api-travel-intent",
+                "label": "Travel Intent Cognition API",
+                "type": "api-execution",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 510,
+                "confidenceBefore": 0.81,
+                "confidenceAfter": 0.866
+              },
+              "checkpoint": {
+                "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-7",
+                "stage": "api-travel-intent",
+                "order": 7,
+                "status": "completed",
+                "replayReady": true,
+                "rollbackReady": true,
+                "timestamp": "2026-05-15T12:53:48.437Z"
+              }
+            },
+            "metadata": {
+              "order": 7
+            },
+            "governance": {
+              "schema_version": "cintent.cognitive.v1.0.0",
+              "governance_id": "governance-66162302af525159",
+              "tenant_id": "demo-tenant",
+              "domain": "enterprise",
+              "operation": "orchestration.stage.completed",
+              "profile": "enterprise-controls",
+              "inherited_policies": [
+                "schema-version-required",
+                "tenant-boundary-required",
+                "lineage-required",
+                "rbac",
+                "audit-lineage",
+                "tenant-boundary"
+              ],
+              "constraints": [
+                {
+                  "id": "tenant-scope",
+                  "status": "enforced",
+                  "reason": "Every runtime operation must have tenant scope."
+                },
+                {
+                  "id": "schema-version",
+                  "status": "enforced",
+                  "reason": "cintent.cognitive.v1.0.0 attached to operation."
+                },
+                {
+                  "id": "replay-lineage",
+                  "status": "advisory",
+                  "reason": "Replay linkage is required when execution emits replayable state."
+                },
+                {
+                  "id": "role-scope",
+                  "status": "advisory",
+                  "reason": "Role guest mapped to canonical RBAC envelope."
+                }
+              ],
+              "decision": "allowed",
+              "evaluated_at": "2026-05-15T12:53:47.843Z"
+            },
+            "lineage": {
+              "nodes": [
+                {
+                  "id": "demo-tenant",
+                  "type": "tenant"
+                },
+                {
+                  "id": "enterprise",
+                  "type": "domain"
+                },
+                {
+                  "id": "studio-exec-1778849627837",
+                  "type": "orchestration"
+                }
+              ],
+              "edges": [
+                {
+                  "from": "demo-tenant",
+                  "to": "enterprise",
+                  "relation": "tenant_to_domain"
+                },
+                {
+                  "from": "enterprise",
+                  "to": "studio-exec-1778849627837",
+                  "relation": "domain_to_orchestration"
+                }
+              ]
+            }
+          },
+          "metadata": {
+            "order": 7
+          },
+          "timestamp": "2026-05-15T12:53:47.843Z"
+        },
+        "metadata": {
+          "eventBus": "in-process-with-redis-stream-contract",
+          "canonicalEventType": "orchestration.stage.completed",
+          "schemaVersion": "cintent.cognitive.v1.0.0",
+          "order": 7
+        },
+        "timestamp": "2026-05-15T12:53:47.843Z"
+      },
+      {
+        "tenant_id": "demo-tenant",
+        "session_id": "demo-e8a6278d6903",
+        "replay_id": "studio-replay-studio-workflow-1778849627837-1778849627837",
+        "event_type": "orchestration.stage.completed",
+        "sequence_no": 6,
+        "payload": {
+          "stage": {
+            "order": 6,
+            "id": "api-cef-metadata",
+            "label": "Cognitive Metadata Contract API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 465,
+            "confidenceBefore": 0.785,
+            "confidenceAfter": 0.84
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-6",
+            "stage": "api-cef-metadata",
+            "order": 6,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T12:53:48.337Z"
+          }
+        }
+      },
+      {
+        "id": "event-8eea374393292924",
+        "type": "eventbus.orchestration.stage.completed",
+        "tenantId": "demo-tenant",
+        "workspaceId": null,
+        "sessionId": "demo-e8a6278d6903",
+        "entityId": "bus-1778849627842-d0e63e5f",
+        "payload": {
+          "id": "bus-1778849627842-d0e63e5f",
+          "type": "orchestration.stage.completed",
+          "canonicalEventType": "orchestration.stage.completed",
+          "schemaVersion": "cintent.cognitive.v1.0.0",
+          "tenant": "demo-tenant",
+          "sessionId": "demo-e8a6278d6903",
+          "payload": {
+            "orchestrationId": "studio-exec-1778849627837",
+            "stage": {
+              "order": 6,
+              "id": "api-cef-metadata",
+              "label": "Cognitive Metadata Contract API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 465,
+              "confidenceBefore": 0.785,
+              "confidenceAfter": 0.84
+            },
+            "checkpoint": {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-6",
+              "stage": "api-cef-metadata",
+              "order": 6,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": true,
+              "timestamp": "2026-05-15T12:53:48.337Z"
+            }
+          },
+          "canonical": {
+            "schema_version": "cintent.cognitive.v1.0.0",
+            "entity_type": "runtime_event",
+            "entity_id": "runtime_event-f3440fb7e47c7f41",
+            "tenant_id": "demo-tenant",
+            "workspace_id": null,
+            "session_id": "demo-e8a6278d6903",
+            "domain": "enterprise",
+            "application_id": null,
+            "created_at": "2026-05-15T12:53:47.842Z",
+            "updated_at": "2026-05-15T12:53:47.842Z",
+            "event_type": "orchestration.stage.completed",
+            "source_event_type": "orchestration.stage.completed",
+            "payload": {
+              "orchestrationId": "studio-exec-1778849627837",
+              "stage": {
+                "order": 6,
+                "id": "api-cef-metadata",
+                "label": "Cognitive Metadata Contract API",
+                "type": "api-execution",
+                "runtimeState": "orchestrating",
+                "liveState": "completed",
+                "durationMs": 465,
+                "confidenceBefore": 0.785,
+                "confidenceAfter": 0.84
+              },
+              "checkpoint": {
+                "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-6",
+                "stage": "api-cef-metadata",
+                "order": 6,
+                "status": "completed",
+                "replayReady": true,
+                "rollbackReady": true,
+                "timestamp": "2026-05-15T12:53:48.337Z"
+              }
+            },
+            "metadata": {
+              "order": 6
+            },
+            "governance": {
+              "schema_version": "cintent.cognitive.v1.0.0",
+              "governance_id": "governance-c77b5f6d9f8c7e34",
+              "tenant_id": "demo-tenant",
+              "domain": "enterprise",
+              "operation": "orchestration.stage.completed",
+              "profile": "enterprise-controls",
+              "inherited_policies": [
+                "schema-version-required",
+                "tenant-boundary-required",
+                "lineage-required",
+                "rbac",
+                "audit-lineage",
+                "tenant-boundary"
+              ],
+              "constraints": [
+                {
+                  "id": "tenant-scope",
+                  "status": "enforced",
+                  "reason": "Every runtime operation must have tenant scope."
+                },
+                {
+                  "id": "schema-version",
+                  "status": "enforced",
+                  "reason": "cintent.cognitive.v1.0.0 attached to operation."
+                },
+                {
+                  "id": "replay-lineage",
+                  "status": "advisory",
+                  "reason": "Replay linkage is required when execution emits replayable state."
+                },
+                {
+                  "id": "role-scope",
+                  "status": "advisory",
+                  "reason": "Role guest mapped to canonical RBAC envelope."
+                }
+              ],
+              "decision": "allowed",
+              "evaluated_at": "2026-05-15T12:53:47.842Z"
+            },
+            "lineage": {
+              "nodes": [
+                {
+                  "id": "demo-tenant",
+                  "type": "tenant"
+                },
+                {
+                  "id": "enterprise",
+                  "type": "domain"
+                },
+                {
+                  "id": "studio-exec-1778849627837",
+                  "type": "orchestration"
+                }
+              ],
+              "edges": [
+                {
+                  "from": "demo-tenant",
+                  "to": "enterprise",
+                  "relation": "tenant_to_domain"
+                },
+                {
+                  "from": "enterprise",
+                  "to": "studio-exec-1778849627837",
+                  "relation": "domain_to_orchestration"
+                }
+              ]
+            }
+          },
+          "metadata": {
+            "order": 6
+          },
+          "timestamp": "2026-05-15T12:53:47.842Z"
+        },
+        "metadata": {
+          "eventBus": "in-process-with-redis-stream-contract",
+          "canonicalEventType": "orchestration.stage.completed",
+          "schemaVersion": "cintent.cognitive.v1.0.0",
+          "order": 6
+        },
+        "timestamp": "2026-05-15T12:53:47.842Z"
+      },
+      {
+        "tenant_id": "demo-tenant",
+        "session_id": "demo-e8a6278d6903",
+        "replay_id": "studio-replay-studio-workflow-1778849627837-1778849627837",
+        "event_type": "orchestration.stage.completed",
+        "sequence_no": 5,
+        "payload": {
+          "stage": {
+            "order": 5,
+            "id": "api-cef-execution",
+            "label": "CEF Execution Lifecycle API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 420,
+            "confidenceBefore": 0.76,
+            "confidenceAfter": 0.814
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-5",
+            "stage": "api-cef-execution",
+            "order": 5,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T12:53:48.237Z"
+          }
+        }
+      }
+    ]
+  },
+  "vectorRetrievalEvidence": {
+    "source": "local-semantic-ledger",
+    "memories": [
+      {
+        "tenant_id": "demo-tenant",
+        "workspace_id": "test-workspace-healthcare-smart-hospital",
+        "session_id": "test-session-healthcare-smart-hospital",
+        "context_id": "test-context-healthcare-1778830108615",
+        "domain": "healthcare",
+        "query": "Build multilingual telemedicine system",
+        "response_summary": "Healthcare Cognitive Assistant: Smart Hospital ICU monitoring, patient flow, emergency care, compliance, streaming telemetry, and replay. Compose the workflow in Orchestration Studio, compile it into a governed runtime graph, then execute with replay and confidence tracking enabled.",
+        "metadata": {
+          "intent": "orchestration",
+          "role": "developer",
+          "recommendations": [
+            "Build the first version in Orchestration Studio and compile before execution.",
+            "Add governance and replay nodes early so the workflow remains auditable.",
+            "For healthcare, treat CINTENT as economy-wide cognitive infrastructure across providers, devices, pharma, insurance, research, telemedicine, logistics, governance, replay, and enterprise operations."
+          ],
+          "answerFingerprint": "aab3ad04f8f98f"
+        },
+        "semanticScore": 0
+      },
+      {
+        "tenant_id": "demo-tenant",
+        "workspace_id": "test-workspace-drone-chaxu",
+        "session_id": "test-session-drone-chaxu",
+        "context_id": "test-context-drone-1778830111567",
+        "domain": "drone",
+        "query": "Generate drone swarm architecture",
+        "response_summary": "Drone Mission Intelligence Assistant: CHAXU drone, autonomous systems, edge, swarm simulation, mission replay, governance, and operational telemetry workflows. Use Multi-Agent Runtime when the workflow needs delegation, consensus, or distributed reasoning.",
+        "metadata": {
+          "intent": "multi-agent",
+          "role": "developer",
+          "recommendations": [
+            "Use agent coordination when delegation, consensus, edge recovery, or swarm synchronization is required.",
+            "Review delegation replay before converting the workflow into an enterprise package.",
+            "For UAV work, treat CINTENT as the cognitive infrastructure layer above MAVLink, PX4, ArduPilot, DJI, UTM, and DGCA-ready governance."
+          ],
+          "answerFingerprint": "e27fd66c1401ac"
+        },
+        "semanticScore": 0
+      },
+      {
+        "tenant_id": "demo-tenant",
+        "workspace_id": "test-workspace-travel-blisstrail",
+        "session_id": "test-session-travel-blisstrail",
+        "context_id": "test-context-travel-1778830117095",
+        "domain": "travel",
+        "query": "Create airport orchestration workflow",
+        "response_summary": "Travel Intelligence Assistant: BlissTrail travel orchestration, airport integration, itinerary planning, localization APIs, and travel simulations. Compose the workflow in Orchestration Studio, compile it into a governed runtime graph, then execute with replay and confidence tracking enabled.",
+        "metadata": {
+          "intent": "orchestration",
+          "role": "developer",
+          "recommendations": [
+            "Build the first version in Orchestration Studio and compile before execution.",
+            "Add governance and replay nodes early so the workflow remains auditable."
+          ],
+          "answerFingerprint": "7367b229bec26b"
+        },
+        "semanticScore": 0
+      },
+      {
+        "tenant_id": "demo-tenant",
+        "workspace_id": "test-workspace-manufacturing-manufacturing",
+        "session_id": "test-session-manufacturing-manufacturing",
+        "context_id": "test-context-manufacturing-1778830122554",
+        "domain": "manufacturing",
+        "query": "Recommend APIs for smart manufacturing",
+        "response_summary": "Manufacturing Systems Assistant: Smart manufacturing orchestration, quality governance, equipment telemetry, and digital twins. Start with Distributed Robotics Coordination API, Robotics Cognitive Runtime API, Robotic Task Orchestration API and validate the short list in sandbox before production entitlement.",
+        "metadata": {
+          "intent": "discovery",
+          "role": "developer",
+          "recommendations": [
+            "Review Distributed Robotics Coordination API first, then compare adjacent APIs before adding to cart.",
+            "Use Ask COGNI follow-up questions to move from discovery into execution planning."
+          ],
+          "answerFingerprint": "6f87c225843233"
+        },
+        "semanticScore": 0
+      },
+      {
+        "tenant_id": "demo-tenant",
+        "workspace_id": "test-workspace-drone-chaxu",
+        "session_id": "test-session-drone-chaxu",
+        "context_id": "test-context-drone-1778830125294",
+        "domain": "drone",
+        "query": "Build multilingual telemedicine workflow",
+        "response_summary": "The current workspace context has a mismatch: This request sounds like Healthcare, while the workspace is set to Drone. Choose whether to switch domain, switch simulation, or continue intentionally before running the workflow.",
+        "metadata": {
+          "intent": "orchestration",
+          "role": "developer",
+          "recommendations": [
+            "Build the first version in Orchestration Studio and compile before execution.",
+            "Add governance and replay nodes early so the workflow remains auditable.",
+            "For UAV work, treat CINTENT as the cognitive infrastructure layer above MAVLink, PX4, ArduPilot, DJI, UTM, and DGCA-ready governance."
+          ],
+          "answerFingerprint": "000375a5cb3d7c"
+        },
+        "semanticScore": 0
+      },
+      {
+        "tenant_id": "demo-tenant",
+        "workspace_id": "test-workspace-healthcare-smart-hospital",
+        "session_id": "test-session-healthcare-smart-hospital",
+        "context_id": "test-context-healthcare-1778830125294",
+        "domain": "healthcare",
+        "query": "Create PX4 MAVLink drone swarm architecture",
+        "response_summary": "The current workspace context has a mismatch: This request sounds like Drone, while the workspace is set to Healthcare. Choose whether to switch domain, switch simulation, or continue intentionally before running the workflow.",
+        "metadata": {
+          "intent": "integration",
+          "role": "developer",
+          "recommendations": [
+            "Use Python SDK with replay and governance hooks enabled.",
+            "Validate the integration in sandbox before requesting production runtime access.",
+            "For healthcare, treat CINTENT as economy-wide cognitive infrastructure across providers, devices, pharma, insurance, research, telemedicine, logistics, governance, replay, and enterprise operations."
+          ],
+          "answerFingerprint": "47ad77fe7b5a54"
+        },
+        "semanticScore": 0
+      },
+      {
+        "tenant_id": "demo-tenant",
+        "workspace_id": "test-workspace-travel-blisstrail",
+        "session_id": "test-session-travel-blisstrail",
+        "context_id": "test-context-travel-1778830125294",
+        "domain": "travel",
+        "query": "Run ICU monitoring simulation for patient flow",
+        "response_summary": "The current workspace context has a mismatch: Hospital cognitive operations does not match the Travel workspace. Choose whether to switch domain, switch simulation, or continue intentionally before running the workflow.",
+        "metadata": {
+          "intent": "simulation",
+          "role": "developer",
+          "recommendations": [
+            "Review Unified Healthcare Cognitive Runtime API first, then compare adjacent APIs before adding to cart.",
+            "Use Ask COGNI follow-up questions to move from discovery into execution planning."
+          ],
+          "answerFingerprint": "0ae482a63e7a5c"
+        },
+        "semanticScore": 0
+      },
+      {
+        "tenant_id": "demo-tenant",
+        "workspace_id": "ask-workspace-tpf9qc",
+        "session_id": "ask-session-ft9xj0",
+        "context_id": "ask-context-l1sc4s",
+        "domain": "drone",
+        "query": "Swarm Simulation for CHAXU",
+        "response_summary": "Drone Mission Intelligence Assistant: CHAXU drone, autonomous systems, edge, swarm simulation, mission replay, governance, and operational telemetry workflows. The latest simulation can be explained through its orchestration nodes, agents, replay capture, and telemetry signals.",
+        "metadata": {
+          "intent": "simulation",
+          "role": "executive",
+          "recommendations": [
+            "Review Edge Simulation Runtime API first, then compare adjacent APIs before adding to cart.",
+            "Use Ask COGNI follow-up questions to move from discovery into execution planning.",
+            "For UAV work, treat CINTENT as the cognitive infrastructure layer above MAVLink, PX4, ArduPilot, DJI, UTM, and DGCA-ready governance."
+          ],
+          "answerFingerprint": "bce52999f902c6"
+        },
+        "semanticScore": 0
+      }
+    ]
+  },
+  "websocketPersistenceLogs": [
+    {
+      "id": "event-31441bf305dfd34e",
+      "type": "websocket.sse.session.recovered",
+      "tenantId": "demo-tenant",
+      "workspaceId": null,
+      "sessionId": "demo-d57636efe832",
+      "entityId": "sse-1778852265002",
+      "payload": {
+        "recoveredEvents": 50,
+        "transport": "sse",
+        "lastEventId": null
+      },
+      "metadata": {
+        "reconnectRestoration": true
+      },
+      "timestamp": "2026-05-15T13:37:45.002Z"
+    },
+    {
+      "id": "event-cddcc0b065067b42",
+      "type": "websocket.sse.session.recovered",
+      "tenantId": "demo-tenant",
+      "workspaceId": null,
+      "sessionId": "demo-d57636efe832",
+      "entityId": "sse-1778852206623",
+      "payload": {
+        "recoveredEvents": 50,
+        "transport": "sse",
+        "lastEventId": null
+      },
+      "metadata": {
+        "reconnectRestoration": true
+      },
+      "timestamp": "2026-05-15T13:36:46.623Z"
+    },
+    {
+      "id": "event-fbb0390a94a48636",
+      "type": "websocket.sse.session.recovered",
+      "tenantId": "demo-tenant",
+      "workspaceId": null,
+      "sessionId": "demo-d57636efe832",
+      "entityId": "sse-1778852128419",
+      "payload": {
+        "recoveredEvents": 50,
+        "transport": "sse",
+        "lastEventId": null
+      },
+      "metadata": {
+        "reconnectRestoration": true
+      },
+      "timestamp": "2026-05-15T13:35:28.420Z"
+    },
+    {
+      "id": "event-3c6d5b13ed319e2b",
+      "type": "websocket.sse.session.recovered",
+      "tenantId": "demo-tenant",
+      "workspaceId": null,
+      "sessionId": "demo-c995c9387b87",
+      "entityId": "sse-1778852041767",
+      "payload": {
+        "recoveredEvents": 50,
+        "transport": "sse",
+        "lastEventId": null
+      },
+      "metadata": {
+        "reconnectRestoration": true
+      },
+      "timestamp": "2026-05-15T13:34:01.767Z"
+    },
+    {
+      "id": "event-b1dd347f34e08407",
+      "type": "websocket.sse.session.recovered",
+      "tenantId": "demo-tenant",
+      "workspaceId": null,
+      "sessionId": "demo-e8a6278d6903",
+      "entityId": "sse-1778852041692",
+      "payload": {
+        "recoveredEvents": 50,
+        "transport": "sse",
+        "lastEventId": null
+      },
+      "metadata": {
+        "reconnectRestoration": true
+      },
+      "timestamp": "2026-05-15T13:34:01.693Z"
+    },
+    {
+      "id": "event-711f0f59c62a4b50",
+      "type": "eventbus.orchestration.stage.completed",
+      "tenantId": "demo-tenant",
+      "workspaceId": null,
+      "sessionId": "demo-e8a6278d6903",
+      "entityId": "bus-1778849627844-c347a976",
+      "payload": {
+        "id": "bus-1778849627844-c347a976",
+        "type": "orchestration.stage.completed",
+        "canonicalEventType": "orchestration.stage.completed",
+        "schemaVersion": "cintent.cognitive.v1.0.0",
+        "tenant": "demo-tenant",
+        "sessionId": "demo-e8a6278d6903",
+        "payload": {
+          "orchestrationId": "studio-exec-1778849627837",
+          "stage": {
+            "order": 8,
+            "id": "api-travel-decision",
+            "label": "Travel Decision Graph API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 555,
+            "confidenceBefore": 0.835,
+            "confidenceAfter": 0.892
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-8",
+            "stage": "api-travel-decision",
+            "order": 8,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T12:53:48.537Z"
+          }
+        },
+        "canonical": {
+          "schema_version": "cintent.cognitive.v1.0.0",
+          "entity_type": "runtime_event",
+          "entity_id": "runtime_event-f3440fb7e47c7f41",
+          "tenant_id": "demo-tenant",
+          "workspace_id": null,
+          "session_id": "demo-e8a6278d6903",
+          "domain": "enterprise",
+          "application_id": null,
+          "created_at": "2026-05-15T12:53:47.844Z",
+          "updated_at": "2026-05-15T12:53:47.844Z",
+          "event_type": "orchestration.stage.completed",
+          "source_event_type": "orchestration.stage.completed",
+          "payload": {
+            "orchestrationId": "studio-exec-1778849627837",
+            "stage": {
+              "order": 8,
+              "id": "api-travel-decision",
+              "label": "Travel Decision Graph API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 555,
+              "confidenceBefore": 0.835,
+              "confidenceAfter": 0.892
+            },
+            "checkpoint": {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-8",
+              "stage": "api-travel-decision",
+              "order": 8,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": true,
+              "timestamp": "2026-05-15T12:53:48.537Z"
+            }
+          },
+          "metadata": {
+            "order": 8
+          },
+          "governance": {
+            "schema_version": "cintent.cognitive.v1.0.0",
+            "governance_id": "governance-ac5c186ac182fed7",
+            "tenant_id": "demo-tenant",
+            "domain": "enterprise",
+            "operation": "orchestration.stage.completed",
+            "profile": "enterprise-controls",
+            "inherited_policies": [
+              "schema-version-required",
+              "tenant-boundary-required",
+              "lineage-required",
+              "rbac",
+              "audit-lineage",
+              "tenant-boundary"
+            ],
+            "constraints": [
+              {
+                "id": "tenant-scope",
+                "status": "enforced",
+                "reason": "Every runtime operation must have tenant scope."
+              },
+              {
+                "id": "schema-version",
+                "status": "enforced",
+                "reason": "cintent.cognitive.v1.0.0 attached to operation."
+              },
+              {
+                "id": "replay-lineage",
+                "status": "advisory",
+                "reason": "Replay linkage is required when execution emits replayable state."
+              },
+              {
+                "id": "role-scope",
+                "status": "advisory",
+                "reason": "Role guest mapped to canonical RBAC envelope."
+              }
+            ],
+            "decision": "allowed",
+            "evaluated_at": "2026-05-15T12:53:47.844Z"
+          },
+          "lineage": {
+            "nodes": [
+              {
+                "id": "demo-tenant",
+                "type": "tenant"
+              },
+              {
+                "id": "enterprise",
+                "type": "domain"
+              },
+              {
+                "id": "studio-exec-1778849627837",
+                "type": "orchestration"
+              }
+            ],
+            "edges": [
+              {
+                "from": "demo-tenant",
+                "to": "enterprise",
+                "relation": "tenant_to_domain"
+              },
+              {
+                "from": "enterprise",
+                "to": "studio-exec-1778849627837",
+                "relation": "domain_to_orchestration"
+              }
+            ]
+          }
+        },
+        "metadata": {
+          "order": 8
+        },
+        "timestamp": "2026-05-15T12:53:47.844Z"
+      },
+      "metadata": {
+        "eventBus": "in-process-with-redis-stream-contract",
+        "canonicalEventType": "orchestration.stage.completed",
+        "schemaVersion": "cintent.cognitive.v1.0.0",
+        "order": 8
+      },
+      "timestamp": "2026-05-15T12:53:47.844Z"
+    },
+    {
+      "id": "event-ccdf4f3136cbab5e",
+      "type": "eventbus.orchestration.stage.completed",
+      "tenantId": "demo-tenant",
+      "workspaceId": null,
+      "sessionId": "demo-e8a6278d6903",
+      "entityId": "bus-1778849627843-f92a0488",
+      "payload": {
+        "id": "bus-1778849627843-f92a0488",
+        "type": "orchestration.stage.completed",
+        "canonicalEventType": "orchestration.stage.completed",
+        "schemaVersion": "cintent.cognitive.v1.0.0",
+        "tenant": "demo-tenant",
+        "sessionId": "demo-e8a6278d6903",
+        "payload": {
+          "orchestrationId": "studio-exec-1778849627837",
+          "stage": {
+            "order": 7,
+            "id": "api-travel-intent",
+            "label": "Travel Intent Cognition API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 510,
+            "confidenceBefore": 0.81,
+            "confidenceAfter": 0.866
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-7",
+            "stage": "api-travel-intent",
+            "order": 7,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T12:53:48.437Z"
+          }
+        },
+        "canonical": {
+          "schema_version": "cintent.cognitive.v1.0.0",
+          "entity_type": "runtime_event",
+          "entity_id": "runtime_event-f3440fb7e47c7f41",
+          "tenant_id": "demo-tenant",
+          "workspace_id": null,
+          "session_id": "demo-e8a6278d6903",
+          "domain": "enterprise",
+          "application_id": null,
+          "created_at": "2026-05-15T12:53:47.843Z",
+          "updated_at": "2026-05-15T12:53:47.843Z",
+          "event_type": "orchestration.stage.completed",
+          "source_event_type": "orchestration.stage.completed",
+          "payload": {
+            "orchestrationId": "studio-exec-1778849627837",
+            "stage": {
+              "order": 7,
+              "id": "api-travel-intent",
+              "label": "Travel Intent Cognition API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 510,
+              "confidenceBefore": 0.81,
+              "confidenceAfter": 0.866
+            },
+            "checkpoint": {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-7",
+              "stage": "api-travel-intent",
+              "order": 7,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": true,
+              "timestamp": "2026-05-15T12:53:48.437Z"
+            }
+          },
+          "metadata": {
+            "order": 7
+          },
+          "governance": {
+            "schema_version": "cintent.cognitive.v1.0.0",
+            "governance_id": "governance-66162302af525159",
+            "tenant_id": "demo-tenant",
+            "domain": "enterprise",
+            "operation": "orchestration.stage.completed",
+            "profile": "enterprise-controls",
+            "inherited_policies": [
+              "schema-version-required",
+              "tenant-boundary-required",
+              "lineage-required",
+              "rbac",
+              "audit-lineage",
+              "tenant-boundary"
+            ],
+            "constraints": [
+              {
+                "id": "tenant-scope",
+                "status": "enforced",
+                "reason": "Every runtime operation must have tenant scope."
+              },
+              {
+                "id": "schema-version",
+                "status": "enforced",
+                "reason": "cintent.cognitive.v1.0.0 attached to operation."
+              },
+              {
+                "id": "replay-lineage",
+                "status": "advisory",
+                "reason": "Replay linkage is required when execution emits replayable state."
+              },
+              {
+                "id": "role-scope",
+                "status": "advisory",
+                "reason": "Role guest mapped to canonical RBAC envelope."
+              }
+            ],
+            "decision": "allowed",
+            "evaluated_at": "2026-05-15T12:53:47.843Z"
+          },
+          "lineage": {
+            "nodes": [
+              {
+                "id": "demo-tenant",
+                "type": "tenant"
+              },
+              {
+                "id": "enterprise",
+                "type": "domain"
+              },
+              {
+                "id": "studio-exec-1778849627837",
+                "type": "orchestration"
+              }
+            ],
+            "edges": [
+              {
+                "from": "demo-tenant",
+                "to": "enterprise",
+                "relation": "tenant_to_domain"
+              },
+              {
+                "from": "enterprise",
+                "to": "studio-exec-1778849627837",
+                "relation": "domain_to_orchestration"
+              }
+            ]
+          }
+        },
+        "metadata": {
+          "order": 7
+        },
+        "timestamp": "2026-05-15T12:53:47.843Z"
+      },
+      "metadata": {
+        "eventBus": "in-process-with-redis-stream-contract",
+        "canonicalEventType": "orchestration.stage.completed",
+        "schemaVersion": "cintent.cognitive.v1.0.0",
+        "order": 7
+      },
+      "timestamp": "2026-05-15T12:53:47.843Z"
+    },
+    {
+      "id": "event-8eea374393292924",
+      "type": "eventbus.orchestration.stage.completed",
+      "tenantId": "demo-tenant",
+      "workspaceId": null,
+      "sessionId": "demo-e8a6278d6903",
+      "entityId": "bus-1778849627842-d0e63e5f",
+      "payload": {
+        "id": "bus-1778849627842-d0e63e5f",
+        "type": "orchestration.stage.completed",
+        "canonicalEventType": "orchestration.stage.completed",
+        "schemaVersion": "cintent.cognitive.v1.0.0",
+        "tenant": "demo-tenant",
+        "sessionId": "demo-e8a6278d6903",
+        "payload": {
+          "orchestrationId": "studio-exec-1778849627837",
+          "stage": {
+            "order": 6,
+            "id": "api-cef-metadata",
+            "label": "Cognitive Metadata Contract API",
+            "type": "api-execution",
+            "runtimeState": "orchestrating",
+            "liveState": "completed",
+            "durationMs": 465,
+            "confidenceBefore": 0.785,
+            "confidenceAfter": 0.84
+          },
+          "checkpoint": {
+            "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-6",
+            "stage": "api-cef-metadata",
+            "order": 6,
+            "status": "completed",
+            "replayReady": true,
+            "rollbackReady": true,
+            "timestamp": "2026-05-15T12:53:48.337Z"
+          }
+        },
+        "canonical": {
+          "schema_version": "cintent.cognitive.v1.0.0",
+          "entity_type": "runtime_event",
+          "entity_id": "runtime_event-f3440fb7e47c7f41",
+          "tenant_id": "demo-tenant",
+          "workspace_id": null,
+          "session_id": "demo-e8a6278d6903",
+          "domain": "enterprise",
+          "application_id": null,
+          "created_at": "2026-05-15T12:53:47.842Z",
+          "updated_at": "2026-05-15T12:53:47.842Z",
+          "event_type": "orchestration.stage.completed",
+          "source_event_type": "orchestration.stage.completed",
+          "payload": {
+            "orchestrationId": "studio-exec-1778849627837",
+            "stage": {
+              "order": 6,
+              "id": "api-cef-metadata",
+              "label": "Cognitive Metadata Contract API",
+              "type": "api-execution",
+              "runtimeState": "orchestrating",
+              "liveState": "completed",
+              "durationMs": 465,
+              "confidenceBefore": 0.785,
+              "confidenceAfter": 0.84
+            },
+            "checkpoint": {
+              "checkpointId": "studio-replay-studio-workflow-1778849627837-1778849627837-checkpoint-6",
+              "stage": "api-cef-metadata",
+              "order": 6,
+              "status": "completed",
+              "replayReady": true,
+              "rollbackReady": true,
+              "timestamp": "2026-05-15T12:53:48.337Z"
+            }
+          },
+          "metadata": {
+            "order": 6
+          },
+          "governance": {
+            "schema_version": "cintent.cognitive.v1.0.0",
+            "governance_id": "governance-c77b5f6d9f8c7e34",
+            "tenant_id": "demo-tenant",
+            "domain": "enterprise",
+            "operation": "orchestration.stage.completed",
+            "profile": "enterprise-controls",
+            "inherited_policies": [
+              "schema-version-required",
+              "tenant-boundary-required",
+              "lineage-required",
+              "rbac",
+              "audit-lineage",
+              "tenant-boundary"
+            ],
+            "constraints": [
+              {
+                "id": "tenant-scope",
+                "status": "enforced",
+                "reason": "Every runtime operation must have tenant scope."
+              },
+              {
+                "id": "schema-version",
+                "status": "enforced",
+                "reason": "cintent.cognitive.v1.0.0 attached to operation."
+              },
+              {
+                "id": "replay-lineage",
+                "status": "advisory",
+                "reason": "Replay linkage is required when execution emits replayable state."
+              },
+              {
+                "id": "role-scope",
+                "status": "advisory",
+                "reason": "Role guest mapped to canonical RBAC envelope."
+              }
+            ],
+            "decision": "allowed",
+            "evaluated_at": "2026-05-15T12:53:47.842Z"
+          },
+          "lineage": {
+            "nodes": [
+              {
+                "id": "demo-tenant",
+                "type": "tenant"
+              },
+              {
+                "id": "enterprise",
+                "type": "domain"
+              },
+              {
+                "id": "studio-exec-1778849627837",
+                "type": "orchestration"
+              }
+            ],
+            "edges": [
+              {
+                "from": "demo-tenant",
+                "to": "enterprise",
+                "relation": "tenant_to_domain"
+              },
+              {
+                "from": "enterprise",
+                "to": "studio-exec-1778849627837",
+                "relation": "domain_to_orchestration"
+              }
+            ]
+          }
+        },
+        "metadata": {
+          "order": 6
+        },
+        "timestamp": "2026-05-15T12:53:47.842Z"
+      },
+      "metadata": {
+        "eventBus": "in-process-with-redis-stream-contract",
+        "canonicalEventType": "orchestration.stage.completed",
+        "schemaVersion": "cintent.cognitive.v1.0.0",
+        "order": 6
+      },
+      "timestamp": "2026-05-15T12:53:47.842Z"
+    }
+  ],
+  "sessionRestorationEvidence": {
+    "latestWorkspace": {
+      "workspace_id": "lifecycle-valid-drone",
+      "domain": "drone",
+      "application_id": "chaxu",
+      "selected_workflow": "drone swarm mission replay",
+      "selected_simulation": "drone-fleet-coordination",
+      "selected_apis": [
+        "drone-fleet"
+      ],
+      "state": {
+        "context": {
+          "domain": "drone",
+          "applicationId": "chaxu",
+          "selectedWorkflow": "drone swarm mission replay",
+          "selectedSimulation": "drone-fleet-coordination",
+          "selectedApis": [
+            "drone-fleet"
+          ]
+        }
+      },
+      "tenant_id": "demo-tenant",
+      "session_id": "demo-5416940bea21",
+      "updated_at": "2026-05-15T13:38:00.882Z"
+    },
+    "refreshEndpoint": "/api/workspace/restore"
+  },
+  "runtimeIntegrity": {
+    "orchestrationPersistence": true,
+    "replayPersistence": true,
+    "telemetryPersistence": true,
+    "askMemoryPersistence": true,
+    "eventBusPersistence": true
+  }
+}

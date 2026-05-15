@@ -1,0 +1,175 @@
+{
+  "status": "ingested",
+  "telemetry": {
+    "id": "x2c-manufacturing-telemetry",
+    "tenant": "demo-tenant",
+    "domain": "manufacturing",
+    "source": "x2c-validation-sensor",
+    "anomaly": true,
+    "sample": {
+      "id": "x2c-manufacturing-telemetry",
+      "domain": "manufacturing",
+      "source": "x2c-validation-sensor",
+      "metrics": {
+        "temperatureC": 92,
+        "vibrationMmS": 6.1
+      },
+      "thresholds": {
+        "temperatureC": 85,
+        "vibrationMmS": 5
+      }
+    },
+    "timestamp": "2026-05-15T13:38:07.306Z",
+    "canonical": {
+      "schema_version": "cintent.cognitive.v1.0.0",
+      "entity_type": "telemetry",
+      "entity_id": "x2c-manufacturing-telemetry",
+      "tenant_id": "demo-tenant",
+      "workspace_id": null,
+      "session_id": "demo-e1166a596df2",
+      "domain": "manufacturing",
+      "application_id": null,
+      "created_at": "2026-05-15T13:38:07.306Z",
+      "updated_at": "2026-05-15T13:38:07.306Z",
+      "event_type": "telemetry.ingested",
+      "source": "x2c-validation-sensor",
+      "telemetry_category": "industrial-sensor",
+      "metrics": {
+        "temperatureC": 92,
+        "vibrationMmS": 6.1
+      },
+      "thresholds": {
+        "temperatureC": 85,
+        "vibrationMmS": 5
+      },
+      "confidence": 0.68,
+      "anomaly_state": "anomaly_detected",
+      "governance_state": "allowed",
+      "links": {
+        "orchestration_id": null,
+        "replay_id": null,
+        "workflow_id": null,
+        "governance_id": "governance-4c5c62c0928da488"
+      }
+    },
+    "governance": {
+      "schema_version": "cintent.cognitive.v1.0.0",
+      "governance_id": "governance-4c5c62c0928da488",
+      "tenant_id": "demo-tenant",
+      "domain": "manufacturing",
+      "operation": "telemetry.anomaly.detected",
+      "profile": "industrial-safety",
+      "inherited_policies": [
+        "schema-version-required",
+        "tenant-boundary-required",
+        "lineage-required",
+        "machine-safety",
+        "maintenance-escalation",
+        "operator-audit"
+      ],
+      "constraints": [
+        {
+          "id": "tenant-scope",
+          "status": "enforced",
+          "reason": "Every runtime operation must have tenant scope."
+        },
+        {
+          "id": "schema-version",
+          "status": "enforced",
+          "reason": "cintent.cognitive.v1.0.0 attached to operation."
+        },
+        {
+          "id": "replay-lineage",
+          "status": "advisory",
+          "reason": "Replay linkage is required when execution emits replayable state."
+        },
+        {
+          "id": "role-scope",
+          "status": "advisory",
+          "reason": "Role guest mapped to canonical RBAC envelope."
+        }
+      ],
+      "decision": "allowed",
+      "evaluated_at": "2026-05-15T13:38:07.306Z"
+    }
+  },
+  "canonicalTelemetry": {
+    "schema_version": "cintent.cognitive.v1.0.0",
+    "entity_type": "telemetry",
+    "entity_id": "x2c-manufacturing-telemetry",
+    "tenant_id": "demo-tenant",
+    "workspace_id": null,
+    "session_id": "demo-e1166a596df2",
+    "domain": "manufacturing",
+    "application_id": null,
+    "created_at": "2026-05-15T13:38:07.306Z",
+    "updated_at": "2026-05-15T13:38:07.306Z",
+    "event_type": "telemetry.ingested",
+    "source": "x2c-validation-sensor",
+    "telemetry_category": "industrial-sensor",
+    "metrics": {
+      "temperatureC": 92,
+      "vibrationMmS": 6.1
+    },
+    "thresholds": {
+      "temperatureC": 85,
+      "vibrationMmS": 5
+    },
+    "confidence": 0.68,
+    "anomaly_state": "anomaly_detected",
+    "governance_state": "allowed",
+    "links": {
+      "orchestration_id": null,
+      "replay_id": null,
+      "workflow_id": null,
+      "governance_id": "governance-4c5c62c0928da488"
+    }
+  },
+  "governance": {
+    "schema_version": "cintent.cognitive.v1.0.0",
+    "governance_id": "governance-4c5c62c0928da488",
+    "tenant_id": "demo-tenant",
+    "domain": "manufacturing",
+    "operation": "telemetry.anomaly.detected",
+    "profile": "industrial-safety",
+    "inherited_policies": [
+      "schema-version-required",
+      "tenant-boundary-required",
+      "lineage-required",
+      "machine-safety",
+      "maintenance-escalation",
+      "operator-audit"
+    ],
+    "constraints": [
+      {
+        "id": "tenant-scope",
+        "status": "enforced",
+        "reason": "Every runtime operation must have tenant scope."
+      },
+      {
+        "id": "schema-version",
+        "status": "enforced",
+        "reason": "cintent.cognitive.v1.0.0 attached to operation."
+      },
+      {
+        "id": "replay-lineage",
+        "status": "advisory",
+        "reason": "Replay linkage is required when execution emits replayable state."
+      },
+      {
+        "id": "role-scope",
+        "status": "advisory",
+        "reason": "Role guest mapped to canonical RBAC envelope."
+      }
+    ],
+    "decision": "allowed",
+    "evaluated_at": "2026-05-15T13:38:07.306Z"
+  },
+  "orchestration": null,
+  "orchestrationTrigger": {
+    "status": "queued",
+    "reason": "telemetry anomaly threshold crossed",
+    "telemetryId": "x2c-manufacturing-telemetry"
+  },
+  "backpressure": false
+}

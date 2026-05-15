@@ -1,0 +1,6 @@
+{
+  "initializationScreen": true,
+  "autoHydrationRemoved": true,
+  "cleanAskPrompt": true,
+  "resetBackendWired": true
+}

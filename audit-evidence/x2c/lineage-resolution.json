@@ -1,0 +1,68 @@
+{
+  "source": "canonical-lineage-tracking-runtime",
+  "schemaVersion": "cintent.cognitive.v1.0.0",
+  "lineage": {
+    "nodes": [
+      {
+        "id": "demo-tenant",
+        "type": "tenant"
+      },
+      {
+        "id": "drone",
+        "type": "domain"
+      },
+      {
+        "id": "x2c-workflow",
+        "type": "workflow"
+      },
+      {
+        "id": "studio-exec-1778852292868",
+        "type": "orchestration"
+      },
+      {
+        "id": "x2c-manufacturing-telemetry",
+        "type": "telemetry"
+      },
+      {
+        "id": "studio-replay-studio-workflow-1778852290157-1778852292868",
+        "type": "replay"
+      },
+      {
+        "id": "governance-e2da4a7fbe139914",
+        "type": "governance"
+      }
+    ],
+    "edges": [
+      {
+        "from": "demo-tenant",
+        "to": "drone",
+        "relation": "tenant_to_domain"
+      },
+      {
+        "from": "drone",
+        "to": "x2c-workflow",
+        "relation": "domain_to_workflow"
+      },
+      {
+        "from": "x2c-workflow",
+        "to": "studio-exec-1778852292868",
+        "relation": "workflow_to_orchestration"
+      },
+      {
+        "from": "studio-exec-1778852292868",
+        "to": "x2c-manufacturing-telemetry",
+        "relation": "orchestration_to_telemetry"
+      },
+      {
+        "from": "x2c-manufacturing-telemetry",
+        "to": "studio-replay-studio-workflow-1778852290157-1778852292868",
+        "relation": "telemetry_to_replay"
+      },
+      {
+        "from": "studio-replay-studio-workflow-1778852290157-1778852292868",
+        "to": "governance-e2da4a7fbe139914",
+        "relation": "replay_to_governance"
+      }
+    ]
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "language": "typescript",
+  "sdk_url": "https://api-cintent.cognivantalabs.com/sdk/undefined/typescript",
+  "package_recommendations": [
+    {
+      "id": "python",
+      "name": "Python SDK",
+      "runtime": "cloud/hybrid",
+      "starter": "pip install cintent-sdk",
+      "visible": true
+    },
+    {
+      "id": "typescript",
+      "name": "TypeScript SDK",
+      "runtime": "cloud/web",
+      "starter": "npm install @cintent/sdk",
+      "visible": true
+    },
+    {
+      "id": "rest",
+      "name": "REST SDK",
+      "runtime": "any",
+      "starter": "OpenAPI + signed tenant token",
+      "visible": true
+    },
+    {
+      "id": "edge",
+      "name": "Edge Runtime SDK",
+      "runtime": "edge/distributed",
+      "starter": "cintent-edge runtime package",
+      "visible": true
+    },
+    {
+      "id": "replay",
+      "name": "Replay Integration SDK",
+      "runtime": "all",
+      "starter": "Replay hooks and explainability envelope",
+      "visible": true
+    },
+    {
+      "id": "governance",
+      "name": "Governance Hooks SDK",
+      "runtime": "all",
+      "starter": "Tenant governance, RBAC, policy propagation hooks",
+      "visible": true
+    },
+    {
+      "id": "swarm",
+      "name": "Swarm Coordination SDK",
+      "runtime": "distributed",
+      "starter": "Distributed consensus and swarm coordination adapter",
+      "visible": true
+    }
+  ],
+  "standards_recommendations": [],
+  "replay_hooks": [
+    {
+      "api_key": "cef-metadata",
+      "hook": "cef-metadata.replay.capture()"
+    },
+    {
+      "api_key": "travel-intent",
+      "hook": "travel-intent.replay.capture()"
+    },
+    {
+      "api_key": "travel-decision",
+      "hook": "travel-decision.replay.capture()"
+    }
+  ],
+  "governance_hooks": [
+    {
+      "api_key": "phase-routing",
+      "hook": "phase-routing.governance.validate()"
+    },
+    {
+      "api_key": "cef-execution",
+      "hook": "cef-execution.governance.validate()"
+    }
+  ],
+  "deployment_guidance": {
+    "mode": "edge",
+    "examples": [
+      "edge authentication bootstrap with tenant-scoped API key",
+      "edge orchestration client with replay capture enabled",
+      "edge governance policy propagation and RBAC scope validation",
+      "edge telemetry, confidence evolution, and observability export"
+    ],
+    "runtimeValidation": [
+      "metadata contract validation",
+      "sandbox execution",
+      "replay package validation",
+      "governance checkpoint validation",
+      "observability metrics validation"
+    ]
+  },
+  "orchestration_dependencies": [
+    "phase-domain",
+    "rbt-multimodal-cognition",
+    "phase-intent",
+    "gov-validate"
+  ],
+  "simulation_runtime": null,
+  "generated_at": "2026-05-15T10:25:32.582Z",
+  "session_type": "demo",
+  "source": "cognitive-sdk-intelligence-runtime",
+  "note": "Demo Mode SDK output is sample-only."
+}

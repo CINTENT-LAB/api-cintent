@@ -1,0 +1,32 @@
+{
+  "title": "CINTENT Production Runtime",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Requests",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "targets": [{ "expr": "cintent_requests_total" }]
+    },
+    {
+      "type": "stat",
+      "title": "P95 Latency",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "targets": [{ "expr": "cintent_http_p95_latency_ms" }]
+    },
+    {
+      "type": "stat",
+      "title": "Orchestrations",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "targets": [{ "expr": "cintent_orchestration_executions_total" }]
+    },
+    {
+      "type": "stat",
+      "title": "Replay Reconstructions",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "targets": [{ "expr": "cintent_replay_reconstructions_total" }]
+    }
+  ]
+}

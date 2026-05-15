@@ -1,0 +1,26 @@
+{
+  "status": "persisted",
+  "state": {
+    "workspace_id": "x2b-workspace-drone",
+    "session_id": "demo-338286d90f99",
+    "active_domain": "drone",
+    "active_application": "CHAXU",
+    "active_workflow": "swarm coordination",
+    "active_apis": [
+      "drone-fleet",
+      "observe-replay-reconstruct"
+    ],
+    "active_simulation": "drone-fleet-coordination",
+    "user_mode": "technical",
+    "runtime_environment": "sandbox",
+    "workflow_state": {
+      "stage": "select-apis",
+      "completed": [
+        "select-domain"
+      ],
+      "runtimeState": "idle"
+    },
+    "tenant_id": "demo-tenant",
+    "updated_at": "2026-05-15T13:38:26.629Z"
+  }
+}

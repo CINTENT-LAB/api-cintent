@@ -118,6 +118,32 @@ services:
       - "3001:3001"
     command: ["node", "server.js"]
 
+  prometheus:
+    image: prom/prometheus:v2.53.1
+    container_name: cintent-prometheus
+    volumes:
+      - ./ops/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      cintent-api:
+        condition: service_started
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: cintent-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-cintent_grafana_password}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./ops/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3002:3000"
+    depends_on:
+      prometheus:
+        condition: service_started
+
 volumes:
   postgres-data:
   timescale-data:
@@ -125,3 +151,4 @@ volumes:
   neo4j-data:
   qdrant-data:
   minio-data:
+  grafana-data:

@@ -1,0 +1,30 @@
+{
+  "status": "reset",
+  "source": "workspace-lifecycle-runtime",
+  "tenant": "demo-tenant",
+  "message": "Active workspace runtime state was cleared. Historical audit and replay records remain available for governed review.",
+  "event": {
+    "id": "event-90554ce9d3f9af4d",
+    "type": "workspace.lifecycle.reset",
+    "tenantId": "demo-tenant",
+    "workspaceId": null,
+    "sessionId": "demo-5416940bea21",
+    "entityId": "workspace-reset-1778852284118",
+    "payload": {
+      "resetAt": "2026-05-15T13:38:04.118Z",
+      "cleared": [
+        "active-orchestration",
+        "active-replay",
+        "active-telemetry",
+        "ask-cogni-context",
+        "workflow-state",
+        "simulation-state"
+      ],
+      "historicalAuditRetained": true
+    },
+    "metadata": {
+      "lifecycle": "explicit-user-reset"
+    },
+    "timestamp": "2026-05-15T13:38:04.118Z"
+  }
+}

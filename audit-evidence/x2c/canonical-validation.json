@@ -1,0 +1,180 @@
+{
+  "source": "canonical-runtime-normalization-validation",
+  "schemaVersion": "cintent.cognitive.v1.0.0",
+  "status": "validated",
+  "registryCoverage": {
+    "domains": 16,
+    "apis": 437,
+    "simulations": 99
+  },
+  "eventConsistency": [
+    {
+      "type": "workspace.updated",
+      "canonical": true
+    },
+    {
+      "type": "context.synchronized",
+      "canonical": true
+    },
+    {
+      "type": "workflow.generated",
+      "canonical": true
+    },
+    {
+      "type": "orchestration.started",
+      "canonical": true
+    },
+    {
+      "type": "orchestration.stage.completed",
+      "canonical": true
+    },
+    {
+      "type": "orchestration.recovered",
+      "canonical": true
+    },
+    {
+      "type": "replay.generated",
+      "canonical": true
+    },
+    {
+      "type": "replay.reconstructed",
+      "canonical": true
+    },
+    {
+      "type": "telemetry.ingested",
+      "canonical": true
+    },
+    {
+      "type": "telemetry.anomaly.detected",
+      "canonical": true
+    },
+    {
+      "type": "governance.validated",
+      "canonical": true
+    },
+    {
+      "type": "simulation.executed",
+      "canonical": true
+    },
+    {
+      "type": "sdk.generated",
+      "canonical": true
+    },
+    {
+      "type": "ask_cogni.reasoned",
+      "canonical": true
+    },
+    {
+      "type": "deployment.prepared",
+      "canonical": true
+    }
+  ],
+  "domainResults": [
+    {
+      "domain": "healthcare",
+      "telemetryValid": true,
+      "orchestrationValid": true,
+      "replayValid": true,
+      "primitiveModel": [
+        "telemetry",
+        "orchestration",
+        "replay"
+      ]
+    },
+    {
+      "domain": "drone",
+      "telemetryValid": true,
+      "orchestrationValid": true,
+      "replayValid": true,
+      "primitiveModel": [
+        "telemetry",
+        "orchestration",
+        "replay"
+      ]
+    },
+    {
+      "domain": "manufacturing",
+      "telemetryValid": true,
+      "orchestrationValid": true,
+      "replayValid": true,
+      "primitiveModel": [
+        "telemetry",
+        "orchestration",
+        "replay"
+      ]
+    },
+    {
+      "domain": "airport",
+      "telemetryValid": true,
+      "orchestrationValid": true,
+      "replayValid": true,
+      "primitiveModel": [
+        "telemetry",
+        "orchestration",
+        "replay"
+      ]
+    },
+    {
+      "domain": "bfsi",
+      "telemetryValid": true,
+      "orchestrationValid": true,
+      "replayValid": true,
+      "primitiveModel": [
+        "telemetry",
+        "orchestration",
+        "replay"
+      ]
+    },
+    {
+      "domain": "legal",
+      "telemetryValid": true,
+      "orchestrationValid": true,
+      "replayValid": true,
+      "primitiveModel": [
+        "telemetry",
+        "orchestration",
+        "replay"
+      ]
+    }
+  ],
+  "governance": {
+    "schema_version": "cintent.cognitive.v1.0.0",
+    "governance_id": "governance-29d17963bb1c97c1",
+    "tenant_id": "demo-tenant",
+    "domain": "enterprise",
+    "operation": "canonical.validation",
+    "profile": "enterprise-controls",
+    "inherited_policies": [
+      "schema-version-required",
+      "tenant-boundary-required",
+      "lineage-required",
+      "rbac",
+      "audit-lineage",
+      "tenant-boundary"
+    ],
+    "constraints": [
+      {
+        "id": "tenant-scope",
+        "status": "enforced",
+        "reason": "Every runtime operation must have tenant scope."
+      },
+      {
+        "id": "schema-version",
+        "status": "enforced",
+        "reason": "cintent.cognitive.v1.0.0 attached to operation."
+      },
+      {
+        "id": "replay-lineage",
+        "status": "advisory",
+        "reason": "Replay linkage is required when execution emits replayable state."
+      },
+      {
+        "id": "role-scope",
+        "status": "advisory",
+        "reason": "Role guest mapped to canonical RBAC envelope."
+      }
+    ],
+    "decision": "allowed",
+    "evaluated_at": "2026-05-15T13:38:07.302Z"
+  }
+}
