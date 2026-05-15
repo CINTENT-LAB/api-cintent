@@ -1269,6 +1269,7 @@
       healthcareHardeningReplay: null,
       healthcareHardeningValidation: null,
       healthcareHardeningDashboard: null,
+      platformRuntimeStatus: null,
       executionStream: null,
       executionPoller: null,
       apiKeys: [],
@@ -1281,7 +1282,15 @@
       askSelectedApis: ['healthcare-impl-executable-runtime', 'healthcare-impl-streaming-runtime', 'healthcare-impl-governance-runtime'],
       askSelectedSimulation: 'hospital-operations',
       askSelectedWorkflow: 'multilingual telemedicine workflow',
+      askDraftQuestion: 'I want to build a multilingual telemedicine platform. What should I do first?',
       askLastResponse: null,
+      askWorkspaceSessions: {},
+      askWorkspaceId: '',
+      askSessionId: '',
+      askContextId: '',
+      askContextValidation: { valid: true, mismatches: [], actions: [] },
+      askOverrideMismatch: false,
+      askWorkflowState: { stage: 'select-apis', completed: [], lastAction: '', runtimeState: 'idle', artifacts: {} },
       chat: [
         { role: 'Ask COGNI', text: 'Choose a domain, application, and mode. I will guide the workspace with simple next actions, not metadata dumps.' }
       ]
@@ -1463,6 +1472,12 @@
         const enabled = state.simulations.find(sim => sim.launchable);
         state.selectedSimulationId = enabled ? enabled.id : (state.simulations[0] && state.simulations[0].id) || '';
       }
+    }
+
+    async function loadPlatformRuntimeStatus() {
+      const response = await fetch('/api/platform/runtime/status', { credentials: 'include' });
+      if (response.ok) state.platformRuntimeStatus = await response.json();
+      return state.platformRuntimeStatus;
     }
 
     function renderShell() {
@@ -2078,32 +2093,305 @@
     function issuePackage() { return { issueId: 'cintent-issue-demo', executionId: 'orch-rbt-workflow-demo', replayTrace: 'attached', orchestrationLineage: selectedApi().lineage, logs: ['governance pass', 'replay capture', 'response emitted'], supportRoute: 'enterprise-support@cognivantalabs.example' }; }
 
     const askDomainProfiles = {
-      healthcare: { title: 'Healthcare Cognitive Assistant', actions: ['Smart Hospital', 'ICU Monitoring', 'Telemedicine', 'Emergency Care', 'Prescription Systems'] },
-      drone: { title: 'Drone Mission Intelligence Assistant', actions: ['Swarm Simulation', 'Mission Replay', 'PX4 Integration', 'MAVLink Runtime', 'Edge Deployment'] },
-      legal: { title: 'Judicial Intelligence Assistant', actions: ['Case Analysis', 'Legal Workflow Replay', 'Multilingual Search', 'Evidence Orchestration', 'Legal Governance'] },
-      travel: { title: 'Travel Intelligence Assistant', actions: ['Travel Orchestration', 'Airport Integration', 'Itinerary Planning', 'Localization APIs', 'Travel Simulations'] },
-      robotics: { title: 'Robotics Operations Assistant', actions: ['Run Robotics Simulation', 'Generate ROS2 SDK', 'Open Replay', 'View Governance', 'Deploy Edge Runtime'] },
-      manufacturing: { title: 'Manufacturing Systems Assistant', actions: ['Smart Factory Twin', 'Equipment Telemetry', 'Quality Governance', 'Predictive Maintenance', 'Export Audit'] },
-      platform: { title: 'CINTENT Workspace Assistant', actions: ['View APIs', 'Create Workflow', 'Run Simulation', 'Generate SDK', 'Show Dashboard'] }
+      healthcare: { title: 'Healthcare Cognitive Assistant', defaultApplication: 'smart-hospital', defaultWorkflow: 'multilingual telemedicine workflow', defaultQuestion: 'I want to build a multilingual telemedicine platform. What should I do first?', searchTerms: ['healthcare','hospital','clinical','patient','icu','telemedicine','medical'], simulationTerms: ['hospital','icu','healthcare','telemedicine','emergency'], actions: ['Smart Hospital', 'ICU Monitoring', 'Telemedicine', 'Emergency Care', 'Prescription Systems'] },
+      drone: { title: 'Drone Mission Intelligence Assistant', defaultApplication: 'chaxu', defaultWorkflow: 'drone swarm mission coordination workflow', defaultQuestion: 'Plan a drone swarm mission with PX4, MAVLink, edge deployment, replay, and governance.', searchTerms: ['drone','uav','swarm','mavlink','px4','mission','edge'], simulationTerms: ['drone','uav','swarm','mission'], actions: ['Swarm Simulation', 'Mission Replay', 'PX4 Integration', 'MAVLink Runtime', 'Edge Deployment'] },
+      legal: { title: 'Judicial Intelligence Assistant', defaultApplication: 'nyaynetra', defaultWorkflow: 'legal case evidence orchestration workflow', defaultQuestion: 'Help me build a multilingual legal case analysis workflow with evidence replay and governance.', searchTerms: ['legal','judicial','case','evidence','nyaynetra'], simulationTerms: ['legal','case','governance'], actions: ['Case Analysis', 'Legal Workflow Replay', 'Multilingual Search', 'Evidence Orchestration', 'Legal Governance'] },
+      travel: { title: 'Travel Intelligence Assistant', defaultApplication: 'blisstrail', defaultWorkflow: 'airport passenger travel orchestration workflow', defaultQuestion: 'Design a travel orchestration workflow for airport operations, localization, itinerary planning, and replay.', searchTerms: ['travel','airport','mobility','itinerary','localization'], simulationTerms: ['travel','airport','mobility'], actions: ['Travel Orchestration', 'Airport Integration', 'Itinerary Planning', 'Localization APIs', 'Travel Simulations'] },
+      robotics: { title: 'Robotics Operations Assistant', defaultApplication: 'manufacturing', defaultWorkflow: 'warehouse robotics orchestration workflow', defaultQuestion: 'Create a robotics orchestration workflow with ROS2 readiness, telemetry, replay, and safety governance.', searchTerms: ['robotics','robot','ros2','warehouse','fleet','isaac'], simulationTerms: ['robot','warehouse','industrial'], actions: ['Run Robotics Simulation', 'Generate ROS2 SDK', 'Open Replay', 'View Governance', 'Deploy Edge Runtime'] },
+      cobotics: { title: 'Cobotics Collaboration Assistant', defaultApplication: 'manufacturing', defaultWorkflow: 'human robot collaboration workcell workflow', defaultQuestion: 'Plan a cobotics workcell with human handoff, safety governance, HRI telemetry, and replay.', searchTerms: ['cobotics','cobot','hri','collaboration','workcell','safety'], simulationTerms: ['cobot','collaboration','hri','robot'], actions: ['Cobot Workcell', 'Safety Governance', 'Human Handoff', 'Collaboration Replay', 'Generate SDK'] },
+      multilingual: { title: 'Multilingual AI Workspace Assistant', defaultApplication: 'shunya-ai', defaultWorkflow: 'multilingual speech and translation workflow', defaultQuestion: 'Build a multilingual AI workflow for speech, translation, regional context, replay, and governance.', searchTerms: ['multilingual','speech','translation','language','regional'], simulationTerms: ['multilingual','speech','translation','language'], actions: ['Speech Workflow', 'Translation Runtime', 'Regional Context', 'Multilingual SDK', 'Replay Conversation'] },
+      manufacturing: { title: 'Manufacturing Systems Assistant', defaultApplication: 'manufacturing', defaultWorkflow: 'smart manufacturing operations workflow', defaultQuestion: 'Create a smart manufacturing workflow with equipment telemetry, quality governance, predictive maintenance, and replay.', searchTerms: ['manufacturing','factory','industrial','equipment','quality'], simulationTerms: ['manufacturing','factory','industrial'], actions: ['Smart Factory Twin', 'Equipment Telemetry', 'Quality Governance', 'Predictive Maintenance', 'Export Audit'] },
+      platform: { title: 'CINTENT Workspace Assistant', defaultApplication: 'platform', defaultWorkflow: 'cognitive platform orchestration workflow', defaultQuestion: 'Guide me through CINTENT APIs, orchestration, replay, governance, SDKs, and simulations.', searchTerms: ['platform','orchestration','replay','governance','sdk'], simulationTerms: ['orchestration','platform'], actions: ['View APIs', 'Create Workflow', 'Run Simulation', 'Generate SDK', 'Show Dashboard'] }
     };
 
+    const applicationDomainMap = {
+      'smart-hospital': 'healthcare',
+      chaxu: 'drone',
+      nyaynetra: 'legal',
+      blisstrail: 'travel',
+      'shunya-ai': 'multilingual',
+      manufacturing: 'manufacturing'
+    };
+
+    const askDomainTerms = {
+      healthcare: ['healthcare','hospital','clinic','patient','doctor','nurse','icu','surgery','telemedicine','medicine','pharma','insurance','clinical','diagnosis','ambulance','hipaa','consent'],
+      drone: ['drone','uav','mavlink','px4','ardupilot','dgca','utm','airspace','fleet','mission','swarm','geofence'],
+      robotics: ['robot','robotics','ros2','isaac','warehouse','fleet','navigation'],
+      cobotics: ['cobot','cobotics','collaborative robot','human robot','hri','workcell','handoff','robotics','robot','safety'],
+      legal: ['legal','judicial','court','case','evidence','nyaynetra','petition','judgment'],
+      travel: ['travel','airport','itinerary','tourism','mobility','passenger','localization','blisstrail'],
+      multilingual: ['multilingual','translation','speech','language','regional','transcription','hri','interaction'],
+      manufacturing: ['manufacturing','factory','industrial','quality','equipment','production','maintenance']
+    };
+
+    function askHash(value) {
+      let hash = 0;
+      String(value || '').split('').forEach(ch => { hash = ((hash << 5) - hash) + ch.charCodeAt(0); hash |= 0; });
+      return Math.abs(hash).toString(36);
+    }
+
+    function detectAskDomainFromText(text = '') {
+      const haystack = String(text || '').toLowerCase();
+      let best = { domain: '', score: 0 };
+      Object.entries(askDomainTerms).forEach(([domain, terms]) => {
+        const score = terms.reduce((sum, term) => sum + (haystack.includes(term) ? 1 : 0), 0);
+        if (score > best.score) best = { domain, score };
+      });
+      return best.score ? best.domain : '';
+    }
+
+    function askWorkspaceKey(domain = state.askDomain, applicationId = state.askApplicationId) {
+      return `${domain || 'platform'}:${applicationId || 'platform'}:${state.askEnvironment || 'sandbox'}`;
+    }
+
+    const askWorkflowStages = [
+      ['select-apis', 'Select APIs'],
+      ['generate-architecture', 'Generate Architecture'],
+      ['generate-orchestration', 'Generate Orchestration'],
+      ['run-simulation', 'Run Simulation'],
+      ['open-replay', 'Open Replay'],
+      ['inspect-governance', 'Inspect Governance'],
+      ['generate-sdk', 'Generate SDK'],
+      ['deploy-runtime', 'Deploy Runtime']
+    ];
+
+    function advanceAskWorkflowStage(stage, artifact = {}) {
+      const current = state.askWorkflowState || { stage: 'select-apis', completed: [], artifacts: {} };
+      const completed = [...new Set([...(current.completed || []), current.stage, stage].filter(Boolean))];
+      state.askWorkflowState = {
+        stage,
+        completed,
+        lastAction: stage,
+        runtimeState: artifact.status || 'completed',
+        artifacts: { ...(current.artifacts || {}), [stage]: artifact }
+      };
+      saveAskWorkspaceSession();
+    }
+
+    function renderAskWorkflowState() {
+      const current = state.askWorkflowState || { stage: 'select-apis', completed: [] };
+      return `<div class="cogni-section"><h4>Workflow Continuity</h4><div class="agent-strip">${askWorkflowStages.map(([id, label]) => `<span class="agent-chip ${current.completed && current.completed.includes(id) ? 'ok' : id === current.stage ? 'active' : ''}">${escapeHtml(label)}</span>`).join('')}</div></div>`;
+    }
+
+    function ensureAskWorkspaceSession() {
+      const key = askWorkspaceKey();
+      const existing = state.askWorkspaceSessions[key] || {};
+      const workspaceId = existing.workspaceId || `ask-workspace-${askHash(key)}`;
+      const sessionId = existing.sessionId || `ask-session-${askHash(`${key}:${Date.now()}`)}`;
+      const contextSource = JSON.stringify({
+        domain: state.askDomain,
+        applicationId: state.askApplicationId,
+        apis: state.askSelectedApis,
+        simulation: state.askSelectedSimulation,
+        workflow: state.askSelectedWorkflow,
+        mode: state.askMode,
+        environment: state.askEnvironment
+      });
+      const contextId = `ask-context-${askHash(contextSource)}`;
+      const session = {
+        workspaceId,
+        sessionId,
+        contextId,
+        domain: state.askDomain,
+        applicationId: state.askApplicationId,
+        selectedApis: state.askSelectedApis,
+        selectedSimulation: state.askSelectedSimulation,
+        selectedWorkflow: state.askSelectedWorkflow,
+        draftQuestion: state.askDraftQuestion,
+        workflowState: existing.workflowState || state.askWorkflowState,
+        chat: existing.chat || [{ role: 'Ask COGNI', text: `${askProfileForDomain(state.askDomain).title} is ready for this workspace.` }],
+        memory: existing.memory || [],
+        validation: validateAskContext()
+      };
+      state.askWorkspaceSessions[key] = session;
+      state.askWorkspaceId = workspaceId;
+      state.askSessionId = sessionId;
+      state.askContextId = contextId;
+      state.askContextValidation = session.validation;
+      state.askWorkflowState = session.workflowState || state.askWorkflowState;
+      if (!state.chat || !state.chat.length || existing.chat) state.chat = session.chat;
+      return session;
+    }
+
+    function saveAskWorkspaceSession() {
+      const key = askWorkspaceKey();
+      state.askWorkspaceSessions[key] = {
+        ...(state.askWorkspaceSessions[key] || {}),
+        workspaceId: state.askWorkspaceId,
+        sessionId: state.askSessionId,
+        contextId: state.askContextId,
+        domain: state.askDomain,
+        applicationId: state.askApplicationId,
+        selectedApis: state.askSelectedApis,
+        selectedSimulation: state.askSelectedSimulation,
+        selectedWorkflow: state.askSelectedWorkflow,
+        draftQuestion: state.askDraftQuestion,
+        workflowState: state.askWorkflowState,
+        chat: state.chat,
+        validation: state.askContextValidation
+      };
+    }
+
+    function validateAskContext(query = state.askDraftQuestion) {
+      const domain = state.askDomain || 'platform';
+      const mismatches = [];
+      const queryDomain = detectAskDomainFromText(`${query || ''} ${state.askSelectedWorkflow || ''}`);
+      if (!state.askOverrideMismatch && queryDomain && domain !== 'platform' && queryDomain !== domain) {
+        mismatches.push({
+          type: 'query-domain',
+          selectedItem: 'question/workflow',
+          selectedValue: query || state.askSelectedWorkflow,
+          expectedDomain: domain,
+          actualDomain: queryDomain,
+          message: `This request looks like ${queryDomain}, but the workspace is ${domain}.`
+        });
+      }
+      const appDomain = applicationDomainMap[state.askApplicationId];
+      if (!state.askOverrideMismatch && appDomain && domain !== 'platform' && appDomain !== domain) {
+        mismatches.push({
+          type: 'application-domain',
+          selectedItem: 'application',
+          selectedValue: state.askApplicationId,
+          expectedDomain: domain,
+          actualDomain: appDomain,
+          message: `${state.askApplicationId} belongs to ${appDomain}, not ${domain}.`
+        });
+      }
+      const simulationOptions = askSimulationOptionsForDomain(domain).map(sim => sim.id);
+      if (!state.askOverrideMismatch && state.askSelectedSimulation && !simulationOptions.includes(state.askSelectedSimulation)) {
+        mismatches.push({
+          type: 'simulation-domain',
+          selectedItem: 'simulation',
+          selectedValue: state.askSelectedSimulation,
+          expectedDomain: domain,
+          actualDomain: 'different domain',
+          message: `The selected simulation does not match ${domain}.`
+        });
+      }
+      const apiOptions = new Set(askApiOptionsForDomain(domain).map(api => api.api_key));
+      const invalidApis = (state.askSelectedApis || []).filter(key => !apiOptions.has(key));
+      if (!state.askOverrideMismatch && invalidApis.length) {
+        mismatches.push({
+          type: 'api-domain',
+          selectedItem: 'APIs',
+          selectedValue: invalidApis.join(', '),
+          expectedDomain: domain,
+          actualDomain: 'different domain',
+          message: `Some selected APIs do not match ${domain}.`
+        });
+      }
+      return {
+        valid: mismatches.length === 0,
+        mismatches,
+        actions: mismatches.length ? [
+          queryDomain && queryDomain !== domain ? { id: 'switch-domain', label: `Switch to ${queryDomain}`, domain: queryDomain } : null,
+          { id: 'switch-simulation', label: 'Switch simulation' },
+          { id: 'continue-intentionally', label: 'Continue intentionally' }
+        ].filter(Boolean) : []
+      };
+    }
+
+    function askProfileForDomain(domain) {
+      const dynamicDomain = roadmapDomains.find(item => item.domain_key === domain || item.id === domain);
+      if (askDomainProfiles[domain]) return askDomainProfiles[domain];
+      const label = dynamicDomain && (dynamicDomain.title || dynamicDomain.nav_title) || String(domain || 'platform').replace(/[-_]/g, ' ');
+      return {
+        title: `${label} Cognitive Assistant`,
+        defaultApplication: 'platform',
+        defaultWorkflow: `${label} orchestration workflow`,
+        defaultQuestion: `Help me build a ${label} workflow with APIs, simulation, replay, governance, SDKs, and deployment guidance.`,
+        searchTerms: [domain, label].filter(Boolean),
+        simulationTerms: [domain, label].filter(Boolean),
+        actions: ['View APIs', 'Create Workflow', 'Run Simulation', 'Generate SDK', 'Open Replay']
+      };
+    }
+
+    function askApiOptionsForDomain(domain) {
+      const profile = askProfileForDomain(domain);
+      const terms = [domain, ...(profile.searchTerms || [])].map(term => String(term || '').toLowerCase()).filter(Boolean);
+      const matches = apiCatalog.filter(api => {
+        const haystack = [api.domain, api.domain_key, api.category, api.name, api.description, api.short_description, ...(api.tags || [])].join(' ').toLowerCase();
+        return domain === 'platform' || terms.some(term => haystack.includes(term));
+      });
+      return (matches.length ? matches : apiCatalog.filter(api => api.replay_support || api.governance_support)).slice(0, 14);
+    }
+
+    function askSimulationOptionsForDomain(domain) {
+      const profile = askProfileForDomain(domain);
+      const terms = [domain, ...(profile.simulationTerms || [])].map(term => String(term || '').toLowerCase()).filter(Boolean);
+      const matches = state.simulations.filter(sim => {
+        const haystack = [sim.id, sim.title, sim.domain, sim.description, ...(sim.domains || []), ...(sim.tags || [])].join(' ').toLowerCase();
+        return domain === 'platform' || terms.some(term => haystack.includes(term));
+      });
+      if (matches.length) return matches;
+      if (domain === 'platform') return state.simulations.slice(0, 8);
+      return [];
+    }
+
+    function effectiveAskSelectedApis(domain = state.askDomain) {
+      const options = askApiOptionsForDomain(domain);
+      const validKeys = new Set(options.map(api => api.api_key).filter(Boolean));
+      const selected = (state.askSelectedApis || []).filter(key => validKeys.has(key));
+      return selected.length ? selected : options.slice(0, 3).map(api => api.api_key).filter(Boolean);
+    }
+
+    function effectiveAskSimulation(domain = state.askDomain) {
+      const options = askSimulationOptionsForDomain(domain);
+      if (options.some(sim => sim.id === state.askSelectedSimulation)) return state.askSelectedSimulation;
+      return options[0] ? options[0].id : '';
+    }
+
+    function applyAskDomainDefaults(domain, options = {}) {
+      saveAskWorkspaceSession();
+      const profile = askProfileForDomain(domain);
+      state.askDomain = domain;
+      state.askApplicationId = profile.defaultApplication || state.askApplicationId || 'platform';
+      state.askSelectedWorkflow = profile.defaultWorkflow || state.askSelectedWorkflow || '';
+      state.askSelectedSimulation = effectiveAskSimulation(domain);
+      state.askSelectedApis = effectiveAskSelectedApis(domain);
+      if (options.resetQuestion || !state.askDraftQuestion) state.askDraftQuestion = profile.defaultQuestion || '';
+      state.askLastResponse = null;
+      state.askOverrideMismatch = false;
+      const nextKey = askWorkspaceKey(domain, state.askApplicationId);
+      const existing = state.askWorkspaceSessions[nextKey];
+      if (existing) {
+        state.askSelectedApis = existing.selectedApis || state.askSelectedApis;
+        state.askSelectedSimulation = existing.selectedSimulation || state.askSelectedSimulation;
+        state.askSelectedWorkflow = existing.selectedWorkflow || state.askSelectedWorkflow;
+        state.askDraftQuestion = existing.draftQuestion || state.askDraftQuestion;
+        state.askWorkflowState = existing.workflowState || state.askWorkflowState;
+        state.chat = existing.chat || state.chat;
+      } else {
+        state.askWorkflowState = { stage: 'select-apis', completed: [], lastAction: '', runtimeState: 'idle', artifacts: {} };
+        state.chat = [{ role: 'Ask COGNI', text: `${profile.title} is ready. I will keep this workspace memory isolated from other domains.` }];
+      }
+      ensureAskWorkspaceSession();
+    }
+
     function askWorkspaceContext() {
-      const selectedApiNames = state.askSelectedApis.map(key => {
+      const session = ensureAskWorkspaceSession();
+      const selectedApis = effectiveAskSelectedApis();
+      const selectedApiNames = selectedApis.map(key => {
         const api = apiCatalog.find(item => item.api_key === key || item.id === key);
         return api ? api.name : key;
-      });
+      }).filter(Boolean);
       const app = applications.find(item => item.id === state.askApplicationId);
       return {
+        workspaceId: session.workspaceId,
+        sessionId: session.sessionId,
+        contextId: session.contextId,
         domain: state.askDomain,
         applicationId: state.askApplicationId,
         applicationName: app ? app.name : state.askApplicationId,
-        selectedApis: state.askSelectedApis,
+        selectedApis,
         selectedApiNames,
-        selectedSimulation: state.askSelectedSimulation || state.selectedSimulationId,
+        selectedSimulation: effectiveAskSimulation(),
         selectedWorkflow: state.askSelectedWorkflow,
+        workflowState: state.askWorkflowState,
         activeRuntime: state.executionRuntime && state.executionRuntime.executionId || state.healthcareImplExecution && state.healthcareImplExecution.id || '',
         environment: state.askEnvironment,
         mode: state.askMode,
+        overrideMismatch: state.askOverrideMismatch,
         subscriptionTier: currentEntitlement().tier
       };
     }
@@ -2113,11 +2401,31 @@
       return `<div class="cogni-section"><h4>Recommended Actions</h4><div class="toolbar">${actions.map(action => `<button class="secondary-btn" type="button" data-cogni-action="${escapeHtml(action.id)}" data-cogni-target="${escapeHtml(action.target || '')}" data-ask-prompt="${escapeHtml(action.prompt || action.label)}">${escapeHtml(action.label)}</button>`).join('')}</div></div>`;
     }
 
+    function renderAskValidation(validation = state.askContextValidation) {
+      if (!validation || validation.valid) return '';
+      return `<div class="lock-banner" style="margin-bottom:12px;"><strong>The current workflow does not match the selected domain.</strong><br>${validation.mismatches.map(item => escapeHtml(item.message)).join('<br>')}<div class="toolbar" style="margin-top:10px;">${validation.actions.map(action => `<button class="secondary-btn" type="button" data-context-action="${escapeHtml(action.id)}" data-context-domain="${escapeHtml(action.domain || '')}">${escapeHtml(action.label)}</button>`).join('')}</div></div>`;
+    }
+
+    function renderRuntimeProof() {
+      const runtime = state.platformRuntimeStatus;
+      const active = runtime && runtime.activeRuntime || {};
+      const layers = runtime && runtime.coreLayers || [];
+      return `<div class="cogni-section"><h4>Runtime Proof</h4><div class="mini-metrics">${[
+        ['Session', state.askSessionId || 'initializing'],
+        ['Context', state.askContextId || 'pending'],
+        ['Execution', active.latestExecution ? active.latestExecution.status : 'idle'],
+        ['Simulation', active.latestSimulation ? 'replay-ready' : 'idle'],
+        ['Core Layers', layers.filter(layer => layer.status === 'operational').length || 0]
+      ].map(item => `<div class="mini"><strong>${escapeHtml(item[1])}</strong><span>${escapeHtml(item[0])}</span></div>`).join('')}</div></div>`;
+    }
+
     function renderCogniResponse(response) {
       if (!response) return '';
       return `<div class="cogni-response">
         <div class="cogni-mode"><span class="tag prod">${escapeHtml(response.assistantName || 'Ask COGNI')}</span><span class="tag blue">${escapeHtml(response.workspaceMode || response.mode || 'guided')} mode</span><span class="tag">${escapeHtml(response.intent || 'general')}</span><span class="tag">${escapeHtml(response.domain || 'platform')}</span></div>
+        ${response.contextValidation && !response.contextValidation.valid ? renderAskValidation(response.contextValidation) : ''}
         ${response.currentContext ? `<div class="cogni-section"><h4>Current Context</h4><p>${Object.entries(response.currentContext).map(([key, value]) => `<strong>${escapeHtml(key)}:</strong> ${escapeHtml(Array.isArray(value) ? value.join(', ') || 'None selected' : String(value || 'Not selected'))}`).join(' &nbsp; ')}</p></div>` : ''}
+        ${renderAskWorkflowState()}
         <div class="cogni-section"><h4>Simple Summary</h4><p>${escapeHtml(response.directAnswer || '')}</p></div>
         ${renderQuickActions(response.quickActions || [])}
         ${(response.contextualCards || []).length ? `<div class="cogni-section"><h4>Context Cards</h4><div class="three-col">${response.contextualCards.map(card => `<div class="tile"><h3>${escapeHtml(card.title)}</h3><p>${escapeHtml(card.body)}</p><span class="tag">${escapeHtml(card.action)}</span></div>`).join('')}</div></div>` : ''}
@@ -2137,39 +2445,54 @@
     }
 
     function renderAsk() {
-      const profile = askDomainProfiles[state.askDomain] || askDomainProfiles.platform;
+      const session = ensureAskWorkspaceSession();
+      state.askContextValidation = validateAskContext();
+      const profile = askProfileForDomain(state.askDomain);
       const appOptions = [
+        { id: 'platform', name: 'CINTENT Platform' },
         { id: 'smart-hospital', name: 'Smart Hospital' },
+        { id: 'chaxu', name: 'CHAXU' },
+        { id: 'nyaynetra', name: 'NyayNetra' },
+        { id: 'blisstrail', name: 'BlissTrail' },
+        { id: 'shunya-ai', name: 'Shunya-AI' },
         { id: 'manufacturing', name: 'Manufacturing Systems' },
         ...applications
       ].filter((item, index, arr) => item && arr.findIndex(other => other.id === item.id) === index);
-      const domainOptions = ['healthcare', 'drone', 'legal', 'travel', 'robotics', 'manufacturing', 'platform'];
-      const apiOptions = apiCatalog.filter(api => state.askDomain === 'platform' || api.domain === state.askDomain || api.domain_key === state.askDomain || (api.category || '').toLowerCase().includes(state.askDomain)).slice(0, 14);
+      const domainOptions = [...new Set(['healthcare', 'drone', 'legal', 'travel', 'robotics', 'cobotics', 'multilingual', 'manufacturing', 'platform', ...roadmapDomains.map(domain => domain.domain_key).filter(Boolean)])];
+      const apiOptions = askApiOptionsForDomain(state.askDomain);
+      const selectedApiKeys = effectiveAskSelectedApis();
+      const simulationOptions = askSimulationOptionsForDomain(state.askDomain);
+      const selectedSimulation = effectiveAskSimulation();
       const context = askWorkspaceContext();
       document.getElementById('view-ask').innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Ask COGNI Workspace</h2><div class="sub">Context-aware multi-domain cognitive workspace intelligence. Choose the operational context first, then ask for guidance.</div></div><span class="tag prod">${escapeHtml(profile.title)}</span></div><div class="panel-body">
         <div class="stat-grid">${[
+          ['Workspace', session.workspaceId],
           ['Domain', context.domain],
           ['Application', context.applicationName || 'Not selected'],
           ['Environment', context.environment],
           ['Mode', context.mode],
           ['APIs', context.selectedApis.length],
-          ['Simulation', context.selectedSimulation || 'Not selected']
+          ['Simulation', context.selectedSimulation || 'Not selected'],
+          ['Stage', state.askWorkflowState.stage]
         ].map(item => `<div class="stat"><div class="stat-label">${escapeHtml(item[0])}</div><div class="stat-value" style="font-size:16px;">${escapeHtml(String(item[1]))}</div></div>`).join('')}</div>
       </div></div>
       <div style="display:grid;grid-template-columns:minmax(220px,0.85fr) minmax(360px,1.45fr) minmax(300px,1fr);gap:18px;margin-top:18px;align-items:start;">
         <div class="panel"><div class="panel-head"><div><h2>Workspace Context</h2><div class="sub">Ask COGNI synchronizes with these selections without a page refresh.</div></div></div><div class="panel-body">
+          ${renderAskValidation()}
           <div class="field"><label>Domain</label><select class="select" id="askDomain">${domainOptions.map(item => `<option value="${item}" ${state.askDomain === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
           <div class="field" style="margin-top:10px;"><label>Application</label><select class="select" id="askApplicationId">${appOptions.map(app => `<option value="${app.id}" ${state.askApplicationId === app.id ? 'selected' : ''}>${app.name}</option>`).join('')}</select></div>
           <div class="field" style="margin-top:10px;"><label>User mode</label><select class="select" id="askMode">${['beginner','business','technical','engineering','diagnostic'].map(item => `<option value="${item}" ${state.askMode === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
           <div class="field" style="margin-top:10px;"><label>Environment</label><select class="select" id="askEnvironment">${['sandbox','production','edge','hybrid','sovereign'].map(item => `<option value="${item}" ${state.askEnvironment === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
           <div class="field" style="margin-top:10px;"><label>Workflow</label><input class="input" id="askSelectedWorkflow" value="${escapeHtml(state.askSelectedWorkflow)}"></div>
-          <div class="field" style="margin-top:10px;"><label>Simulation</label><select class="select" id="askSelectedSimulation">${state.simulations.slice(0, 14).map(sim => `<option value="${sim.id}" ${state.askSelectedSimulation === sim.id ? 'selected' : ''}>${sim.title}</option>`).join('')}</select></div>
-          <div class="field" style="margin-top:10px;"><label>Selected APIs</label><div class="api-list" style="max-height:260px;overflow:auto;">${apiOptions.map(api => `<label class="api-card" style="cursor:pointer;"><span class="api-top"><span class="api-name">${escapeHtml(api.name)}</span><input type="checkbox" data-ask-api="${escapeHtml(api.api_key)}" ${state.askSelectedApis.includes(api.api_key) ? 'checked' : ''}></span><span class="api-desc">${escapeHtml(api.description || api.short_description || '')}</span></label>`).join('') || empty('No APIs for this domain yet.')}</div></div>
+          <div class="field" style="margin-top:10px;"><label>Simulation</label><select class="select" id="askSelectedSimulation">${simulationOptions.length ? simulationOptions.slice(0, 14).map(sim => `<option value="${sim.id}" ${selectedSimulation === sim.id ? 'selected' : ''}>${sim.title}</option>`).join('') : '<option value="">No matching simulation yet</option>'}</select></div>
+          <div class="field" style="margin-top:10px;"><label>Selected APIs</label><div class="api-list" style="max-height:260px;overflow:auto;">${apiOptions.map(api => `<label class="api-card" style="cursor:pointer;"><span class="api-top"><span class="api-name">${escapeHtml(api.name)}</span><input type="checkbox" data-ask-api="${escapeHtml(api.api_key)}" ${selectedApiKeys.includes(api.api_key) ? 'checked' : ''}></span><span class="api-desc">${escapeHtml(api.description || api.short_description || '')}</span></label>`).join('') || empty('No APIs for this domain yet.')}</div></div>
         </div></div>
         <div class="panel"><div class="panel-head"><div><h2>Operational Workspace</h2><div class="sub">${escapeHtml(profile.title)} for ${escapeHtml(context.applicationName || context.domain)}.</div></div></div><div class="panel-body">
+          ${renderAskWorkflowState()}
+          ${renderRuntimeProof()}
           <div class="three-col">${profile.actions.map(action => `<button class="tile" type="button" data-ask-prompt="${escapeHtml(action)} for ${escapeHtml(context.applicationName || context.domain)}"><h3>${escapeHtml(action)}</h3><p>Ask for guided recommendations, workflow steps, simulations, replay, SDKs, and governance.</p></button>`).join('')}</div>
-          <div class="field" style="margin-top:12px;"><label>Ask COGNI in this workspace</label><textarea class="textarea" id="askInput">I want to build a multilingual telemedicine platform.</textarea></div>
-          <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="askBtn">Ask COGNI</button><button class="secondary-btn" type="button" data-module="environments">Run Simulation</button><button class="secondary-btn" type="button" data-module="studio">Create Workflow</button><button class="secondary-btn" type="button" data-module="sdks">Generate SDK</button><button class="secondary-btn" type="button" data-module="visualizer">Open Replay</button></div>
+          <div class="field" style="margin-top:12px;"><label>Ask COGNI in this workspace</label><textarea class="textarea" id="askInput">${escapeHtml(state.askDraftQuestion || profile.defaultQuestion || '')}</textarea></div>
+          <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="askBtn">Ask COGNI</button><button class="secondary-btn" type="button" data-ask-action="run-simulation">Run Simulation</button><button class="secondary-btn" type="button" data-ask-action="create-workflow">Create Workflow</button><button class="secondary-btn" type="button" data-ask-action="generate-sdk">Generate SDK</button><button class="secondary-btn" type="button" data-ask-action="open-replay">Open Replay</button></div>
           <div class="chat" id="chatBox" style="margin-top:14px;">${state.chat.map(renderChatMessage).join('')}</div>
         </div></div>
         <div class="panel"><div class="panel-head"><div><h2>Contextual Assistant</h2><div class="sub">Simple summary first. Details and diagnostics stay collapsed until needed.</div></div></div><div class="panel-body">
@@ -2183,6 +2506,96 @@
       let matches = apiCatalog.filter(a => t.split(/\s+/).filter(Boolean).some(term => apiHaystack(a).includes(term))).slice(0, 4);
       if (!matches.length) matches = apiCatalog.slice(0, 3);
       return `Recommended ${matches.map(a => a.name).join(', ')}. Start in sandbox mode, enable governance validation, request replay capture, and inspect confidence evolution before production entitlement. For enterprise rollout, add Tenant Governance API and Cognitive Observability API.`;
+    }
+
+    async function executeAskQuickAction(action) {
+      ensureAskWorkspaceSession();
+      if (action === 'run-simulation') {
+        const simulationId = effectiveAskSimulation();
+        if (!simulationId) {
+          state.askLastResponse = { assistantName: askProfileForDomain(state.askDomain).title, workspaceMode: state.askMode, intent: 'simulation', domain: state.askDomain, directAnswer: `No matching ${state.askDomain} simulation is available yet. Select a compatible simulation or continue as a cross-domain workflow intentionally.`, keyRecommendations: ['Choose a matching simulation before runtime execution.', 'Use Create Workflow to compile orchestration while simulation coverage is added.'], suggestedNextSteps: ['Switch simulation', 'Create workflow'], quickActions: [], currentContext: askWorkspaceContext(), optionalDetails: {}, optionalDiagnostics: {} };
+          state.chat.push({ role: 'Ask COGNI', response: state.askLastResponse });
+          renderAsk();
+          return;
+        }
+        state.selectedSimulationId = simulationId;
+        const response = await fetch('/api/simulations/execute', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ simulationId, mode: state.askEnvironment === 'production' ? 'sandbox' : state.askEnvironment, input: { requestedFrom: 'ask-cogni-workspace', workspaceId: state.askWorkspaceId, contextId: state.askContextId, domain: state.askDomain, workflow: state.askSelectedWorkflow, replay: true, governance: true } })
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || 'Simulation execution failed');
+        state.simulationRuntime = payload;
+        advanceAskWorkflowStage('run-simulation', { status: 'completed', simulationId, replay: payload.replayPackage });
+        state.askDraftQuestion = `Explain the ${state.askDomain} simulation telemetry, replay, governance checkpoints, and next workflow step.`;
+        state.module = 'environments';
+        await loadPlatformRuntimeStatus();
+        render();
+        return;
+      }
+      if (action === 'create-workflow') {
+        const response = await fetch('/api/studio/compile', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: state.askSelectedWorkflow || askProfileForDomain(state.askDomain).defaultWorkflow,
+            description: state.askDraftQuestion,
+            apiKeys: effectiveAskSelectedApis(),
+            domain: state.askDomain,
+            simulationId: effectiveAskSimulation(),
+            deploymentMode: state.askEnvironment,
+            workspaceContext: askWorkspaceContext()
+          })
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || 'Studio workflow compilation failed');
+        state.studioWorkflowTitle = payload.title || state.askSelectedWorkflow;
+        state.studioDescription = state.askDraftQuestion;
+        state.studioCompiled = payload.compiledWorkflow || payload;
+        advanceAskWorkflowStage('generate-orchestration', { status: 'compiled', workflowId: state.studioCompiled.workflowId });
+        state.module = 'studio';
+        await loadPlatformRuntimeStatus();
+        render();
+        return;
+      }
+      if (action === 'generate-sdk') {
+        const response = await fetch('/api/sdk/intelligence', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...sdkContextPayload(), apiKeys: effectiveAskSelectedApis(), domain: state.askDomain, problem: state.askDraftQuestion, simulationId: effectiveAskSimulation(), workspaceContext: askWorkspaceContext() })
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || 'SDK intelligence failed');
+        state.sdkDomain = state.askDomain;
+        state.sdkProblem = state.askDraftQuestion;
+        state.sdkIntelligence = payload;
+        advanceAskWorkflowStage('generate-sdk', { status: 'generated', sdks: (payload.recommended_sdks || []).map(sdk => sdk.name) });
+        state.module = 'sdks';
+        await loadPlatformRuntimeStatus();
+        render();
+        return;
+      }
+      if (action === 'open-replay') {
+        advanceAskWorkflowStage('open-replay', { status: 'opened', runtime: state.executionRuntime && state.executionRuntime.executionId || state.simulationRuntime && state.simulationRuntime.simulationId || 'latest' });
+        state.module = 'visualizer';
+        render();
+        return;
+      }
+      if (action === 'inspect-governance') {
+        advanceAskWorkflowStage('inspect-governance', { status: 'opened', domain: state.askDomain });
+        state.module = 'governance';
+        render();
+        return;
+      }
+      if (action === 'deploy-runtime') {
+        advanceAskWorkflowStage('deploy-runtime', { status: 'planned', environment: state.askEnvironment });
+        state.askDraftQuestion = `Plan deployment for ${state.askSelectedWorkflow} in ${state.askEnvironment} with governance, replay retention, and SDK integration.`;
+        renderAsk();
+      }
     }
 
     function renderExecutionPlan(plan) {
@@ -3075,24 +3488,72 @@
       const standardsQueryBtn = event.target.closest('[data-standards-query]');
       if (standardsQueryBtn) { state.module = 'standards'; render(); setTimeout(() => { const input = document.getElementById('standardsSearch'); if (input) input.value = standardsQueryBtn.dataset.standardsQuery; runStandardsSearch(standardsQueryBtn.dataset.standardsQuery).catch(() => {}); }, 250); return; }
       const askDomainBtn = event.target.closest('[data-ask-domain]');
-      if (askDomainBtn) { state.module = 'ask'; state.chat.push({ role: 'You', text: `Explain roadmap and API plans for ${askDomainBtn.dataset.askDomain}` }); render(); return; }
+      if (askDomainBtn) {
+        applyAskDomainDefaults(askDomainBtn.dataset.askDomain, { resetQuestion: true });
+        state.module = 'ask';
+        state.askDraftQuestion = `Explain roadmap and API plans for ${askDomainBtn.dataset.askDomain}`;
+        render();
+        return;
+      }
       const cogniActionBtn = event.target.closest('[data-cogni-action]');
       if (cogniActionBtn) {
         const target = cogniActionBtn.dataset.cogniTarget;
         if (target) state.module = target;
         const prompt = cogniActionBtn.dataset.askPrompt;
         if (prompt) state.chat.push({ role: 'You', text: prompt });
+        const actionMap = {
+          'run-simulation': 'run-simulation',
+          'create-workflow': 'create-workflow',
+          'generate-sdk': 'generate-sdk',
+          'open-replay': 'open-replay',
+          'deploy-runtime': 'deploy-runtime',
+          'view-governance': 'inspect-governance'
+        };
+        if (actionMap[cogniActionBtn.dataset.cogniAction]) {
+          executeAskQuickAction(actionMap[cogniActionBtn.dataset.cogniAction]).catch(error => {
+            state.chat.push({ role: 'Ask COGNI', text: `Action failed: ${error.message}` });
+            renderAsk();
+          });
+          return;
+        }
         render();
         return;
       }
       const askPromptBtn = event.target.closest('[data-ask-prompt]');
-      if (askPromptBtn) { state.module = 'ask'; render(); setTimeout(() => { const input = document.getElementById('askInput'); if (input) input.value = askPromptBtn.dataset.askPrompt; }, 0); return; }
+      if (askPromptBtn) { state.askDraftQuestion = askPromptBtn.dataset.askPrompt; state.askLastResponse = null; state.module = 'ask'; render(); return; }
+      const contextActionBtn = event.target.closest('[data-context-action]');
+      if (contextActionBtn) {
+        const action = contextActionBtn.dataset.contextAction;
+        if (action === 'switch-domain' && contextActionBtn.dataset.contextDomain) {
+          applyAskDomainDefaults(contextActionBtn.dataset.contextDomain, { resetQuestion: true });
+        }
+        if (action === 'switch-simulation') {
+          state.askSelectedSimulation = effectiveAskSimulation();
+          state.askLastResponse = null;
+        }
+        if (action === 'continue-intentionally') {
+          state.askOverrideMismatch = true;
+          state.askContextValidation = validateAskContext();
+          state.askLastResponse = null;
+        }
+        renderAsk();
+        return;
+      }
+      const askActionBtn = event.target.closest('[data-ask-action]');
+      if (askActionBtn) {
+        const action = askActionBtn.dataset.askAction;
+        executeAskQuickAction(action).catch(error => {
+          state.chat.push({ role: 'Ask COGNI', text: `Action failed: ${error.message}` });
+          renderAsk();
+        });
+        return;
+      }
       const learningQueryBtn = event.target.closest('[data-learning-query]');
-      if (learningQueryBtn) { state.module = 'ask'; render(); setTimeout(() => { const input = document.getElementById('askInput'); if (input) input.value = `Learning Mode: ${learningQueryBtn.dataset.learningQuery}`; }, 0); return; }
+      if (learningQueryBtn) { state.askDraftQuestion = `Learning Mode: ${learningQueryBtn.dataset.learningQuery}`; state.askLastResponse = null; state.module = 'ask'; render(); return; }
       const learningSectionBtn = event.target.closest('[data-learning-section]');
       if (learningSectionBtn) { els.search.value = learningSectionBtn.dataset.learningSection; state.module = 'learn'; render(); return; }
       const contextualLearn = event.target.closest('[data-context-learn]');
-      if (contextualLearn) { const page = state.module; state.module = 'ask'; render(); setTimeout(() => { const input = document.getElementById('askInput'); if (input) input.value = `Learning Mode: Ask COGNI about the ${page} page. Explain what I should understand, what actions to take, and how orchestration, replay, governance, observability, and SDK integration apply here.`; }, 0); return; }
+      if (contextualLearn) { const page = state.module; state.askDraftQuestion = `Learning Mode: Ask COGNI about the ${page} page. Explain what I should understand, what actions to take, and how orchestration, replay, governance, observability, and SDK integration apply here.`; state.askLastResponse = null; state.module = 'ask'; render(); return; }
       const appAction = event.target.closest('[data-app-action]');
       if (appAction) {
         const app = applicationById(appAction.dataset.app);
@@ -3202,16 +3663,37 @@
       if (event.target.id === 'healthcareHardeningScenario') { state.healthcareHardeningScenario = event.target.value; state.healthcareHardeningExecution = null; state.healthcareHardeningReplay = null; state.healthcareHardeningValidation = null; }
       if (event.target.id === 'clinicalDataObjective') { state.clinicalDataObjective = event.target.value; state.clinicalDataExecution = null; state.clinicalDataReplay = null; }
       if (event.target.id === 'clinicalDataWorkflow') { state.clinicalDataWorkflow = event.target.value; state.clinicalDataExecution = null; state.clinicalDataReplay = null; renderHealthcare(); }
-      if (event.target.id === 'askDomain') { state.askDomain = event.target.value; state.askSelectedApis = []; state.askLastResponse = null; renderAsk(); }
-      if (event.target.id === 'askApplicationId') { state.askApplicationId = event.target.value; state.askLastResponse = null; renderAsk(); }
+      if (event.target.id === 'askDomain') { applyAskDomainDefaults(event.target.value, { resetQuestion: true }); renderAsk(); }
+      if (event.target.id === 'askApplicationId') {
+        const nextDomain = applicationDomainMap[event.target.value];
+        if (nextDomain && nextDomain !== state.askDomain) {
+          applyAskDomainDefaults(nextDomain, { resetQuestion: true });
+          state.askApplicationId = event.target.value;
+        } else {
+          state.askApplicationId = event.target.value;
+          state.askLastResponse = null;
+        }
+        renderAsk();
+      }
       if (event.target.id === 'askMode') { state.askMode = event.target.value; state.askLastResponse = null; renderAsk(); }
       if (event.target.id === 'askEnvironment') { state.askEnvironment = event.target.value; state.askLastResponse = null; renderAsk(); }
-      if (event.target.id === 'askSelectedSimulation') { state.askSelectedSimulation = event.target.value; state.askLastResponse = null; }
-      if (event.target.id === 'askSelectedWorkflow') { state.askSelectedWorkflow = event.target.value; state.askLastResponse = null; }
+      if (event.target.id === 'askSelectedSimulation') { state.askSelectedSimulation = event.target.value; state.askLastResponse = null; renderAsk(); }
+      if (event.target.id === 'askSelectedWorkflow') { state.askSelectedWorkflow = event.target.value; state.askLastResponse = null; renderAsk(); }
       if (event.target.matches('[data-ask-api]')) {
         const key = event.target.dataset.askApi;
         state.askSelectedApis = event.target.checked ? [...new Set([...state.askSelectedApis, key])] : state.askSelectedApis.filter(item => item !== key);
         state.askLastResponse = null;
+        renderAsk();
+      }
+      if (event.target.id && event.target.id.startsWith('ask')) saveAskWorkspaceSession();
+    });
+
+    document.addEventListener('input', event => {
+      if (event.target.id === 'askInput') {
+        state.askDraftQuestion = event.target.value;
+        state.askContextValidation = validateAskContext(event.target.value);
+        state.askLastResponse = null;
+        saveAskWorkspaceSession();
       }
     });
 
@@ -3276,6 +3758,10 @@
           });
           const payload = await response.json();
           if (!response.ok) throw new Error(payload.error || 'Simulation execution failed');
+          state.simulationRuntime = payload;
+          if (state.module === 'ask' || state.selectedSimulationId === state.askSelectedSimulation) {
+            advanceAskWorkflowStage('run-simulation', { status: 'completed', simulationId: payload.simulationId, replay: payload.replayPackage });
+          }
           animateSimulation(payload);
         } catch (error) {
           if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
@@ -3500,6 +3986,9 @@
           if (!response.ok) throw new Error(payload.error || 'Studio workflow compilation failed');
           state.studioCompiled = payload.compiledWorkflow || payload;
           state.studioExecution = null;
+          if (state.module === 'ask' || state.studioWorkflowTitle === state.askSelectedWorkflow) {
+            advanceAskWorkflowStage('generate-orchestration', { status: 'compiled', workflowId: state.studioCompiled.workflowId });
+          }
           renderStudio();
         } catch (error) {
           if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
@@ -3519,6 +4008,7 @@
           const payload = await response.json();
           if (!response.ok) throw new Error(payload.error || 'Studio workflow execution failed');
           state.studioExecution = payload.runtime || payload.execution || payload;
+          advanceAskWorkflowStage('inspect-governance', { status: 'executed', executionId: payload.executionId, replay: payload.replay });
           renderStudio();
         } catch (error) {
           if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
@@ -4006,21 +4496,32 @@
       if (event.target.id === 'askBtn') {
         const input = document.getElementById('askInput');
         state.askSelectedWorkflow = document.getElementById('askSelectedWorkflow') ? document.getElementById('askSelectedWorkflow').value : state.askSelectedWorkflow;
-        state.chat.push({ role: 'You', text: input.value });
+        state.askSelectedSimulation = effectiveAskSimulation();
+        state.askSelectedApis = effectiveAskSelectedApis();
+        state.askDraftQuestion = input ? input.value : state.askDraftQuestion;
+        ensureAskWorkspaceSession();
+        state.askContextValidation = validateAskContext(state.askDraftQuestion);
+        const askQuery = String(state.askDraftQuestion || '').trim() || askProfileForDomain(state.askDomain).defaultQuestion;
+        state.chat.push({ role: 'You', text: askQuery });
         try {
           const response = await fetch('/api/ask', {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: input.value, context: askWorkspaceContext() })
+            body: JSON.stringify({ query: askQuery, context: askWorkspaceContext() })
           });
           const payload = await response.json();
           if (!response.ok) throw new Error(payload.error || 'Ask COGNI failed');
           state.askLastResponse = payload.adaptiveResponse || { directAnswer: payload.answer, keyRecommendations: [], suggestedNextSteps: [], optionalDiagnostics: {} };
+          if (state.askLastResponse.workspaceId) state.askWorkspaceId = state.askLastResponse.workspaceId;
+          if (state.askLastResponse.sessionId) state.askSessionId = state.askLastResponse.sessionId;
+          if (state.askLastResponse.contextId) state.askContextId = state.askLastResponse.contextId;
+          if (state.askLastResponse.contextValidation) state.askContextValidation = state.askLastResponse.contextValidation;
           state.chat.push({ role: 'Ask COGNI', response: state.askLastResponse });
         } catch (error) {
-          state.chat.push({ role: 'Ask COGNI', text: askCogni(input.value) });
+          state.chat.push({ role: 'Ask COGNI', text: askCogni(askQuery) });
         }
+        saveAskWorkspaceSession();
         renderAsk();
       }
     });
@@ -4040,6 +4541,7 @@
         await loadBackendMetadata();
         await loadBackendBilling();
         await loadBackendSimulations();
+        await loadPlatformRuntimeStatus();
         render();
       } catch (error) {
         location.href = '/login';

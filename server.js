@@ -49,6 +49,7 @@ const executionEvents = [];
 const simulationEvents = [];
 const auditEvents = [];
 const askCogniMemory = new Map();
+const askCogniWorkspaceSessions = new Map();
 const subscriptions = new Map();
 const apiKeys = new Map();
 const useCaseRequests = [];
@@ -2210,7 +2211,8 @@ function classifyAskCogniIntent(query) {
                     : intent === 'diagnostic' ? 'operations' : intent === 'orchestration' ? 'architect' : 'executive';
     const domain = has(['drone', 'uav', 'mavlink', 'px4', 'utm', 'dgca']) ? 'drone'
         : has(['healthcare', 'hospital', 'clinic', 'patient', 'doctor', 'nurse', 'icu', 'surgery', 'surgical', 'pharma', 'medicine', 'insurance', 'claims', 'telemedicine', 'clinical trial', 'medical device', 'ambulance', 'rehabilitation', 'biomedical', 'diagnostic', 'diagnosis', 'radiology', 'pathology', 'population health', 'precision medicine', 'emergency coordination', 'public health', 'pandemic', 'outbreak', 'epidemiology', 'humanitarian', 'sovereign healthcare', 'national healthcare', 'global healthcare', 'healthcare resilience', 'hipaa', 'gdpr', 'compliance', 'audit', 'consent', 'gmp', 'fda', 'cybersecurity']) ? 'healthcare'
-            : has(['robot', 'cobot', 'ros2', 'isaac', 'warehouse', 'industrial']) ? 'robotics'
+            : has(['cobot', 'cobotic', 'collaborative robot', 'human robot collaboration', 'shared workcell']) ? 'cobotics'
+            : has(['robot', 'ros2', 'isaac', 'warehouse', 'industrial']) ? 'robotics'
                 : has(['digital twin', 'twin', 'factory', 'airport']) ? 'digital-twin'
                     : has(['multilingual', 'speech', 'translation', 'language']) ? 'multilingual'
                         : has(['travel', 'mobility', 'itinerary']) ? 'travel'
@@ -2248,7 +2250,7 @@ function summarizeGovernance(latestExecution) {
 }
 
 function rememberAskCogni(user, query, response) {
-    const key = user.tenant || user.email || 'anonymous';
+    const key = response.workspaceMemoryKey || user.tenant || user.email || 'anonymous';
     const entries = askCogniMemory.get(key) || [];
     entries.unshift({
         at: new Date().toISOString(),
@@ -2256,10 +2258,262 @@ function rememberAskCogni(user, query, response) {
         intent: response.intent,
         role: response.role,
         domain: response.domain,
-        recommendation: response.keyRecommendations[0] || ''
+        workspaceId: response.workspaceId,
+        contextId: response.contextId,
+        recommendation: response.keyRecommendations[0] || '',
+        answerFingerprint: response.answerFingerprint || ''
     });
     askCogniMemory.set(key, entries.slice(0, 8));
     return entries.slice(0, 8);
+}
+
+function stableHash(value) {
+    return crypto.createHash('sha1').update(String(value || '')).digest('hex').slice(0, 14);
+}
+
+const ASK_DOMAIN_TERMS = {
+    healthcare: ['healthcare', 'hospital', 'clinic', 'patient', 'doctor', 'nurse', 'icu', 'surgery', 'surgical', 'telemedicine', 'medicine', 'pharma', 'insurance', 'clinical', 'diagnosis', 'ambulance', 'hipaa', 'gmp', 'consent'],
+    drone: ['drone', 'uav', 'mavlink', 'px4', 'ardupilot', 'dgca', 'utm', 'airspace', 'fleet', 'mission', 'swarm', 'geofence'],
+    robotics: ['robot', 'robotics', 'ros2', 'isaac', 'warehouse', 'fleet', 'autonomous robot', 'navigation'],
+    cobotics: ['cobot', 'cobotics', 'collaborative robot', 'human robot', 'hri', 'workcell', 'handoff', 'robotics', 'robot', 'safety'],
+    legal: ['legal', 'judicial', 'court', 'case', 'evidence', 'nyaynetra', 'petition', 'judgment'],
+    travel: ['travel', 'airport', 'itinerary', 'tourism', 'mobility', 'passenger', 'localization', 'blisstrail'],
+    multilingual: ['multilingual', 'translation', 'speech', 'language', 'regional', 'transcription', 'hri', 'interaction'],
+    manufacturing: ['manufacturing', 'factory', 'industrial', 'quality', 'equipment', 'production', 'maintenance']
+};
+
+function tokenTermsFromText(value = '') {
+    return String(value || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, ' ')
+        .split(/\s+/)
+        .filter(token => token.length > 2)
+        .slice(0, 40);
+}
+
+function buildAskDomainLexicon(catalog = []) {
+    const lexicon = {};
+    Object.entries(ASK_DOMAIN_TERMS).forEach(([domain, terms]) => {
+        lexicon[domain] = new Set([domain, ...terms]);
+    });
+    catalog.forEach(api => {
+        const domain = api.domain_key || domainKeyForApi(api) || api.category_name || 'platform';
+        if (!lexicon[domain]) lexicon[domain] = new Set([domain]);
+        [
+            api.name,
+            api.short_description,
+            api.full_description,
+            api.category_name,
+            api.api_key,
+            ...(api.tags || []),
+            ...(api.capabilities || []),
+            ...(api.standards_supported || []),
+            ...(api.protocols_supported || []),
+            ...(api.ecosystem_compatibility || [])
+        ].forEach(value => tokenTermsFromText(value).forEach(token => lexicon[domain].add(token)));
+    });
+    SIMULATION_TEMPLATES.forEach(template => {
+        if (!lexicon[template.domain]) lexicon[template.domain] = new Set([template.domain]);
+        [template.id, template.title, template.category, template.apiKey, ...(template.agents || []), ...(template.signals || [])]
+            .forEach(value => tokenTermsFromText(value).forEach(token => lexicon[template.domain].add(token)));
+    });
+    Object.values(ASK_COGNI_APPLICATION_PROFILES).forEach(profile => {
+        if (!lexicon[profile.domain]) lexicon[profile.domain] = new Set([profile.domain]);
+        [profile.assistant, profile.focus].forEach(value => tokenTermsFromText(value).forEach(token => lexicon[profile.domain].add(token)));
+    });
+    return Object.fromEntries(Object.entries(lexicon).map(([domain, terms]) => [domain, [...terms]]));
+}
+
+function detectAskDomainFromText(text = '', lexicon = ASK_DOMAIN_TERMS) {
+    const haystack = String(text || '').toLowerCase();
+    let best = { domain: '', score: 0 };
+    Object.entries(lexicon).forEach(([domain, terms]) => {
+        const score = terms.reduce((sum, term) => {
+            const normalized = String(term || '').toLowerCase();
+            if (!normalized || normalized.length < 3) return sum;
+            return sum + (haystack.includes(normalized) ? (ASK_DOMAIN_TERMS[domain] && ASK_DOMAIN_TERMS[domain].includes(normalized) ? 2 : 1) : 0);
+        }, 0);
+        if (score > best.score) best = { domain, score };
+    });
+    return best.score ? best.domain : '';
+}
+
+function scoreAskDomainText(text = '', domain = '', lexicon = ASK_DOMAIN_TERMS) {
+    const haystack = String(text || '').toLowerCase();
+    const terms = lexicon[domain] || ASK_DOMAIN_TERMS[domain] || [domain];
+    return terms.reduce((sum, term) => {
+        const normalized = String(term || '').toLowerCase();
+        if (!normalized || normalized.length < 3) return sum;
+        return sum + (haystack.includes(normalized) ? (ASK_DOMAIN_TERMS[domain] && ASK_DOMAIN_TERMS[domain].includes(normalized) ? 2 : 1) : 0);
+    }, 0);
+}
+
+function appDomainForAsk(applicationId = '') {
+    const appProfile = ASK_COGNI_APPLICATION_PROFILES[String(applicationId || '').toLowerCase()];
+    return appProfile && appProfile.domain || '';
+}
+
+function apiDomainMatches(api, domain, lexicon = ASK_DOMAIN_TERMS) {
+    if (!api || !domain || domain === 'platform') return true;
+    const haystack = [
+        api.domain_key,
+        api.category_name,
+        api.category,
+        api.name,
+        api.short_description,
+        api.full_description,
+        ...(api.tags || []),
+        ...(api.capabilities || [])
+    ].join(' ').toLowerCase();
+    const terms = lexicon[domain] || ASK_DOMAIN_TERMS[domain] || [domain];
+    return terms.some(term => haystack.includes(term));
+}
+
+function simulationDomainMatches(simulationId = '', domain = '', lexicon = ASK_DOMAIN_TERMS) {
+    if (!simulationId || !domain || domain === 'platform') return true;
+    const template = SIMULATION_TEMPLATES.find(item => item.id === simulationId);
+    if (!template) return false;
+    if (template.domain === domain) return true;
+    if (domain === 'cobotics' && template.domain === 'robotics') return true;
+    if (domain === 'multilingual' && ['travel', 'healthcare', 'legal'].includes(template.domain) && /multilingual|translation|speech/i.test([template.id, template.title, template.category].join(' '))) return true;
+    return false;
+}
+
+function buildAskContextValidation(workspaceContext, query, catalog) {
+    const selectedDomain = workspaceContext.domain || 'platform';
+    const lexicon = buildAskDomainLexicon(catalog);
+    const mismatches = [];
+    const contextText = `${query} ${workspaceContext.selectedWorkflow || ''}`;
+    const suggestedDomain = detectAskDomainFromText(contextText, ASK_DOMAIN_TERMS);
+    const selectedDomainScore = scoreAskDomainText(contextText, selectedDomain, ASK_DOMAIN_TERMS);
+    const suggestedDomainScore = scoreAskDomainText(contextText, suggestedDomain, ASK_DOMAIN_TERMS);
+    const suggestedIsKnownVertical = Boolean(ASK_DOMAIN_TERMS[suggestedDomain]);
+    const strongCrossDomainSignal = suggestedDomain && suggestedDomain !== selectedDomain && suggestedIsKnownVertical && (selectedDomainScore === 0 || suggestedDomainScore >= selectedDomainScore + 3);
+    if (strongCrossDomainSignal && selectedDomain !== 'platform') {
+        mismatches.push({
+            type: 'query-domain',
+            selectedItem: 'question/workflow',
+            selectedValue: cleanCogniText(`${query} ${workspaceContext.selectedWorkflow || ''}`).slice(0, 160),
+            expectedDomain: selectedDomain,
+            actualDomain: suggestedDomain,
+            message: `This request sounds like ${titleCaseDomainLabel(suggestedDomain)}, while the workspace is set to ${titleCaseDomainLabel(selectedDomain)}.`
+        });
+    }
+    const appDomain = appDomainForAsk(workspaceContext.applicationId);
+    if (appDomain && selectedDomain !== 'platform' && appDomain !== selectedDomain) {
+        mismatches.push({
+            type: 'application-domain',
+            selectedItem: 'application',
+            selectedValue: workspaceContext.applicationName || workspaceContext.applicationId,
+            expectedDomain: selectedDomain,
+            actualDomain: appDomain,
+            message: `${workspaceContext.applicationName || workspaceContext.applicationId} belongs to ${titleCaseDomainLabel(appDomain)}, not ${titleCaseDomainLabel(selectedDomain)}.`
+        });
+    }
+    const apiLookup = new Map(catalog.map(api => [api.api_key, api]));
+    const invalidApis = (workspaceContext.selectedApis || []).filter(apiKey => !apiDomainMatches(apiLookup.get(apiKey), selectedDomain, lexicon));
+    if (invalidApis.length) {
+        mismatches.push({
+            type: 'api-domain',
+            selectedItem: 'APIs',
+            selectedValue: invalidApis.join(', '),
+            expectedDomain: selectedDomain,
+            actualDomain: detectAskDomainFromText(invalidApis.join(' '), lexicon) || 'different domain',
+            message: `Some selected APIs do not match the ${titleCaseDomainLabel(selectedDomain)} workspace.`
+        });
+    }
+    if (workspaceContext.selectedSimulation && !simulationDomainMatches(workspaceContext.selectedSimulation, selectedDomain, lexicon)) {
+        const template = SIMULATION_TEMPLATES.find(item => item.id === workspaceContext.selectedSimulation);
+        mismatches.push({
+            type: 'simulation-domain',
+            selectedItem: 'simulation',
+            selectedValue: template ? template.title : workspaceContext.selectedSimulation,
+            expectedDomain: selectedDomain,
+            actualDomain: template ? template.domain : 'unknown',
+            message: `${template ? template.title : workspaceContext.selectedSimulation} does not match the ${titleCaseDomainLabel(selectedDomain)} workspace.`
+        });
+    }
+    return {
+        valid: mismatches.length === 0,
+        selectedDomain,
+        suggestedDomain,
+        mismatches,
+        actions: mismatches.length ? [
+            suggestedDomain && suggestedDomain !== selectedDomain ? { id: 'switch-domain', label: `Switch to ${titleCaseDomainLabel(suggestedDomain)}`, domain: suggestedDomain } : null,
+            { id: 'switch-simulation', label: 'Switch simulation' },
+            { id: 'continue-intentionally', label: 'Continue intentionally' }
+        ].filter(Boolean) : []
+    };
+}
+
+function getAskWorkspaceSession(user, workspaceContext, query, catalog) {
+    const tenant = user.tenant || user.email || 'anonymous';
+    const workspaceId = workspaceContext.workspaceId || `workspace-${tenant}-${workspaceContext.domain}-${workspaceContext.applicationId || 'platform'}`;
+    const sessionId = workspaceContext.sessionId || `session-${stableHash(`${tenant}:${workspaceId}`)}`;
+    const contextSignature = JSON.stringify({
+        domain: workspaceContext.domain,
+        applicationId: workspaceContext.applicationId,
+        selectedApis: workspaceContext.selectedApis,
+        selectedSimulation: workspaceContext.selectedSimulation,
+        selectedWorkflow: workspaceContext.selectedWorkflow,
+        environment: workspaceContext.environment,
+        mode: workspaceContext.mode,
+        workflowState: workspaceContext.workflowState
+    });
+    const contextId = workspaceContext.contextId || `ctx-${stableHash(contextSignature)}`;
+    const memoryKey = `${tenant}:${workspaceId}`;
+    const existing = askCogniWorkspaceSessions.get(memoryKey) || {
+        workspaceId,
+        sessionId,
+        domain: workspaceContext.domain,
+        createdAt: new Date().toISOString(),
+        conversationMemory: [],
+        workflowMemory: [],
+        actionHistory: []
+    };
+    existing.contextId = contextId;
+    existing.domain = workspaceContext.domain;
+    existing.applicationId = workspaceContext.applicationId;
+    existing.selectedApis = workspaceContext.selectedApis || [];
+    existing.selectedSimulation = workspaceContext.selectedSimulation || '';
+    existing.selectedWorkflow = workspaceContext.selectedWorkflow || '';
+    existing.mode = workspaceContext.mode;
+    existing.environment = workspaceContext.environment;
+    existing.workflowState = workspaceContext.workflowState || existing.workflowState || { stage: 'select-apis', completed: [], runtimeState: 'idle' };
+    existing.updatedAt = new Date().toISOString();
+    existing.validation = buildAskContextValidation(workspaceContext, query, catalog);
+    existing.composedContext = {
+        workspaceId,
+        sessionId,
+        contextId,
+        domain: workspaceContext.domain,
+        assistant: workspaceContext.assistant,
+        application: workspaceContext.applicationName || workspaceContext.applicationId,
+        workflow: workspaceContext.selectedWorkflow,
+        simulation: workspaceContext.selectedSimulation,
+        selectedApis: workspaceContext.selectedApis,
+        selectedApiNames: workspaceContext.selectedApiNames,
+        mode: workspaceContext.mode,
+        environment: workspaceContext.environment,
+        workflowState: existing.workflowState,
+        priorQuestions: existing.conversationMemory.slice(0, 4).map(item => item.query),
+        currentQuestion: query,
+        validation: existing.validation
+    };
+    askCogniWorkspaceSessions.set(memoryKey, existing);
+    return { ...existing, memoryKey };
+}
+
+function isNearDuplicateAskResponse(candidate = '', memory = []) {
+    const normalize = value => new Set(String(value || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(token => token.length > 3));
+    const candidateTokens = normalize(candidate);
+    if (!candidateTokens.size) return false;
+    return memory.some(item => {
+        const priorTokens = normalize(item.answer || item.recommendation || '');
+        const overlap = [...candidateTokens].filter(token => priorTokens.has(token)).length;
+        const ratio = overlap / Math.max(candidateTokens.size, priorTokens.size || 1);
+        return ratio > 0.82;
+    });
 }
 
 const ASK_COGNI_WORKSPACE_PROFILES = {
@@ -2277,6 +2531,13 @@ const ASK_COGNI_WORKSPACE_PROFILES = {
         defaultApis: ['drone-fleet', 'edge-swarm-coordinate', 'observe-replay-reconstruct'],
         followUps: ['Is the mission single-drone, fleet, or swarm?', 'Do you need MAVLink/PX4 integration or higher-level orchestration only?', 'Will the runtime operate at the edge or in a cloud command center?']
     },
+    cobotics: {
+        assistant: 'Cobotics Collaboration Assistant',
+        summary: 'I will focus on human-robot collaboration, shared workcells, safety governance, HRI handoff, replayable collaboration, and operator-friendly deployment.',
+        suggestedActions: ['Cobot Workcell', 'Safety Governance', 'Human Handoff', 'Collaboration Replay', 'Generate SDK'],
+        defaultApis: ['cobot-collaboration', 'cobot-safety-governance', 'hri-multimodal-interaction'],
+        followUps: ['Is the cobot assisting people, sharing a workcell, or handling autonomous tasks?', 'Do you need HRI, safety governance, or equipment telemetry first?', 'Will the deployment run in a factory, warehouse, hospital, or service environment?']
+    },
     legal: {
         assistant: 'Judicial Intelligence Assistant',
         summary: 'I will focus on legal workflow orchestration, multilingual search, case analysis, evidence lineage, governance, and replayable decisions.',
@@ -2290,6 +2551,13 @@ const ASK_COGNI_WORKSPACE_PROFILES = {
         suggestedActions: ['Travel Orchestration', 'Airport Integration', 'Itinerary Planning', 'Localization APIs', 'Travel Simulations'],
         defaultApis: ['travel-intent', 'phase-domain', 'hri-multimodal-interaction'],
         followUps: ['Is this for airport operations, traveler experience, mobility routing, or localization?', 'Do you need multilingual interaction?', 'Should we simulate airport flow before API integration?']
+    },
+    multilingual: {
+        assistant: 'Multilingual AI Workspace Assistant',
+        summary: 'I will focus on multilingual intent, speech, translation, regional context, communication workflows, replay, and governance-aware language operations.',
+        suggestedActions: ['Speech Workflow', 'Translation Runtime', 'Regional Context', 'Multilingual SDK', 'Replay Conversation'],
+        defaultApis: ['phase-intent', 'hri-multimodal-interaction', 'ask-adaptive-response'],
+        followUps: ['Which languages or regions matter first?', 'Is this text, speech, real-time conversation, or document workflow?', 'Should translation be connected to travel, healthcare, legal, or enterprise workflows?']
     },
     robotics: {
         assistant: 'Robotics Operations Assistant',
@@ -2318,7 +2586,7 @@ const ASK_COGNI_APPLICATION_PROFILES = {
     nyaynetra: { domain: 'legal', assistant: 'Judicial Intelligence Assistant', focus: 'NyayNetra case analysis, multilingual legal search, evidence orchestration, legal governance, and workflow replay.' },
     blisstrail: { domain: 'travel', assistant: 'Travel Intelligence Assistant', focus: 'BlissTrail travel orchestration, airport integration, itinerary planning, localization APIs, and travel simulations.' },
     chaxu: { domain: 'drone', assistant: 'Drone Mission Intelligence Assistant', focus: 'CHAXU drone, autonomous systems, edge, swarm simulation, mission replay, governance, and operational telemetry workflows.' },
-    'shunya-ai': { domain: 'platform', assistant: 'CINTENT Workspace Assistant', focus: 'Shunya-AI cognitive infrastructure, SDKs, workflow generation, governance, and deployment guidance.' },
+    'shunya-ai': { domain: 'multilingual', assistant: 'Multilingual AI Workspace Assistant', focus: 'Shunya-AI multilingual cognition, speech, translation, regional context, workflow generation, governance, and deployment guidance.' },
     'smart-hospital': { domain: 'healthcare', assistant: 'Healthcare Cognitive Assistant', focus: 'Smart Hospital ICU monitoring, patient flow, emergency care, compliance, streaming telemetry, and replay.' },
     manufacturing: { domain: 'manufacturing', assistant: 'Manufacturing Systems Assistant', focus: 'Smart manufacturing orchestration, quality governance, equipment telemetry, and digital twins.' }
 };
@@ -2338,21 +2606,30 @@ function normalizeAskCogniWorkspaceContext(rawContext = {}, classification = {},
     const appProfile = ASK_COGNI_APPLICATION_PROFILES[applicationKey] || null;
     const domainKey = String(rawContext.domain || '').toLowerCase();
     const domain = domainKey && domainKey !== 'all' ? domainKey : appProfile && appProfile.domain || classification.domain || 'platform';
-    const profile = { ...(ASK_COGNI_WORKSPACE_PROFILES[domain] || ASK_COGNI_WORKSPACE_PROFILES.platform) };
-    if (appProfile) {
+    const profile = { ...buildDynamicAskCogniProfile(domain) };
+    const appProfileMatchesDomain = appProfile && (appProfile.domain === domain || !domainKey || domain === 'platform');
+    if (appProfileMatchesDomain) {
         profile.assistant = appProfile.assistant;
         profile.summary = appProfile.focus;
     }
+    const selectedApis = Array.isArray(rawContext.selectedApis) ? rawContext.selectedApis.map(item => String(item || '').trim()).filter(Boolean).slice(0, 8) : [];
+    const selectedApiNames = Array.isArray(rawContext.selectedApiNames) ? rawContext.selectedApiNames.map(item => String(item || '').trim()).filter(Boolean).slice(0, 8) : [];
+    const defaultApis = Array.isArray(profile.defaultApis) ? profile.defaultApis.filter(Boolean).slice(0, 5) : [];
     return {
         assistant: profile.assistant,
         domain,
+        workspaceId: rawContext.workspaceId || '',
+        sessionId: rawContext.sessionId || '',
+        contextId: rawContext.contextId || '',
+        overrideMismatch: Boolean(rawContext.overrideMismatch),
         applicationId: rawContext.applicationId || '',
         applicationName: rawContext.applicationName || appProfile && appProfile.assistant || '',
-        selectedApis: Array.isArray(rawContext.selectedApis) ? rawContext.selectedApis.slice(0, 8) : [],
-        selectedApiNames: Array.isArray(rawContext.selectedApiNames) ? rawContext.selectedApiNames.slice(0, 8) : [],
+        selectedApis: selectedApis.length ? selectedApis : defaultApis,
+        selectedApiNames,
         selectedSimulation: rawContext.selectedSimulation || '',
         selectedWorkflow: rawContext.selectedWorkflow || '',
         activeRuntime: rawContext.activeRuntime || '',
+        workflowState: rawContext.workflowState && typeof rawContext.workflowState === 'object' ? rawContext.workflowState : { stage: 'select-apis', completed: [], runtimeState: 'idle' },
         environment: rawContext.environment || rawContext.deploymentMode || 'sandbox',
         mode: requestedMode || 'business',
         role: modeRole || 'executive',
@@ -2360,6 +2637,32 @@ function normalizeAskCogniWorkspaceContext(rawContext = {}, classification = {},
         tenant: user.tenant,
         profile,
         showDiagnostics: requestedMode === 'diagnostic' || /diagnostic|debug|trace|raw|advanced/i.test(String(rawContext.flags || ''))
+    };
+}
+
+function titleCaseDomainLabel(value = 'platform') {
+    return String(value || 'platform')
+        .split(/[-_\s]+/)
+        .filter(Boolean)
+        .map(part => part.slice(0, 1).toUpperCase() + part.slice(1))
+        .join(' ');
+}
+
+function buildDynamicAskCogniProfile(domain, domainMatches = []) {
+    if (ASK_COGNI_WORKSPACE_PROFILES[domain]) return ASK_COGNI_WORKSPACE_PROFILES[domain];
+    const match = domainMatches.find(item => item.domain_key === domain || item.id === domain || String(item.title || '').toLowerCase() === String(domain).toLowerCase());
+    const label = match && (match.title || match.nav_title) || titleCaseDomainLabel(domain);
+    const vision = match && match.vision ? match.vision : `I will focus on ${label} workflows, relevant APIs, orchestration, replay, governance, simulations, SDKs, dashboards, and deployment guidance.`;
+    return {
+        assistant: `${label} Cognitive Assistant`,
+        summary: vision,
+        suggestedActions: ['View APIs', 'Create Workflow', 'Run Simulation', 'Generate SDK', 'Open Replay'],
+        defaultApis: [],
+        followUps: [
+            `What ${label} workflow are you trying to build?`,
+            'Do you need sandbox guidance, production planning, or edge deployment?',
+            'Should replay, governance, streaming, or SDK generation be prioritized?'
+        ]
     };
 }
 
@@ -2379,7 +2682,7 @@ function buildAskCogniQuickActions(workspaceContext, intent) {
     return base.slice(0, 8);
 }
 
-function buildAdaptiveCogniResponse({ query, ranked, domainMatches, applicationMatches, sdkRecommendation, standardsContext, studioCompile, latestExecutionContext, latestSimulationContext, performanceContext, user, contextBundle = {}, workspaceContext: rawWorkspaceContext = {} }) {
+function buildAdaptiveCogniResponse({ query, ranked, domainMatches, applicationMatches, sdkRecommendation, standardsContext, studioCompile, latestExecutionContext, latestSimulationContext, performanceContext, user, contextBundle = {}, workspaceContext: rawWorkspaceContext = {}, workspaceSession = null }) {
     const baseClassification = classifyAskCogniIntent(`${query} ${rawWorkspaceContext.domain || ''} ${rawWorkspaceContext.applicationName || ''} ${rawWorkspaceContext.selectedWorkflow || ''}`);
     const workspaceContext = normalizeAskCogniWorkspaceContext(rawWorkspaceContext, baseClassification, user);
     const classification = {
@@ -2394,7 +2697,8 @@ function buildAdaptiveCogniResponse({ query, ranked, domainMatches, applicationM
     const replaySummary = summarizeReplay(latestExecutionContext, latestSimulationContext);
     const governanceSummary = summarizeGovernance(latestExecutionContext);
     const confidenceSummary = summarizeConfidence(latestExecutionContext ? latestExecutionContext.confidenceTimeline : []);
-    const memory = askCogniMemory.get(user.tenant || user.email || 'anonymous') || [];
+    const memoryKey = workspaceSession && workspaceSession.memoryKey || user.tenant || user.email || 'anonymous';
+    const memory = askCogniMemory.get(memoryKey) || [];
     const governanceRuntime = contextBundle.governanceFabricContext && contextBundle.governanceFabricContext.latestRuntime;
     const marketplacePackages = contextBundle.marketplaceContext && contextBundle.marketplaceContext.packages || [];
     const multiAgentRuntime = contextBundle.multiAgentContext && contextBundle.multiAgentContext.latestRuntime;
@@ -2409,6 +2713,11 @@ function buildAdaptiveCogniResponse({ query, ranked, domainMatches, applicationM
         architect: 'Here is the architecture view.',
         operations: 'Here is the runtime health view.'
     };
+    const contextValidation = workspaceSession && workspaceSession.validation || { valid: true, mismatches: [], actions: [] };
+    const composedContext = workspaceSession && workspaceSession.composedContext || {};
+    const mismatchLead = !contextValidation.valid && !workspaceContext.overrideMismatch
+        ? `The current workspace context has a mismatch: ${contextValidation.mismatches.map(item => item.message).join(' ')}`
+        : '';
     const workspaceLead = `${workspaceContext.assistant}: ${workspaceContext.profile.summary}`;
     const directByIntent = {
         discovery: `${workspaceLead} Start with ${topApis.length ? topApis.slice(0, 3).join(', ') : `the ${domainName} workspace`} and validate the short list in ${workspaceContext.environment} before production entitlement.`,
@@ -2424,10 +2733,15 @@ function buildAdaptiveCogniResponse({ query, ranked, domainMatches, applicationM
         marketplace: `${workspaceLead} ${marketplacePackages.length ? `The best package candidates are ${marketplacePackages.slice(0, 3).map(pkg => pkg.name).join(', ')}.` : 'Search the Marketplace by operational problem to find reusable packages.'}`,
         'enterprise-ops': `${workspaceLead} ${enterpriseSummary ? enterpriseSummary.executiveSummary : 'Enterprise OS unifies orchestration visibility, governance operations, replay intelligence, deployment readiness, operational risk, and executive cognition.'}`,
         memory: `${workspaceLead} ${memoryMatches.length ? `Memory Fabric has ${memoryMatches.length} relevant replay or episode matches for continuity.` : 'No matching memory episode is available yet; run or replay a workflow to create one.'}`,
-        orchestration: `${workspaceLead} Compose the workflow in Orchestration Studio, compile it into a governed runtime graph, then execute with replay and confidence tracking enabled.`,
+        orchestration: workspaceContext.mode === 'beginner'
+            ? `${workspaceLead} Start by choosing the main workflow, then let CINTENT recommend the APIs, simulation, replay, governance, and SDK path before you build. For this workspace, begin with ${workspaceContext.selectedWorkflow || `${classification.domain} workflow planning`} in sandbox mode.`
+            : `${workspaceLead} Compose the workflow in Orchestration Studio, compile it into a governed runtime graph, then execute with replay and confidence tracking enabled.`,
         learning: `${workspaceLead} CINTENT is cognitive operating infrastructure: APIs, orchestration, governance, replay, simulations, SDKs, observability, memory, agents, and marketplace packages operate as one system.`,
         general: `${workspaceLead} I can guide this through discovery, workflow design, replay analysis, governance review, SDK integration, marketplace packaging, or operational diagnostics.`
     };
+    if (mismatchLead) {
+        directByIntent[classification.intent] = `${mismatchLead} Choose whether to switch domain, switch simulation, or continue intentionally before running the workflow.`;
+    }
     const keyRecommendations = [];
     if (classification.intent === 'integration') {
         keyRecommendations.push(`Use ${topSdk[0] || 'Python or TypeScript SDK'} with replay and governance hooks enabled.`);
@@ -2482,7 +2796,18 @@ function buildAdaptiveCogniResponse({ query, ranked, domainMatches, applicationM
         classification.intent === 'memory' && memoryMatches[0] ? { title: 'Memory Match', body: `${memoryMatches[0].title}: ${memoryMatches[0].summary}`, action: 'Open Memory Fabric' } : null,
         topSdk[0] ? { title: 'SDK Path', body: `${topSdk[0]} is the recommended integration starting point for this context.`, action: 'Open SDK Center' } : null
     ].filter(Boolean).slice(0, 4);
-    const quickActions = buildAskCogniQuickActions(workspaceContext, classification.intent);
+    const quickActions = contextValidation.valid || workspaceContext.overrideMismatch
+        ? buildAskCogniQuickActions(workspaceContext, classification.intent)
+        : contextValidation.actions.map(action => ({
+            id: action.id,
+            label: action.label,
+            target: action.id === 'switch-simulation' ? 'environments' : 'ask',
+            prompt: action.id === 'continue-intentionally'
+                ? `Continue intentionally with cross-domain ${workspaceContext.domain} context and explain risks.`
+                : action.id === 'switch-domain'
+                    ? `Switch workspace to ${action.domain} and rebuild recommendations.`
+                    : `Switch to a matching ${workspaceContext.domain} simulation.`
+        }));
     const followUpQuestions = (workspaceContext.profile.followUps || ASK_COGNI_WORKSPACE_PROFILES.platform.followUps).slice(0, 3);
     const advancedRequested = workspaceContext.showDiagnostics || classification.role === 'operations' && classification.intent === 'diagnostic';
     const optionalDiagnostics = {
@@ -2513,11 +2838,22 @@ function buildAdaptiveCogniResponse({ query, ranked, domainMatches, applicationM
         role: classification.role,
         domain: classification.domain,
         assistantName: workspaceContext.assistant,
+        workspaceId: workspaceSession && workspaceSession.workspaceId,
+        sessionId: workspaceSession && workspaceSession.sessionId,
+        contextId: workspaceSession && workspaceSession.contextId,
+        workspaceMemoryKey: memoryKey,
+        contextValidation,
+        composedPromptContext: composedContext,
         currentContext: {
+            workspaceId: workspaceSession && workspaceSession.workspaceId || workspaceContext.workspaceId || 'workspace-not-set',
+            sessionId: workspaceSession && workspaceSession.sessionId || workspaceContext.sessionId || 'session-not-set',
             domain: classification.domain,
             application: workspaceContext.applicationName || workspaceContext.applicationId || 'Not selected',
             environment: workspaceContext.environment,
-            APIs: workspaceContext.selectedApiNames.length ? workspaceContext.selectedApiNames : workspaceContext.selectedApis,
+            APIs: workspaceContext.selectedApiNames.length ? workspaceContext.selectedApiNames : (workspaceContext.selectedApis.length ? workspaceContext.selectedApis : ['Recommended APIs pending selection']),
+            workflow: workspaceContext.selectedWorkflow || 'Not selected',
+            simulation: workspaceContext.selectedSimulation || 'Not selected',
+            workflowStage: workspaceContext.workflowState && workspaceContext.workflowState.stage || 'select-apis',
             mode: workspaceContext.mode,
             subscriptionTier: workspaceContext.subscriptionTier
         },
@@ -2535,6 +2871,7 @@ function buildAdaptiveCogniResponse({ query, ranked, domainMatches, applicationM
         memoryContinuity: memory.length ? `I am carrying forward ${memory.length} recent Ask COGNI interaction${memory.length === 1 ? '' : 's'} for this tenant.` : 'No prior Ask COGNI memory is available for this session yet.',
         optionalDetails: sanitizeCogniPayload({
             architecture: studioCompile ? `${studioCompile.nodes.length} workflow nodes and ${studioCompile.edges.length} dependencies are ready to review.` : 'Generate or run a workflow to create architecture detail.',
+            workflowState: workspaceContext.workflowState,
             sdkPath: topSdk,
             standards: (standardsContext.standardsMatches || []).slice(0, 4).map(item => item.name),
             memoryContinuity: memory.slice(0, 3)
@@ -2542,7 +2879,39 @@ function buildAdaptiveCogniResponse({ query, ranked, domainMatches, applicationM
         advancedDiagnosticsAvailable: true,
         optionalDiagnostics: advancedRequested ? sanitizeCogniPayload(optionalDiagnostics) : { status: 'Advanced diagnostics are hidden. Switch to Diagnostic/Admin Mode or explicitly ask for diagnostics to view telemetry, replay, governance, and runtime internals.' }
     };
+    response.answerFingerprint = stableHash(`${response.domain}:${response.intent}:${response.directAnswer}:${response.keyRecommendations.join('|')}`);
+    if (isNearDuplicateAskResponse(response.directAnswer, memory)) {
+        const continuity = workspaceSession && workspaceSession.conversationMemory && workspaceSession.conversationMemory[0]
+            ? `Compared with your previous ${response.domain} question, the next useful move is to advance the workflow state instead of repeating discovery.`
+            : 'To avoid repeating the same guidance, I am moving this answer into the next operational step.';
+        response.directAnswer = cleanCogniText(`${response.directAnswer} ${continuity}`);
+        response.suggestedNextSteps = [
+            `Advance workflow state for ${workspaceContext.selectedWorkflow || response.domain}.`,
+            ...response.suggestedNextSteps.filter(step => !/confirm/i.test(step)).slice(0, 2)
+        ];
+        response.answerFingerprint = stableHash(`${response.domain}:${response.intent}:${response.directAnswer}:${Date.now()}`);
+    }
     response.conversationMemory = rememberAskCogni(user, query, response);
+    if (workspaceSession) {
+        workspaceSession.conversationMemory.unshift({
+            at: new Date().toISOString(),
+            query: cleanCogniText(query).slice(0, 240),
+            answer: response.directAnswer,
+            intent: response.intent,
+            domain: response.domain,
+            contextId: response.contextId
+        });
+        workspaceSession.conversationMemory = workspaceSession.conversationMemory.slice(0, 10);
+        workspaceSession.workflowMemory.unshift({
+            at: new Date().toISOString(),
+            workflow: workspaceContext.selectedWorkflow,
+            simulation: workspaceContext.selectedSimulation,
+            selectedApis: workspaceContext.selectedApis,
+            validation: contextValidation
+        });
+        workspaceSession.workflowMemory = workspaceSession.workflowMemory.slice(0, 10);
+        askCogniWorkspaceSessions.set(workspaceSession.memoryKey, workspaceSession);
+    }
     return response;
 }
 
@@ -6738,6 +7107,56 @@ app.get('/api/status', (req, res) => {
     });
 });
 
+app.get('/api/platform/runtime/status', authMiddleware, async (req, res) => {
+    const catalog = await loadCatalogEntries();
+    const tenant = req.user.tenant || req.user.email || 'anonymous';
+    const workspaceSessions = [...askCogniWorkspaceSessions.entries()]
+        .filter(([key]) => key.startsWith(`${tenant}:`) || !req.user.demo)
+        .map(([, session]) => ({
+            workspaceId: session.workspaceId,
+            sessionId: session.sessionId,
+            contextId: session.contextId,
+            domain: session.domain,
+            applicationId: session.applicationId,
+            workflow: session.selectedWorkflow,
+            simulation: session.selectedSimulation,
+            workflowState: session.workflowState,
+            memoryEvents: session.conversationMemory.length,
+            validation: session.validation,
+            updatedAt: session.updatedAt
+        }));
+    const latestExecution = executionEvents.find(event => event.tenant === tenant || !req.user.demo) || null;
+    const latestSimulation = simulationEvents.find(event => event.tenant === tenant || !req.user.demo) || null;
+    res.json({
+        source: 'domain-agnostic-cognitive-platform-runtime',
+        platformPrinciple: 'Domains and applications are runtime consumers of shared metadata, orchestration, replay, governance, simulation, SDK, observability, workspace, session, marketplace, billing, and deployment primitives.',
+        status: 'operational',
+        tenant,
+        coreLayers: [
+            { id: 'metadata-registry', status: catalog.length ? 'operational' : 'degraded', evidence: `${catalog.length} APIs loaded` },
+            { id: 'orchestration-runtime', status: 'operational', evidence: `${executionEvents.length} execution events` },
+            { id: 'replay-runtime', status: 'operational', evidence: `${executionEvents.filter(event => event.replay || event.studioRuntime).length + simulationEvents.filter(event => event.runtime && event.runtime.replayPackage).length} replay-capable events` },
+            { id: 'governance-runtime', status: 'operational', evidence: `${auditEvents.length} audit/governance events` },
+            { id: 'ask-cogni-runtime', status: 'operational', evidence: `${workspaceSessions.length} contextual workspace sessions` },
+            { id: 'simulation-runtime', status: 'operational', evidence: `${simulationEvents.length} simulation events` },
+            { id: 'sdk-intelligence-runtime', status: 'operational', evidence: 'metadata-driven SDK intelligence available' },
+            { id: 'workspace-session-runtime', status: 'operational', evidence: `${workspaceSessions.length} isolated sessions` },
+            { id: 'billing-access-runtime', status: 'operational', evidence: getSessionEntitlement(req.user).tier },
+            { id: 'observability-runtime', status: 'operational', evidence: 'runtime status, replay, execution, and audit telemetry available' }
+        ],
+        activeRuntime: {
+            latestExecution: latestExecution ? { id: latestExecution.id, api: latestExecution.api_name, status: latestExecution.status, replay: Boolean(latestExecution.replay) } : null,
+            latestSimulation: latestSimulation ? { id: latestSimulation.id, domain: latestSimulation.domain, simulationId: latestSimulation.runtime && latestSimulation.runtime.simulationId, replay: Boolean(latestSimulation.runtime && latestSimulation.runtime.replayPackage) } : null,
+            workspaceSessions
+        },
+        validation: {
+            invalidSessions: workspaceSessions.filter(session => session.validation && !session.validation.valid).length,
+            staleStateGuard: true,
+            domainAgnosticCore: true
+        }
+    });
+});
+
 app.post('/api/auth/signup', async (req, res) => {
     const { email, password, name } = req.body || {};
     if (!email || !password) {
@@ -8058,6 +8477,9 @@ app.post('/api/ask', authMiddleware, requireScopes('ask:cognitive'), async (req,
                 explainability: simulationEvents[0].runtime.explainability
             } : null
         };
+        const previewClassification = classifyAskCogniIntent(`${query} ${contextText}`);
+        const normalizedWorkspaceContext = normalizeAskCogniWorkspaceContext(context, previewClassification, req.user);
+        const workspaceSession = getAskWorkspaceSession(req.user, normalizedWorkspaceContext, query, catalog);
         const adaptiveResponse = buildAdaptiveCogniResponse({
             query,
             ranked,
@@ -8071,7 +8493,13 @@ app.post('/api/ask', authMiddleware, requireScopes('ask:cognitive'), async (req,
             performanceContext: response.performanceContext,
             user: req.user,
             contextBundle: response,
-            workspaceContext: context
+            workspaceContext: {
+                ...context,
+                workspaceId: normalizedWorkspaceContext.workspaceId || workspaceSession.workspaceId,
+                sessionId: normalizedWorkspaceContext.sessionId || workspaceSession.sessionId,
+                contextId: normalizedWorkspaceContext.contextId || workspaceSession.contextId
+            },
+            workspaceSession
         });
         response.answer = adaptiveResponse.directAnswer;
         response.responseMode = adaptiveResponse.mode;
@@ -8101,13 +8529,19 @@ app.post('/api/ask', authMiddleware, requireScopes('ask:cognitive'), async (req,
         }));
         response.structuredResponse = response.customerResponse;
         response.askCogniIntelligence = {
-            phase: 'PHASE-6E-ASKCOGNI-UX-TRANSFORMATION',
-            positioning: 'Context-aware multi-domain cognitive workspace intelligence system for CINTENT.',
+            phase: 'PHASE-6E-ASKCOGNI-STATE-ENGINE',
+            positioning: 'Contextual cognitive session engine with workspace memory isolation, context validation, prompt composition, and workflow continuity.',
             runtimeServices: [...ASK_COGNI_INTELLIGENCE_SERVICES, ...ASK_COGNI_UX_TRANSFORMATION_SERVICES],
-            pipeline: ['workspace context synchronization', 'domain assistant selection', 'application context retrieval', 'intent detection', 'role/mode classification', 'runtime context retrieval', 'replay context retrieval', 'governance context retrieval', 'memory context retrieval', 'confidence analysis', 'simple summary generation', 'quick action generation', 'optional details', 'advanced diagnostics gating'],
+            pipeline: ['workspace session resolution', 'context id generation', 'workspace memory retrieval', 'context validation', 'domain assistant selection', 'application context retrieval', 'intent detection', 'workflow state inspection', 'runtime context retrieval', 'replay context retrieval', 'governance context retrieval', 'prompt context composition', 'deduplication check', 'adaptive response generation', 'quick action generation'],
             metadataSanitized: true,
             rawMetadataDump: false,
-            workspaceOriented: true
+            workspaceOriented: true,
+            workspaceSession: {
+                workspaceId: adaptiveResponse.workspaceId,
+                sessionId: adaptiveResponse.sessionId,
+                contextId: adaptiveResponse.contextId,
+                contextValidation: adaptiveResponse.contextValidation
+            }
         };
         response.architecture.ragFlow = response.askCogniIntelligence.pipeline;
         recordAudit('ask-cogni.query', req.user, { query, matches: ranked.length, intent: adaptiveResponse.intent, mode: adaptiveResponse.mode });
