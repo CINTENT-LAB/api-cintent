@@ -1251,13 +1251,39 @@
       healthcareComplianceObjective: 'Validate healthcare compliance propagation across regulatory governance, consent, AI inference, audit lineage, manufacturing quality, cybersecurity, privacy, replay, and sovereign healthcare regulatory intelligence.',
       healthcareComplianceExecution: null,
       healthcareComplianceReplay: null,
+      clinicalDataWorkflow: 'consultation-transcription-prescription',
+      clinicalDataObjective: 'Coordinate patient records, doctor-patient consultation capture, medical transcription, prescription intelligence, longitudinal patient memory, consent governance, clinical replay, and explainable interaction intelligence.',
+      clinicalDataExecution: null,
+      clinicalDataReplay: null,
+      healthcareApiDevelopmentApi: 'clinical-patient-record-runtime',
+      healthcareApiDevelopmentExecution: null,
+      healthcareApiDevelopmentReplay: null,
+      healthcareApiValidation: null,
+      healthcareImplGroup: 'patient-clinical',
+      healthcareImplAction: 'create-patient',
+      healthcareImplExecution: null,
+      healthcareImplReplay: null,
+      healthcareImplDashboard: null,
+      healthcareHardeningScenario: 'region-outage',
+      healthcareHardeningExecution: null,
+      healthcareHardeningReplay: null,
+      healthcareHardeningValidation: null,
+      healthcareHardeningDashboard: null,
       executionStream: null,
       executionPoller: null,
       apiKeys: [],
       domainDetails: {},
       selectedApplicationId: '',
+      askDomain: 'healthcare',
+      askApplicationId: 'smart-hospital',
+      askMode: 'beginner',
+      askEnvironment: 'sandbox',
+      askSelectedApis: ['healthcare-impl-executable-runtime', 'healthcare-impl-streaming-runtime', 'healthcare-impl-governance-runtime'],
+      askSelectedSimulation: 'hospital-operations',
+      askSelectedWorkflow: 'multilingual telemedicine workflow',
+      askLastResponse: null,
       chat: [
-        { role: 'Ask COGNI', text: 'I can recommend APIs, explain orchestration lineage, inspect replay concepts, troubleshoot integrations, and guide enterprise onboarding.' }
+        { role: 'Ask COGNI', text: 'Choose a domain, application, and mode. I will guide the workspace with simple next actions, not metadata dumps.' }
       ]
     };
 
@@ -2051,17 +2077,57 @@
     }
     function issuePackage() { return { issueId: 'cintent-issue-demo', executionId: 'orch-rbt-workflow-demo', replayTrace: 'attached', orchestrationLineage: selectedApi().lineage, logs: ['governance pass', 'replay capture', 'response emitted'], supportRoute: 'enterprise-support@cognivantalabs.example' }; }
 
+    const askDomainProfiles = {
+      healthcare: { title: 'Healthcare Cognitive Assistant', actions: ['Smart Hospital', 'ICU Monitoring', 'Telemedicine', 'Emergency Care', 'Prescription Systems'] },
+      drone: { title: 'Drone Mission Intelligence Assistant', actions: ['Swarm Simulation', 'Mission Replay', 'PX4 Integration', 'MAVLink Runtime', 'Edge Deployment'] },
+      legal: { title: 'Judicial Intelligence Assistant', actions: ['Case Analysis', 'Legal Workflow Replay', 'Multilingual Search', 'Evidence Orchestration', 'Legal Governance'] },
+      travel: { title: 'Travel Intelligence Assistant', actions: ['Travel Orchestration', 'Airport Integration', 'Itinerary Planning', 'Localization APIs', 'Travel Simulations'] },
+      robotics: { title: 'Robotics Operations Assistant', actions: ['Run Robotics Simulation', 'Generate ROS2 SDK', 'Open Replay', 'View Governance', 'Deploy Edge Runtime'] },
+      manufacturing: { title: 'Manufacturing Systems Assistant', actions: ['Smart Factory Twin', 'Equipment Telemetry', 'Quality Governance', 'Predictive Maintenance', 'Export Audit'] },
+      platform: { title: 'CINTENT Workspace Assistant', actions: ['View APIs', 'Create Workflow', 'Run Simulation', 'Generate SDK', 'Show Dashboard'] }
+    };
+
+    function askWorkspaceContext() {
+      const selectedApiNames = state.askSelectedApis.map(key => {
+        const api = apiCatalog.find(item => item.api_key === key || item.id === key);
+        return api ? api.name : key;
+      });
+      const app = applications.find(item => item.id === state.askApplicationId);
+      return {
+        domain: state.askDomain,
+        applicationId: state.askApplicationId,
+        applicationName: app ? app.name : state.askApplicationId,
+        selectedApis: state.askSelectedApis,
+        selectedApiNames,
+        selectedSimulation: state.askSelectedSimulation || state.selectedSimulationId,
+        selectedWorkflow: state.askSelectedWorkflow,
+        activeRuntime: state.executionRuntime && state.executionRuntime.executionId || state.healthcareImplExecution && state.healthcareImplExecution.id || '',
+        environment: state.askEnvironment,
+        mode: state.askMode,
+        subscriptionTier: currentEntitlement().tier
+      };
+    }
+
+    function renderQuickActions(actions = []) {
+      if (!actions.length) return '';
+      return `<div class="cogni-section"><h4>Recommended Actions</h4><div class="toolbar">${actions.map(action => `<button class="secondary-btn" type="button" data-cogni-action="${escapeHtml(action.id)}" data-cogni-target="${escapeHtml(action.target || '')}" data-ask-prompt="${escapeHtml(action.prompt || action.label)}">${escapeHtml(action.label)}</button>`).join('')}</div></div>`;
+    }
+
     function renderCogniResponse(response) {
       if (!response) return '';
       return `<div class="cogni-response">
-        <div class="cogni-mode"><span class="tag prod">${escapeHtml(response.mode || 'adaptive')} mode</span><span class="tag blue">${escapeHtml(response.intent || 'general')}</span><span class="tag">${escapeHtml(response.domain || 'platform')}</span></div>
-        <div class="cogni-section"><h4>Direct Answer</h4><p>${escapeHtml(response.directAnswer || '')}</p></div>
+        <div class="cogni-mode"><span class="tag prod">${escapeHtml(response.assistantName || 'Ask COGNI')}</span><span class="tag blue">${escapeHtml(response.workspaceMode || response.mode || 'guided')} mode</span><span class="tag">${escapeHtml(response.intent || 'general')}</span><span class="tag">${escapeHtml(response.domain || 'platform')}</span></div>
+        ${response.currentContext ? `<div class="cogni-section"><h4>Current Context</h4><p>${Object.entries(response.currentContext).map(([key, value]) => `<strong>${escapeHtml(key)}:</strong> ${escapeHtml(Array.isArray(value) ? value.join(', ') || 'None selected' : String(value || 'Not selected'))}`).join(' &nbsp; ')}</p></div>` : ''}
+        <div class="cogni-section"><h4>Simple Summary</h4><p>${escapeHtml(response.directAnswer || '')}</p></div>
+        ${renderQuickActions(response.quickActions || [])}
         ${(response.contextualCards || []).length ? `<div class="cogni-section"><h4>Context Cards</h4><div class="three-col">${response.contextualCards.map(card => `<div class="tile"><h3>${escapeHtml(card.title)}</h3><p>${escapeHtml(card.body)}</p><span class="tag">${escapeHtml(card.action)}</span></div>`).join('')}</div></div>` : ''}
         <div class="cogni-section"><h4>Key Recommendations</h4><ul>${(response.keyRecommendations || []).map(item => `<li>${escapeHtml(item)}</li>`).join('') || '<li>Run a sandbox workflow to generate current runtime context.</li>'}</ul></div>
         <div class="cogni-section"><h4>Suggested Next Steps</h4><ul>${(response.suggestedNextSteps || []).map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>
+        ${(response.followUpQuestions || []).length ? `<div class="cogni-section"><h4>Helpful Follow-up Questions</h4><div class="toolbar">${response.followUpQuestions.map(item => `<button class="secondary-btn" type="button" data-ask-prompt="${escapeHtml(item)}">${escapeHtml(item)}</button>`).join('')}</div></div>` : ''}
         <div class="cogni-section"><h4>Relevant APIs / SDKs</h4><p>${(response.relevantApis || []).slice(0, 4).map(api => `${escapeHtml(api.name)} (${escapeHtml(api.reason || api.lifecycle || 'recommended')})`).join(', ') || 'No exact API match yet.'}${(response.relevantSdks || []).length ? `<br>SDKs: ${(response.relevantSdks || []).map(escapeHtml).join(', ')}` : ''}</p></div>
         <div class="cogni-section"><h4>Replay, Governance & Confidence</h4><p>${escapeHtml(response.replayInsight || '')}<br>${escapeHtml(response.governanceInsight || '')}<br>${escapeHtml(response.confidenceInsight || '')}</p></div>
-        <details class="cogni-section"><summary>Optional Diagnostics</summary><pre>${pretty(response.optionalDiagnostics || {})}</pre></details>
+        <details class="cogni-section"><summary>Optional Details</summary><pre>${pretty(response.optionalDetails || {})}</pre></details>
+        <details class="cogni-section"><summary>Advanced Diagnostics</summary><pre>${pretty(response.optionalDiagnostics || {})}</pre></details>
       </div>`;
     }
 
@@ -2071,7 +2137,45 @@
     }
 
     function renderAsk() {
-      document.getElementById('view-ask').innerHTML = `<div class="two-col"><div class="panel"><div class="panel-head"><div><h2>Ask COGNI Navigator</h2><div class="sub">Adaptive cognitive architect for discovery, orchestration, replay, governance, SDKs, billing, standards, onboarding, diagnostics, and learning.</div></div><span class="tag blue">Adaptive Intelligence</span></div><div class="panel-body"><div class="chat" id="chatBox">${state.chat.map(renderChatMessage).join('')}</div><div class="three-col" style="margin-top:12px;">${['Executive: What should I do next?', 'Developer: Generate ROS2 integration guidance', 'Operations: Explain latest replay and governance health'].map(item => `<button class="tile" type="button" data-ask-prompt="${item}"><h3>${item}</h3><p>Ask COGNI adapts response mode, depth, recommendations, and diagnostics.</p></button>`).join('')}</div><div class="field" style="margin-top:12px;"><label>Ask about APIs, workflows, replay, governance, standards, protocols, billing, SDKs, lifecycle, metrics, dependencies, onboarding, or diagnostics</label><textarea class="textarea" id="askInput">Which APIs support drone swarms?</textarea></div><div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="askBtn">Ask COGNI</button><button class="secondary-btn" type="button" data-module="learn">Open Learn CINTENT</button><button class="secondary-btn" type="button" data-module="studio">Open Studio</button></div></div></div><div class="detail"><h2>Adaptive response intelligence</h2>${infoList('Ask COGNI now adapts by', ['Intent: discovery, replay, governance, SDK, deployment, simulation, diagnostics, learning', 'Role: executive, developer, architect, operations', 'Context: active APIs, runtime history, replay, governance, simulations, Studio workflows, SDKs, standards', 'Sanitization: broken runtime values and internal database fields are removed from customer-facing answers', 'Progressive disclosure: simple answer first, optional diagnostics only when needed'])}</div></div>`;
+      const profile = askDomainProfiles[state.askDomain] || askDomainProfiles.platform;
+      const appOptions = [
+        { id: 'smart-hospital', name: 'Smart Hospital' },
+        { id: 'manufacturing', name: 'Manufacturing Systems' },
+        ...applications
+      ].filter((item, index, arr) => item && arr.findIndex(other => other.id === item.id) === index);
+      const domainOptions = ['healthcare', 'drone', 'legal', 'travel', 'robotics', 'manufacturing', 'platform'];
+      const apiOptions = apiCatalog.filter(api => state.askDomain === 'platform' || api.domain === state.askDomain || api.domain_key === state.askDomain || (api.category || '').toLowerCase().includes(state.askDomain)).slice(0, 14);
+      const context = askWorkspaceContext();
+      document.getElementById('view-ask').innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Ask COGNI Workspace</h2><div class="sub">Context-aware multi-domain cognitive workspace intelligence. Choose the operational context first, then ask for guidance.</div></div><span class="tag prod">${escapeHtml(profile.title)}</span></div><div class="panel-body">
+        <div class="stat-grid">${[
+          ['Domain', context.domain],
+          ['Application', context.applicationName || 'Not selected'],
+          ['Environment', context.environment],
+          ['Mode', context.mode],
+          ['APIs', context.selectedApis.length],
+          ['Simulation', context.selectedSimulation || 'Not selected']
+        ].map(item => `<div class="stat"><div class="stat-label">${escapeHtml(item[0])}</div><div class="stat-value" style="font-size:16px;">${escapeHtml(String(item[1]))}</div></div>`).join('')}</div>
+      </div></div>
+      <div style="display:grid;grid-template-columns:minmax(220px,0.85fr) minmax(360px,1.45fr) minmax(300px,1fr);gap:18px;margin-top:18px;align-items:start;">
+        <div class="panel"><div class="panel-head"><div><h2>Workspace Context</h2><div class="sub">Ask COGNI synchronizes with these selections without a page refresh.</div></div></div><div class="panel-body">
+          <div class="field"><label>Domain</label><select class="select" id="askDomain">${domainOptions.map(item => `<option value="${item}" ${state.askDomain === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
+          <div class="field" style="margin-top:10px;"><label>Application</label><select class="select" id="askApplicationId">${appOptions.map(app => `<option value="${app.id}" ${state.askApplicationId === app.id ? 'selected' : ''}>${app.name}</option>`).join('')}</select></div>
+          <div class="field" style="margin-top:10px;"><label>User mode</label><select class="select" id="askMode">${['beginner','business','technical','engineering','diagnostic'].map(item => `<option value="${item}" ${state.askMode === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
+          <div class="field" style="margin-top:10px;"><label>Environment</label><select class="select" id="askEnvironment">${['sandbox','production','edge','hybrid','sovereign'].map(item => `<option value="${item}" ${state.askEnvironment === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
+          <div class="field" style="margin-top:10px;"><label>Workflow</label><input class="input" id="askSelectedWorkflow" value="${escapeHtml(state.askSelectedWorkflow)}"></div>
+          <div class="field" style="margin-top:10px;"><label>Simulation</label><select class="select" id="askSelectedSimulation">${simulations.slice(0, 14).map(sim => `<option value="${sim.id}" ${state.askSelectedSimulation === sim.id ? 'selected' : ''}>${sim.title}</option>`).join('')}</select></div>
+          <div class="field" style="margin-top:10px;"><label>Selected APIs</label><div class="api-list" style="max-height:260px;overflow:auto;">${apiOptions.map(api => `<label class="api-card" style="cursor:pointer;"><span class="api-top"><span class="api-name">${escapeHtml(api.name)}</span><input type="checkbox" data-ask-api="${escapeHtml(api.api_key)}" ${state.askSelectedApis.includes(api.api_key) ? 'checked' : ''}></span><span class="api-desc">${escapeHtml(api.description || api.short_description || '')}</span></label>`).join('') || empty('No APIs for this domain yet.')}</div></div>
+        </div></div>
+        <div class="panel"><div class="panel-head"><div><h2>Operational Workspace</h2><div class="sub">${escapeHtml(profile.title)} for ${escapeHtml(context.applicationName || context.domain)}.</div></div></div><div class="panel-body">
+          <div class="three-col">${profile.actions.map(action => `<button class="tile" type="button" data-ask-prompt="${escapeHtml(action)} for ${escapeHtml(context.applicationName || context.domain)}"><h3>${escapeHtml(action)}</h3><p>Ask for guided recommendations, workflow steps, simulations, replay, SDKs, and governance.</p></button>`).join('')}</div>
+          <div class="field" style="margin-top:12px;"><label>Ask COGNI in this workspace</label><textarea class="textarea" id="askInput">I want to build a multilingual telemedicine platform.</textarea></div>
+          <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="askBtn">Ask COGNI</button><button class="secondary-btn" type="button" data-module="environments">Run Simulation</button><button class="secondary-btn" type="button" data-module="studio">Create Workflow</button><button class="secondary-btn" type="button" data-module="sdks">Generate SDK</button><button class="secondary-btn" type="button" data-module="visualizer">Open Replay</button></div>
+          <div class="chat" id="chatBox" style="margin-top:14px;">${state.chat.map(renderChatMessage).join('')}</div>
+        </div></div>
+        <div class="panel"><div class="panel-head"><div><h2>Contextual Assistant</h2><div class="sub">Simple summary first. Details and diagnostics stay collapsed until needed.</div></div></div><div class="panel-body">
+          ${state.askLastResponse ? renderCogniResponse(state.askLastResponse) : infoList('Ask COGNI will adapt to', ['Selected domain and application', 'Selected APIs and workflow', 'Simulation and replay state', 'Billing tier and environment', 'Beginner, business, technical, engineering, or diagnostic mode'])}
+        </div></div>
+      </div>`;
     }
 
     function askCogni(text) {
@@ -2735,6 +2839,16 @@
           const commercialServices = payload.commercial_runtime_services || [];
           const globalServices = payload.global_runtime_services || [];
           const complianceServices = payload.compliance_runtime_services || [];
+          const clinicalDataServices = payload.clinical_data_runtime_services || [];
+          const apiDevelopmentServices = payload.api_development_runtime_services || [];
+          const apiDevelopment = payload.apiDevelopment || {};
+          const apiImplementationServices = payload.api_implementation_runtime_services || [];
+          const apiImplementation = payload.apiImplementation || {};
+          const implementationGroups = apiImplementation.runtimeGroups || [];
+          const selectedImplGroup = implementationGroups.find(group => group.id === state.healthcareImplGroup) || implementationGroups[0] || { id: 'patient-clinical', actions: ['create-patient'] };
+          const productionHardeningServices = payload.production_hardening_runtime_services || [];
+          const productionHardening = payload.productionHardening || {};
+          const hardeningScenarios = productionHardening.failureScenarios || [];
           const metadataApis = payload.metadata_apis || [];
           target.innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Unified Cognitive Healthcare Economy Infrastructure</h2><div class="sub">${payload.positioning}</div></div><span class="tag prod">PHASE-6B-HEALTHCARE-EXPANDED</span></div><div class="panel-body">
             <div class="stat-grid">${[
@@ -2745,11 +2859,19 @@
               ['Commercial services', commercialServices.length],
               ['Global services', globalServices.length],
               ['Compliance services', complianceServices.length],
+              ['Clinical data services', clinicalDataServices.length],
+              ['API dev services', apiDevelopmentServices.length],
+              ['Executable services', apiImplementationServices.length],
+              ['Hardening services', productionHardeningServices.length],
               ['Economy segments', segments.length],
               ['Industry branches', branches.length],
               ['Executions', metrics.workflow_executions || 0],
               ['Global execs', metrics.global_executions || 0],
               ['Compliance execs', metrics.compliance_executions || 0],
+              ['Clinical execs', metrics.clinical_data_executions || 0],
+              ['API dev execs', metrics.api_development_executions || 0],
+              ['Runtime execs', metrics.api_implementation_executions || 0],
+              ['Hardening execs', metrics.production_hardening_executions || 0],
               ['Replay events', metrics.replay_events || 0],
               ['Governance events', metrics.governance_events || 0],
               ['Avg confidence', metrics.average_confidence || 0]
@@ -2760,6 +2882,29 @@
               <div class="field"><label>Healthcare branch</label><select class="select" id="healthcareBranch">${branches.map(branch => `<option value="${branch.id}" ${state.healthcareBranch === branch.id ? 'selected' : ''}>${branch.name}</option>`).join('')}</select></div>
             </div>
             <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runHealthcareWorkflow">Run Healthcare Workflow</button><button class="secondary-btn" type="button" data-ask-prompt="Recommend healthcare APIs for telemedicine insurance governance ICU telemetry and surgical orchestration">Ask COGNI Healthcare Intelligence</button><button class="secondary-btn" type="button" data-module="environments">Open Simulations</button><button class="secondary-btn" type="button" data-module="enterprise-os">Open Enterprise OS</button></div>
+          </div></div>
+          <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Executable healthcare API runtime</h2><div class="sub">Versioned healthcare APIs with metadata resolution, authorization, orchestration, governance injection, replay capture, telemetry streams, Ask COGNI awareness, billing usage, and dashboard visibility.</div></div><span class="tag prod">PHASE-6B-HEALTHCARE-API-IMPLEMENTATION</span></div><div class="panel-body">
+            <div class="form-grid">
+              <div class="field"><label>Runtime group</label><select class="select" id="healthcareImplGroup">${implementationGroups.map(group => `<option value="${group.id}" ${state.healthcareImplGroup === group.id ? 'selected' : ''}>${group.name}</option>`).join('')}</select></div>
+              <div class="field"><label>Action</label><select class="select" id="healthcareImplAction">${(selectedImplGroup.actions || []).map(action => `<option value="${action}" ${state.healthcareImplAction === action ? 'selected' : ''}>${action}</option>`).join('')}</select></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runHealthcareImplRuntime">Run Executable API</button><button class="secondary-btn" type="button" id="loadHealthcareImplDashboard">Load Live Dashboard</button><button class="secondary-btn" type="button" data-ask-prompt="Explain executable healthcare API runtime replay governance streaming and dashboard visibility">Ask COGNI Runtime</button><button class="secondary-btn" type="button" data-module="playground">Open Playground</button></div>
+          </div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Executable runtime output</h2><pre id="healthcareImplOutput">${pretty(state.healthcareImplExecution || { instruction: 'Run a versioned healthcare API to create backend-connected records, orchestration lineage, replay capture, governance telemetry, and semantic memory.' })}</pre></div><div class="detail"><h2>Executable replay/dashboard</h2><pre id="healthcareImplReplayOutput">${pretty(state.healthcareImplReplay || state.healthcareImplDashboard || { instruction: 'Replay and dashboard output appears after executable runtime calls.' })}</pre></div></div>
+          <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Production hardening command</h2><div class="sub">Enterprise reliability, high availability, distributed failover, sovereign security, healthcare cybersecurity, replay hardening, streaming reliability, disaster recovery, tenant isolation, and autonomous monitoring.</div></div><span class="tag prod">PHASE-6B-HEALTHCARE-PRODUCTION-HARDENING</span></div><div class="panel-body">
+            <div class="form-grid">
+              <div class="field"><label>Failure scenario</label><select class="select" id="healthcareHardeningScenario">${hardeningScenarios.map(scenario => `<option value="${scenario.id}" ${state.healthcareHardeningScenario === scenario.id ? 'selected' : ''}>${scenario.name}</option>`).join('')}</select></div>
+              <div class="detail"><h2>Hardening posture</h2><pre>${pretty({ targetAvailability: productionHardening.targetAvailability, services: productionHardeningServices.length, sovereignDeploymentModels: productionHardening.sovereignDeploymentModels || [], securityControls: productionHardening.securityControls || [] })}</pre></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runHealthcareHardening">Run Hardening Drill</button><button class="secondary-btn" type="button" id="validateHealthcareHardening">Validate Production Readiness</button><button class="secondary-btn" type="button" id="loadHealthcareHardeningDashboard">Load Hardening Dashboard</button><button class="secondary-btn" type="button" data-ask-prompt="Why did ICU telemetry slow down? Show replay recovery lineage and governance bottleneck.">Ask COGNI Diagnostics</button></div>
+          </div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Hardening execution</h2><pre id="healthcareHardeningOutput">${pretty(state.healthcareHardeningExecution || { instruction: 'Run a production hardening drill to validate failover, replay persistence, streaming continuity, sovereign governance, cybersecurity, observability, and recovery lineage.' })}</pre></div><div class="detail"><h2>Hardening replay/validation</h2><pre id="healthcareHardeningReplayOutput">${pretty(state.healthcareHardeningReplay || state.healthcareHardeningValidation || state.healthcareHardeningDashboard || { instruction: 'Hardening replay, validation, and dashboard output appears after production readiness commands.' })}</pre></div></div>
+          <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Healthcare API development command</h2><div class="sub">Registry-derived API execution, metadata schema validation, generated playground readiness, replay/governance validation, SDK readiness, and enterprise stabilization.</div></div><span class="tag blue">PHASE-6B-HEALTHCARE-API-DEVELOPMENT</span></div><div class="panel-body">
+            <div class="form-grid">
+              <div class="field"><label>Healthcare API contract</label><select class="select" id="healthcareApiDevelopmentApi">${metadataApis.map(api => `<option value="${api.api_key}" ${state.healthcareApiDevelopmentApi === api.api_key ? 'selected' : ''}>${api.name}</option>`).join('')}</select></div>
+              <div class="detail"><h2>Metadata schema</h2><pre>${pretty({ fields: apiDevelopment.metadataSchemaFields || [], statusModel: apiDevelopment.statusModel || [] })}</pre></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runHealthcareApiDevelopment">Execute API Runtime</button><button class="secondary-btn" type="button" id="validateHealthcareApis">Run Validation Framework</button><button class="secondary-btn" type="button" data-ask-prompt="Recommend healthcare APIs and explain replay governance interoperability SDK and testing readiness">Ask COGNI API Development</button><button class="secondary-btn" type="button" data-module="playground">Open Playground</button></div>
           </div></div>
           <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Advanced medical intelligence command</h2><div class="sub">Surgical robotics, autonomous clinical intelligence, AI diagnostics, biomedical telemetry, emergency coordination, population health, precision medicine, healthcare swarms, and national healthcare observability.</div></div></div><div class="panel-body">
             <div class="form-grid">
@@ -2796,6 +2941,13 @@
             </div>
             <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runHealthcareCompliance">Run Compliance Validation</button><button class="secondary-btn" type="button" data-ask-prompt="Is this workflow HIPAA compliant and show audit reconstruction with AI inference lineage">Ask COGNI Compliance</button></div>
           </div></div>
+          <div class="panel" style="margin-top:18px;"><div class="panel-head"><div><h2>Clinical data command</h2><div class="sub">Patient records, doctor-patient interaction, transcription, prescriptions, longitudinal memory, multilingual communication, clinical search, consent governance, and consultation replay.</div></div></div><div class="panel-body">
+            <div class="form-grid">
+              <div class="field"><label>Clinical data objective</label><textarea class="textarea" id="clinicalDataObjective">${escapeHtml(state.clinicalDataObjective)}</textarea></div>
+              <div class="field"><label>Clinical workflow</label><select class="select" id="clinicalDataWorkflow">${['consultation-transcription-prescription','patient-record-longitudinal-memory','doctor-patient-interaction-replay','multilingual-telemedicine-summary','clinical-document-intelligence','prescription-drug-interaction','clinical-search-retrieval','emergency-consultation-replay','consent-aware-record-access','treatment-evolution-explainability'].map(item => `<option value="${item}" ${state.clinicalDataWorkflow === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="runClinicalData">Run Clinical Data Workflow</button><button class="secondary-btn" type="button" data-ask-prompt="Show consultation replay, explain prescription lineage, and summarize patient history">Ask COGNI Clinical</button></div>
+          </div></div>
           <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Healthcare economy branches</h2><pre>${pretty(branches)}</pre></div><div class="detail"><h2>Ecosystem coverage</h2><pre>${pretty({ segments, multimodalSignals: payload.multimodalSignals, replayTypes: payload.replayTypes })}</pre></div></div>
           <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Latest healthcare execution</h2><pre id="healthcareExecutionOutput">${pretty(state.healthcareExecution || { instruction: 'Run a healthcare workflow to create clinical, device, governance, pharma, insurance, replay, and enterprise operations lineage.' })}</pre></div><div class="detail"><h2>Healthcare replay reconstruction</h2><pre id="healthcareReplayOutput">${pretty(state.healthcareReplay || { instruction: 'Healthcare replay appears after execution and reconstructs clinical, surgery, treatment, governance, insurance, logistics, anomaly, and explainability replay.' })}</pre></div></div>
           <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Advanced healthcare execution</h2><pre id="advancedHealthcareOutput">${pretty(state.advancedHealthcareExecution || { instruction: 'Run advanced healthcare to produce surgical robotics, diagnostics, biomedical telemetry, emergency, population health, precision medicine, and national observability lineage.' })}</pre></div><div class="detail"><h2>Advanced healthcare replay</h2><pre id="advancedHealthcareReplayOutput">${pretty(state.advancedHealthcareReplay || { instruction: 'Advanced replay reconstructs surgery, diagnosis, emergency, robotics, telemetry, governance, anomaly, and explainability replay.' })}</pre></div></div>
@@ -2803,7 +2955,9 @@
           <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Commercial execution</h2><pre id="healthcareCommercialOutput">${pretty(state.healthcareCommercialExecution || { instruction: 'Run commercial workflow to produce MedTech, pharma, procurement, supply chain, insurance, revenue, manufacturing, governance, and replay lineage.' })}</pre></div><div class="detail"><h2>Commercial replay</h2><pre id="healthcareCommercialReplayOutput">${pretty(state.healthcareCommercialReplay || { instruction: 'Commercial replay reconstructs procurement, financial, insurance, pharma, logistics, governance, anomaly, and MedTech replay.' })}</pre></div></div>
           <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Global healthcare execution</h2><pre id="healthcareGlobalOutput">${pretty(state.healthcareGlobalExecution || { instruction: 'Run global healthcare to produce public health, pandemic, epidemiology, humanitarian, resilience, federation, crisis, governance, and strategic analytics lineage.' })}</pre></div><div class="detail"><h2>Global healthcare replay</h2><pre id="healthcareGlobalReplayOutput">${pretty(state.healthcareGlobalReplay || { instruction: 'Global replay reconstructs pandemic, crisis, governance, humanitarian, epidemiological, emergency orchestration, federation, and anomaly replay.' })}</pre></div></div>
           <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Compliance execution</h2><pre id="healthcareComplianceOutput">${pretty(state.healthcareComplianceExecution || { instruction: 'Run compliance validation to produce regulatory governance, consent, AI governance, audit lineage, manufacturing quality, cybersecurity, privacy, and replay lineage.' })}</pre></div><div class="detail"><h2>Compliance replay</h2><pre id="healthcareComplianceReplayOutput">${pretty(state.healthcareComplianceReplay || { instruction: 'Compliance replay reconstructs audit, governance, AI inference, manufacturing, privacy, consent, cybersecurity, anomaly, and operational traceability replay.' })}</pre></div></div>
-          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Runtime composition</h2><pre>${pretty({ runtimeServices, advancedServices, interoperabilityServices, commercialServices, globalServices, complianceServices, advancedCategories: payload.advancedCategories, interoperabilityStandards: payload.interoperabilityStandards, commercialCategories: payload.commercialCategories, globalCategories: payload.globalCategories, complianceCoverage: payload.complianceCoverage, enterpriseIntegration: payload.enterpriseIntegration })}</pre></div><div class="detail"><h2>Metadata-backed healthcare APIs</h2><pre>${pretty(metadataApis.map(api => ({ api_key: api.api_key, name: api.name, lifecycle: api.lifecycle_state, min_tier: api.min_tier, replay: api.replay_support, governance: api.governance_support, locked: api.access_policy && api.access_policy.locked })))}</pre></div></div>`;
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Clinical data execution</h2><pre id="clinicalDataOutput">${pretty(state.clinicalDataExecution || { instruction: 'Run clinical data workflow to produce patient record, consultation, transcription, prescription, memory, consent, search, and replay lineage.' })}</pre></div><div class="detail"><h2>Clinical interaction replay</h2><pre id="clinicalDataReplayOutput">${pretty(state.clinicalDataReplay || { instruction: 'Clinical replay reconstructs consultation, transcription, prescription, diagnosis, governance, consent, AI inference, and patient memory replay.' })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>API runtime execution</h2><pre id="healthcareApiDevelopmentOutput">${pretty(state.healthcareApiDevelopmentExecution || { instruction: 'Execute a registry-backed healthcare API through the standardized runtime to validate governance, replay, observability, SDK generation, and lifecycle state.' })}</pre></div><div class="detail"><h2>API validation framework</h2><pre id="healthcareApiValidationOutput">${pretty(state.healthcareApiValidation || { instruction: 'Run functional, compliance, performance, simulation, security, interoperability, and AI governance validation over metadata-backed healthcare APIs.' })}</pre></div></div>
+          <div class="two-col" style="margin-top:18px;"><div class="detail"><h2>Runtime composition</h2><pre>${pretty({ runtimeServices, advancedServices, interoperabilityServices, commercialServices, globalServices, complianceServices, clinicalDataServices, apiDevelopmentServices, apiImplementationServices, productionHardeningServices, apiDevelopment, apiImplementation, productionHardening, advancedCategories: payload.advancedCategories, interoperabilityStandards: payload.interoperabilityStandards, commercialCategories: payload.commercialCategories, globalCategories: payload.globalCategories, complianceCoverage: payload.complianceCoverage, clinicalDataCategories: payload.clinicalDataCategories, enterpriseIntegration: payload.enterpriseIntegration })}</pre></div><div class="detail"><h2>Metadata-backed healthcare APIs</h2><pre>${pretty(metadataApis.map(api => ({ api_key: api.api_key, name: api.name, lifecycle: api.lifecycle_state, min_tier: api.min_tier, replay: api.replay_support, governance: api.governance_support, locked: api.access_policy && api.access_policy.locked })))}</pre></div></div>`;
         })
         .catch(error => {
           target.innerHTML = `<div class="panel"><div class="panel-head"><h2>Unified Cognitive Healthcare Economy Infrastructure</h2></div><div class="panel-body">${empty(`Healthcare runtime unavailable: ${error.message}`)}</div></div>`;
@@ -2922,6 +3076,15 @@
       if (standardsQueryBtn) { state.module = 'standards'; render(); setTimeout(() => { const input = document.getElementById('standardsSearch'); if (input) input.value = standardsQueryBtn.dataset.standardsQuery; runStandardsSearch(standardsQueryBtn.dataset.standardsQuery).catch(() => {}); }, 250); return; }
       const askDomainBtn = event.target.closest('[data-ask-domain]');
       if (askDomainBtn) { state.module = 'ask'; state.chat.push({ role: 'You', text: `Explain roadmap and API plans for ${askDomainBtn.dataset.askDomain}` }); render(); return; }
+      const cogniActionBtn = event.target.closest('[data-cogni-action]');
+      if (cogniActionBtn) {
+        const target = cogniActionBtn.dataset.cogniTarget;
+        if (target) state.module = target;
+        const prompt = cogniActionBtn.dataset.askPrompt;
+        if (prompt) state.chat.push({ role: 'You', text: prompt });
+        render();
+        return;
+      }
       const askPromptBtn = event.target.closest('[data-ask-prompt]');
       if (askPromptBtn) { state.module = 'ask'; render(); setTimeout(() => { const input = document.getElementById('askInput'); if (input) input.value = askPromptBtn.dataset.askPrompt; }, 0); return; }
       const learningQueryBtn = event.target.closest('[data-learning-query]');
@@ -3034,6 +3197,22 @@
       if (event.target.id === 'healthcareGlobalWorkflow') { state.healthcareGlobalWorkflow = event.target.value; state.healthcareGlobalExecution = null; state.healthcareGlobalReplay = null; renderHealthcare(); }
       if (event.target.id === 'healthcareComplianceObjective') { state.healthcareComplianceObjective = event.target.value; state.healthcareComplianceExecution = null; state.healthcareComplianceReplay = null; }
       if (event.target.id === 'healthcareComplianceWorkflow') { state.healthcareComplianceWorkflow = event.target.value; state.healthcareComplianceExecution = null; state.healthcareComplianceReplay = null; renderHealthcare(); }
+      if (event.target.id === 'healthcareImplGroup') { state.healthcareImplGroup = event.target.value; state.healthcareImplAction = ''; state.healthcareImplExecution = null; state.healthcareImplReplay = null; renderHealthcare(); }
+      if (event.target.id === 'healthcareImplAction') { state.healthcareImplAction = event.target.value; state.healthcareImplExecution = null; state.healthcareImplReplay = null; }
+      if (event.target.id === 'healthcareHardeningScenario') { state.healthcareHardeningScenario = event.target.value; state.healthcareHardeningExecution = null; state.healthcareHardeningReplay = null; state.healthcareHardeningValidation = null; }
+      if (event.target.id === 'clinicalDataObjective') { state.clinicalDataObjective = event.target.value; state.clinicalDataExecution = null; state.clinicalDataReplay = null; }
+      if (event.target.id === 'clinicalDataWorkflow') { state.clinicalDataWorkflow = event.target.value; state.clinicalDataExecution = null; state.clinicalDataReplay = null; renderHealthcare(); }
+      if (event.target.id === 'askDomain') { state.askDomain = event.target.value; state.askSelectedApis = []; state.askLastResponse = null; renderAsk(); }
+      if (event.target.id === 'askApplicationId') { state.askApplicationId = event.target.value; state.askLastResponse = null; renderAsk(); }
+      if (event.target.id === 'askMode') { state.askMode = event.target.value; state.askLastResponse = null; renderAsk(); }
+      if (event.target.id === 'askEnvironment') { state.askEnvironment = event.target.value; state.askLastResponse = null; renderAsk(); }
+      if (event.target.id === 'askSelectedSimulation') { state.askSelectedSimulation = event.target.value; state.askLastResponse = null; }
+      if (event.target.id === 'askSelectedWorkflow') { state.askSelectedWorkflow = event.target.value; state.askLastResponse = null; }
+      if (event.target.matches('[data-ask-api]')) {
+        const key = event.target.dataset.askApi;
+        state.askSelectedApis = event.target.checked ? [...new Set([...state.askSelectedApis, key])] : state.askSelectedApis.filter(item => item !== key);
+        state.askLastResponse = null;
+      }
     });
 
     document.addEventListener('dragstart', event => {
@@ -3517,6 +3696,143 @@
           if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
         }
       }
+      if (event.target.id === 'runHealthcareImplRuntime') {
+        const group = document.getElementById('healthcareImplGroup');
+        const action = document.getElementById('healthcareImplAction');
+        if (group) state.healthcareImplGroup = group.value;
+        if (action) state.healthcareImplAction = action.value;
+        const output = document.getElementById('healthcareImplOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'executing-healthcare-runtime', group: state.healthcareImplGroup, action: state.healthcareImplAction }, null, 2);
+        try {
+          const response = await fetch('/api/v1/healthcare/runtime/execute', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ group: state.healthcareImplGroup, action: state.healthcareImplAction, mode: 'sandbox', patient: { name: 'CINTENT Runtime Patient', clinicalContext: 'live executable healthcare API validation' }, objective: 'Execute healthcare API through orchestration, governance, replay, telemetry, and semantic memory runtime.' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Executable healthcare runtime failed');
+          state.healthcareImplExecution = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/v1/healthcare/runtime/replay/${encodeURIComponent(state.healthcareImplExecution.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.healthcareImplReplay = replayPayload;
+          const dashResponse = await fetch('/api/v1/healthcare/dashboard', { credentials: 'include' });
+          const dashPayload = await dashResponse.json();
+          if (dashResponse.ok) state.healthcareImplDashboard = dashPayload;
+          state.memorySearch = 'executable healthcare API replay governance streaming telemetry';
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'loadHealthcareImplDashboard') {
+        const output = document.getElementById('healthcareImplReplayOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'loading-healthcare-runtime-dashboard' }, null, 2);
+        try {
+          const response = await fetch('/api/v1/healthcare/dashboard', { credentials: 'include' });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Healthcare runtime dashboard failed');
+          state.healthcareImplDashboard = payload;
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'runHealthcareHardening') {
+        const scenario = document.getElementById('healthcareHardeningScenario');
+        if (scenario) state.healthcareHardeningScenario = scenario.value;
+        const output = document.getElementById('healthcareHardeningOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'running-healthcare-production-hardening', scenario: state.healthcareHardeningScenario }, null, 2);
+        try {
+          const response = await fetch('/api/v1/healthcare/hardening/execute', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ scenario: state.healthcareHardeningScenario, mode: 'sandbox', objective: 'Validate enterprise healthcare production hardening, failover recovery, replay persistence, sovereign governance, cybersecurity, and disaster recovery.' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Healthcare production hardening failed');
+          state.healthcareHardeningExecution = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/v1/healthcare/hardening/replay/${encodeURIComponent(state.healthcareHardeningExecution.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.healthcareHardeningReplay = replayPayload;
+          const dashResponse = await fetch('/api/v1/healthcare/hardening/dashboard', { credentials: 'include' });
+          const dashPayload = await dashResponse.json();
+          if (dashResponse.ok) state.healthcareHardeningDashboard = dashPayload;
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'validateHealthcareHardening') {
+        const output = document.getElementById('healthcareHardeningReplayOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'validating-healthcare-production-readiness' }, null, 2);
+        try {
+          const response = await fetch('/api/v1/healthcare/hardening/validate', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ scenario: state.healthcareHardeningScenario }) });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Healthcare hardening validation failed');
+          state.healthcareHardeningValidation = payload;
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'loadHealthcareHardeningDashboard') {
+        const output = document.getElementById('healthcareHardeningReplayOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'loading-healthcare-hardening-dashboard' }, null, 2);
+        try {
+          const response = await fetch('/api/v1/healthcare/hardening/dashboard', { credentials: 'include' });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Healthcare hardening dashboard failed');
+          state.healthcareHardeningDashboard = payload;
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'runHealthcareApiDevelopment') {
+        const apiSelect = document.getElementById('healthcareApiDevelopmentApi');
+        if (apiSelect) state.healthcareApiDevelopmentApi = apiSelect.value;
+        const output = document.getElementById('healthcareApiDevelopmentOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'executing-healthcare-api-runtime', api_key: state.healthcareApiDevelopmentApi }, null, 2);
+        try {
+          const response = await fetch('/api/healthcare/api-development/execute', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ api_key: state.healthcareApiDevelopmentApi, mode: 'sandbox', input: { replayRequested: true, governanceValidation: true, sdkGeneration: true } })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Healthcare API runtime execution failed');
+          state.healthcareApiDevelopmentExecution = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/healthcare/api-development/replay/${encodeURIComponent(state.healthcareApiDevelopmentExecution.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.healthcareApiDevelopmentReplay = replayPayload;
+          state.memorySearch = 'healthcare API runtime validation replay governance SDK observability';
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+      if (event.target.id === 'validateHealthcareApis') {
+        const output = document.getElementById('healthcareApiValidationOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'validating-healthcare-api-framework' }, null, 2);
+        try {
+          const response = await fetch('/api/healthcare/api-development/validate', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mode: 'sandbox', suites: ['functional', 'compliance', 'performance', 'simulation', 'security', 'interoperability', 'AI governance'] })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Healthcare API validation failed');
+          state.healthcareApiValidation = payload;
+          state.memorySearch = 'healthcare API testing compliance performance interoperability AI governance';
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
       if (event.target.id === 'runAdvancedHealthcare') {
         const objective = document.getElementById('advancedHealthcareObjective');
         const workflow = document.getElementById('advancedHealthcareWorkflow');
@@ -3647,6 +3963,32 @@
           if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
         }
       }
+      if (event.target.id === 'runClinicalData') {
+        const objective = document.getElementById('clinicalDataObjective');
+        const workflow = document.getElementById('clinicalDataWorkflow');
+        if (objective) state.clinicalDataObjective = objective.value;
+        if (workflow) state.clinicalDataWorkflow = workflow.value;
+        const output = document.getElementById('clinicalDataOutput');
+        if (output) output.textContent = JSON.stringify({ status: 'executing-clinical-data', workflow: state.clinicalDataWorkflow }, null, 2);
+        try {
+          const response = await fetch('/api/healthcare/clinical-data/execute', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ objective: state.clinicalDataObjective, workflow: state.clinicalDataWorkflow, mode: 'sandbox' })
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Clinical data execution failed');
+          state.clinicalDataExecution = payload.execution || payload.runtime || payload;
+          const replayResponse = await fetch(`/api/healthcare/clinical-data/replay/${encodeURIComponent(state.clinicalDataExecution.id)}`, { credentials: 'include' });
+          const replayPayload = await replayResponse.json();
+          if (replayResponse.ok) state.clinicalDataReplay = replayPayload;
+          state.memorySearch = 'clinical consultation transcription prescription patient memory replay';
+          renderHealthcare();
+        } catch (error) {
+          if (output) output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
       const memoryReconstruct = event.target.closest('[data-memory-reconstruct]');
       if (memoryReconstruct) {
         const output = document.getElementById('memoryReconstructionOutput');
@@ -3663,17 +4005,19 @@
       }
       if (event.target.id === 'askBtn') {
         const input = document.getElementById('askInput');
+        state.askSelectedWorkflow = document.getElementById('askSelectedWorkflow') ? document.getElementById('askSelectedWorkflow').value : state.askSelectedWorkflow;
         state.chat.push({ role: 'You', text: input.value });
         try {
           const response = await fetch('/api/ask', {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: input.value })
+            body: JSON.stringify({ query: input.value, context: askWorkspaceContext() })
           });
           const payload = await response.json();
           if (!response.ok) throw new Error(payload.error || 'Ask COGNI failed');
-          state.chat.push({ role: 'Ask COGNI', response: payload.adaptiveResponse || { directAnswer: payload.answer, keyRecommendations: [], suggestedNextSteps: [], optionalDiagnostics: {} } });
+          state.askLastResponse = payload.adaptiveResponse || { directAnswer: payload.answer, keyRecommendations: [], suggestedNextSteps: [], optionalDiagnostics: {} };
+          state.chat.push({ role: 'Ask COGNI', response: state.askLastResponse });
         } catch (error) {
           state.chat.push({ role: 'Ask COGNI', text: askCogni(input.value) });
         }
