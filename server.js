@@ -12,6 +12,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
+const { createPersistenceRuntime } = require('./src/persistence/runtime');
 
 require('dotenv').config();
 
@@ -35,6 +36,7 @@ const dbConfig = process.env.DATABASE_URL ? {
 
 const pool = dbConfig ? new Pool(dbConfig) : null;
 const dbEnabled = !!pool;
+const persistenceRuntime = createPersistenceRuntime({ pool, rootDir: __dirname, enabled: true });
 
 const COOKIE_NAME = 'cintent_session';
 const JWT_SECRET = process.env.JWT_SECRET || 'cintent-demo-secret';
@@ -59,6 +61,38 @@ const healthcareRuntimeStore = new Map();
 const healthcarePatientStore = new Map();
 const healthcareSemanticMemory = new Map();
 let healthcareRuntimeSchemaReady = false;
+const anonymousSandboxSessions = new Map();
+const traceEvents = [];
+const traceSubscribers = new Map();
+const replayRecordings = new Map();
+const manufacturingTelemetryByTenant = new Map();
+const telemetryTriggerCooldown = new Map();
+const orchestrationFabricRuns = new Map();
+const eventBusHistory = [];
+const eventBusSubscribers = new Map();
+const platformSettings = {
+    publicSandboxEnabled: true,
+    accessMode: 'public-sandbox',
+    rbacRoles: ['admin', 'developer', 'viewer'],
+    updatedAt: new Date().toISOString()
+};
+
+const COMPANY_PROFILE = {
+    name: 'Cognivanta Labs',
+    legal_name: 'Cognivanta Labs',
+    platform: 'CINTENT',
+    website: 'https://api-cintent.cognivantalabs.com',
+    product_url: 'https://api-cintent.cognivantalabs.com/CINTENT-PLATFORM-PROD.html',
+    founding_date: null,
+    leadership: [],
+    address: null,
+    social_links: [],
+    contact: {
+        security: 'security@cognivantalabs.com',
+        support: 'support@cognivantalabs.com'
+    },
+    metadata_note: 'Public company metadata is intentionally limited to verified operator-provided fields. Placeholder social links are not exposed.'
+};
 
 const TIER_RANK = { demo: 0, free: 1, developer: 2, professional: 3, startup: 3, enterprise: 4 };
 const PLAN_DEFINITIONS = [
@@ -957,6 +991,14 @@ function recordAudit(type, user, detail) {
     };
     auditEvents.unshift(event);
     if (auditEvents.length > 250) auditEvents.pop();
+    persistenceRuntime.persistRuntimeEvent({
+        type: `audit.${type}`,
+        tenantId: event.tenant,
+        sessionId: user && (user.sessionId || user.sub),
+        entityId: event.id,
+        payload: event,
+        metadata: { audit: true, demo: event.demo }
+    });
     return event;
 }
 
@@ -1011,6 +1053,9 @@ function authMiddleware(req, res, next) {
     try {
         const payload = jwt.verify(token, JWT_SECRET);
         req.user = payload;
+        if (payload.sandbox) {
+            return sandboxRateLimit(req, res, next);
+        }
         return next();
     } catch (error) {
         return res.status(401).json({ error: 'Invalid or expired session' });
@@ -1043,6 +1088,254 @@ function requireScopes(...scopes) {
         next();
     };
 }
+
+function tenantKey(user) {
+    return (user && (user.tenant || user.email || user.sub)) || 'anonymous';
+}
+
+function emitSse(res, event, payload) {
+    res.write(`event: ${event}\n`);
+    res.write(`data: ${JSON.stringify(payload)}\n\n`);
+}
+
+function recordTrace(type, user, payload = {}, decision = {}) {
+    const trace = {
+        id: `trace-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
+        type,
+        tenant: tenantKey(user),
+        session: user && (user.sessionId || user.sub || user.id),
+        actor: user ? { role: user.role || 'viewer', demo: !!user.demo, sandbox: !!user.sandbox } : { role: 'anonymous' },
+        payload,
+        decision,
+        timestamp: new Date().toISOString()
+    };
+    traceEvents.unshift(trace);
+    if (traceEvents.length > 500) traceEvents.pop();
+    persistenceRuntime.persistReplayEvent({
+        replay_event_id: trace.id,
+        tenant_id: trace.tenant,
+        session_id: trace.session,
+        replay_id: payload && (payload.replayId || payload.replay_id || (payload.replay && payload.replay.replayId)) || null,
+        event_type: type,
+        payload: trace,
+        created_at: trace.timestamp
+    });
+    persistenceRuntime.persistRuntimeEvent({
+        type: `trace.${type}`,
+        tenantId: trace.tenant,
+        sessionId: trace.session,
+        entityId: trace.id,
+        payload: trace,
+        metadata: { observability: true }
+    });
+    const subscribers = traceSubscribers.get(trace.tenant) || new Set();
+    subscribers.forEach(res => emitSse(res, 'trace', trace));
+    return trace;
+}
+
+function publishRuntimeEvent(type, user, payload = {}, metadata = {}) {
+    const tenant = tenantKey(user);
+    const event = {
+        id: `bus-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
+        type,
+        tenant,
+        sessionId: user && (user.sessionId || user.sub || user.id),
+        payload,
+        metadata,
+        timestamp: new Date().toISOString()
+    };
+    eventBusHistory.unshift(event);
+    if (eventBusHistory.length > 1000) eventBusHistory.pop();
+    persistenceRuntime.persistRuntimeEvent({
+        type: `eventbus.${type}`,
+        tenantId: tenant,
+        sessionId: event.sessionId,
+        entityId: event.id,
+        payload: event,
+        metadata: { eventBus: 'in-process-with-redis-stream-contract', ...metadata }
+    });
+    const subscribers = eventBusSubscribers.get(tenant) || new Set();
+    subscribers.forEach(res => emitSse(res, 'runtime-event', event));
+    return event;
+}
+
+function buildOrchestrationCheckpoints(stages = [], replayId) {
+    return stages.map((stage, index) => ({
+        checkpointId: `${replayId || 'replay'}-checkpoint-${index + 1}`,
+        stage: stage.id || stage.step || `stage-${index + 1}`,
+        order: index + 1,
+        status: stage.liveState || stage.state || 'pending',
+        replayReady: true,
+        rollbackReady: index > 0,
+        timestamp: new Date(Date.now() + index * 100).toISOString()
+    }));
+}
+
+async function createUnifiedOrchestrationRun({ user, compiledWorkflow = null, api = null, mode = 'sandbox', input = {}, source = 'unified-fabric' }) {
+    const catalog = api ? null : await loadCatalogEntries();
+    const compiled = compiledWorkflow || compileStudioWorkflow(catalog, user, {
+        title: input.workflow || input.title || `${input.domain || 'CINTENT'} orchestration`,
+        apiKeys: input.apiKeys || input.selectedApis || []
+    });
+    const event = compiledWorkflow || !api
+        ? executeStudioWorkflow(compiled, user, mode)
+        : (() => {
+            const session = buildExecutionSession({ api, user, mode, input, governanceContext: { source } });
+            return materializeExecutionSession(session);
+        })();
+    const replayId = (event.replay && event.replay.replayId) || (event.replayPackage && event.replayPackage.replayId) || `replay-${event.executionId || event.id}`;
+    const stages = event.orchestrationTrace || event.stages || (event.runtime && event.runtime.orchestrationTrace) || [];
+    const run = {
+        orchestrationId: event.executionId || event.id,
+        workflowId: compiled.workflowId,
+        tenant: tenantKey(user),
+        sessionId: user.sessionId || user.sub,
+        mode,
+        source,
+        status: event.status || 'running',
+        graph: event.visualization || event.graph || compiled.runtimeGraph,
+        stages,
+        transitions: stages.slice(1).map((stage, index) => ({ from: stages[index].id || stages[index].step, to: stage.id || stage.step, status: 'completed' })),
+        checkpoints: buildOrchestrationCheckpoints(stages, replayId),
+        governance: event.governance || event.governancePropagation || {},
+        replay: event.replay || event.replayPackage || { replayId },
+        confidenceTimeline: event.confidenceEvolution || event.confidenceTimeline || compiled.confidenceTimeline,
+        telemetry: event.telemetry || {},
+        recovery: { retryCount: 0, lastCheckpoint: null, recoveryReady: true },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+    orchestrationFabricRuns.set(run.orchestrationId, run);
+    publishRuntimeEvent('orchestration.started', user, { orchestrationId: run.orchestrationId, workflowId: run.workflowId, mode }, { source });
+    run.stages.forEach((stage, index) => {
+        publishRuntimeEvent('orchestration.stage.completed', user, { orchestrationId: run.orchestrationId, stage, checkpoint: run.checkpoints[index] }, { order: index + 1 });
+        persistenceRuntime.persistReplayEvent({
+            tenant_id: run.tenant,
+            session_id: run.sessionId,
+            replay_id: run.replay.replayId,
+            event_type: 'orchestration.stage.completed',
+            sequence_no: index + 1,
+            payload: { stage, checkpoint: run.checkpoints[index] }
+        });
+    });
+    await persistenceRuntime.persistRuntimeEvent({
+        type: 'unified_orchestration_run.persisted',
+        tenantId: run.tenant,
+        sessionId: run.sessionId,
+        entityId: run.orchestrationId,
+        payload: run,
+        metadata: { workflowId: run.workflowId, replayId: run.replay.replayId }
+    });
+    return run;
+}
+
+function reconstructReplay(replayId, user) {
+    const tenant = tenantKey(user);
+    const run = [...orchestrationFabricRuns.values()].find(item => item.replay && item.replay.replayId === replayId || item.orchestrationId === replayId);
+    const events = eventBusHistory
+        .filter(event => event.tenant === tenant && JSON.stringify(event.payload || {}).includes(replayId))
+        .reverse();
+    const traceMatches = traceEvents.filter(trace => trace.tenant === tenant && JSON.stringify(trace.payload || {}).includes(replayId)).reverse();
+    return {
+        replayId,
+        status: run || events.length || traceMatches.length ? 'reconstructed' : 'not-found',
+        orchestration: run || null,
+        timeline: [
+            ...(run ? run.checkpoints.map(item => ({ type: 'checkpoint', ...item })) : []),
+            ...events.map(event => ({ type: event.type, timestamp: event.timestamp, payload: event.payload })),
+            ...traceMatches.map(trace => ({ type: trace.type, timestamp: trace.timestamp, payload: trace.payload }))
+        ],
+        diff: run ? {
+            plannedStages: (run.stages || []).length,
+            replayEvents: events.length + traceMatches.length,
+            integrity: 'sha256-payload-hash-ready'
+        } : null,
+        exportable: true
+    };
+}
+
+async function recoverOrchestration(orchestrationId, user, action = 'retry') {
+    const run = orchestrationFabricRuns.get(orchestrationId);
+    if (!run) return null;
+    const checkpoint = run.checkpoints.slice().reverse().find(item => item.status === 'completed' || item.status === 'recovered') || run.checkpoints[0];
+    run.recovery.retryCount += action === 'retry' ? 1 : 0;
+    run.recovery.lastCheckpoint = checkpoint;
+    run.status = action === 'rollback' ? 'rolled-back-to-checkpoint' : action === 'restart' ? 'restarted-from-checkpoint' : 'recovered';
+    run.updatedAt = new Date().toISOString();
+    publishRuntimeEvent('orchestration.recovered', user, { orchestrationId, action, checkpoint }, { recoveryReady: true });
+    await persistenceRuntime.persistRuntimeEvent({
+        type: 'orchestration_recovery.persisted',
+        tenantId: tenantKey(user),
+        sessionId: user.sessionId || user.sub,
+        entityId: orchestrationId,
+        payload: { action, checkpoint, run },
+        metadata: { recovery: true }
+    });
+    return run;
+}
+
+function createAnonymousSandboxSession(req) {
+    const id = `sandbox-${crypto.randomBytes(8).toString('hex')}`;
+    const now = Date.now();
+    const expiresAt = new Date(now + 60 * 60 * 1000).toISOString();
+    const tenant = `sandbox-${crypto.randomBytes(4).toString('hex')}`;
+    const session = {
+        id,
+        tenant,
+        role: 'viewer',
+        sandbox: true,
+        demo: true,
+        createdAt: new Date(now).toISOString(),
+        expiresAt,
+        preload: {
+            domain: 'drone',
+            application: 'CHAXU',
+            workflow: 'Drone swarm simulation',
+            simulation: 'drone-fleet-coordination',
+            selectedApis: ['drone-fleet', 'replay-core', 'gov-validate']
+        },
+        rate: { windowStartedAt: now, count: 0, limit: 120 }
+    };
+    anonymousSandboxSessions.set(id, session);
+    persistenceRuntime.upsertWorkspaceState({
+        workspace_id: `workspace-${tenant}-sandbox`,
+        tenant_id: tenant,
+        session_id: id,
+        domain: session.preload.domain,
+        application_id: String(session.preload.application || '').toLowerCase(),
+        selected_apis: session.preload.selectedApis,
+        selected_workflow: session.preload.workflow,
+        selected_simulation: session.preload.simulation,
+        state: { sandbox: true, preload: session.preload, runtime_state: 'initialized' },
+        expires_at: expiresAt
+    });
+    return session;
+}
+
+function sandboxRateLimit(req, res, next) {
+    if (!req.user || !req.user.sandbox) return next();
+    const session = anonymousSandboxSessions.get(req.user.sessionId || req.user.sub);
+    if (!session) return res.status(401).json({ error: 'Sandbox session expired. Open /sandbox to create a fresh one.' });
+    const now = Date.now();
+    if (new Date(session.expiresAt).getTime() <= now) {
+        anonymousSandboxSessions.delete(session.id);
+        return res.status(401).json({ error: 'Sandbox session expired. Open /sandbox to create a fresh one.' });
+    }
+    if (now - session.rate.windowStartedAt > 60 * 1000) {
+        session.rate.windowStartedAt = now;
+        session.rate.count = 0;
+    }
+    session.rate.count += 1;
+    if (session.rate.count > session.rate.limit) {
+        return res.status(429).json({ error: 'Sandbox rate limit exceeded. Please wait a minute and try again.' });
+    }
+    next();
+}
+
+app.use((req, res, next) => {
+    if (!req.path.startsWith('/api/') || ['/api/health', '/api/status', '/api/openapi.json'].includes(req.path)) return next();
+    sandboxRateLimit(req, res, next);
+});
 
 function normalizeTier(tier) {
     const value = String(tier || 'free').toLowerCase();
@@ -1371,12 +1664,116 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const prodHtmlPath = path.join(__dirname, 'public', 'CINTENT-PLATFORM-PROD.html');
-function sendProdPage(res) {
+function sendProdPage(res, bootstrap = null) {
     let html = fs.readFileSync(prodHtmlPath, 'utf8');
     if (!html.includes('<script src="/dynamic-metadata.js"></script>')) {
         html = html.replace('</body>', '  <script src="/dynamic-metadata.js"></script>\n</body>');
     }
+    if (bootstrap) {
+        const safeBootstrap = JSON.stringify(bootstrap).replace(/</g, '\\u003c');
+        html = html.replace('</head>', `<script>window.__CINTENT_BOOTSTRAP__=${safeBootstrap};</script>\n</head>`);
+    }
     res.send(html);
+}
+
+function buildOpenApiSpec() {
+    const domainExamples = {
+        healthcare: { query: 'Build multilingual telemedicine with replay and consent governance.' },
+        drone: { query: 'Generate a drone swarm architecture with PX4, MAVLink, mission replay, and edge runtime.' },
+        legal: { query: 'Explain evidence orchestration and legal workflow replay.' },
+        travel: { query: 'Create airport baggage orchestration with disruption replay.' },
+        manufacturing: { query: 'Recommend predictive maintenance workflow from live line telemetry.' }
+    };
+    const paths = {
+        '/api/cogni/ask': {
+            post: {
+                operationId: 'askCogni',
+                tags: ['Ask COGNI'],
+                summary: 'Ask the contextual cognitive workspace assistant.',
+                requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/AskRequest' }, examples: domainExamples } } },
+                responses: { 200: { description: 'Contextual response' } }
+            }
+        },
+        '/api/ask/context/sync': { post: { operationId: 'syncAskCogniContext', tags: ['Ask COGNI'], summary: 'Synchronize workspace context, validation, proactive guidance, and workflow state.', responses: { 200: { description: 'Synchronized context' } } } },
+        '/api/ask/quick-action': { post: { operationId: 'executeAskQuickAction', tags: ['Ask COGNI'], summary: 'Execute a real Ask COGNI quick action such as simulation, replay, SDK, workflow, governance, or deployment.', responses: { 200: { description: 'Quick action result' } } } },
+        '/api/ask/memory': { get: { operationId: 'getAskCogniMemory', tags: ['Ask COGNI'], summary: 'Retrieve tenant/workspace-scoped Ask COGNI memory.', responses: { 200: { description: 'Memory entries' } } } },
+        '/api/domains': { get: { operationId: 'listDomains', tags: ['Domains'], summary: 'List available cognitive domains.', responses: { 200: { description: 'Domains' } } } },
+        '/api/catalog': { get: { operationId: 'listCatalog', tags: ['Metadata'], summary: 'List metadata-driven APIs.', responses: { 200: { description: 'API catalog' } } } },
+        '/api/orchestration/compile': { post: { operationId: 'compileWorkflow', tags: ['Orchestration'], summary: 'Compile selected APIs into a workflow graph.', responses: { 200: { description: 'Compiled workflow' } } } },
+        '/api/orchestration/execute': { post: { operationId: 'executeWorkflow', tags: ['Orchestration'], summary: 'Execute a sandbox orchestration workflow.', responses: { 200: { description: 'Execution runtime' } } } },
+        '/api/orchestration/fabric/execute': { post: { operationId: 'executeUnifiedOrchestration', tags: ['Orchestration'], summary: 'Execute through the unified cognitive orchestration fabric.', responses: { 200: { description: 'Persistent orchestration run' } } } },
+        '/api/orchestration/fabric/{orchestrationId}': { get: { operationId: 'getUnifiedOrchestration', tags: ['Orchestration'], summary: 'Read persistent orchestration graph, checkpoints, replay, confidence, and recovery state.', parameters: [{ name: 'orchestrationId', in: 'path', required: true, schema: { type: 'string' } }], responses: { 200: { description: 'Orchestration run' } } } },
+        '/api/simulations/execute': { post: { operationId: 'runSimulation', tags: ['Simulations'], summary: 'Run a domain simulation.', responses: { 200: { description: 'Simulation runtime' } } } },
+        '/api/replay/execute': { post: { operationId: 'executeReplay', tags: ['Replay'], summary: 'Execute a recorded workspace sequence and return result diffs.', responses: { 200: { description: 'Replay results' } } } },
+        '/api/replay/reconstruct/{replayId}': { get: { operationId: 'reconstructReplay', tags: ['Replay'], summary: 'Reconstruct orchestration, telemetry, governance, and runtime replay timeline.', parameters: [{ name: 'replayId', in: 'path', required: true, schema: { type: 'string' } }], responses: { 200: { description: 'Replay reconstruction' } } } },
+        '/api/traces/stream': { get: { operationId: 'streamExecutionTrace', tags: ['Observability'], summary: 'Stream runtime execution trace events using SSE.', responses: { 200: { description: 'SSE trace stream' } } } },
+        '/api/event-bus/stream': { get: { operationId: 'streamRuntimeEventBus', tags: ['Observability'], summary: 'Stream central runtime event bus events using SSE.', responses: { 200: { description: 'SSE runtime event stream' } } } },
+        '/api/telemetry/ingest': { post: { operationId: 'ingestTelemetry', tags: ['Telemetry'], summary: 'Ingest telemetry and trigger orchestration when anomaly thresholds are crossed.', responses: { 200: { description: 'Telemetry ingestion result' } } } },
+        '/api/telemetry/manufacturing/stream': { get: { operationId: 'streamManufacturingTelemetry', tags: ['Telemetry'], summary: 'Stream live manufacturing telemetry every two seconds.', responses: { 200: { description: 'SSE telemetry stream' } } } },
+        '/api/sdk/snippet': { post: { operationId: 'generateSdkSnippet', tags: ['SDK'], summary: 'Generate Python, JavaScript, or cURL snippets from OpenAPI metadata.', responses: { 200: { description: 'Snippet' } } } },
+        '/api/settings/platform': { get: { operationId: 'getPlatformSettings', tags: ['Enterprise'], summary: 'Read enterprise platform settings.', responses: { 200: { description: 'Settings' } } }, post: { operationId: 'updatePlatformSettings', tags: ['Enterprise'], summary: 'Update enterprise platform settings as an admin.', responses: { 200: { description: 'Settings' } } } }
+    };
+    return {
+        openapi: '3.0.3',
+        info: { title: 'CINTENT Cognitive Infrastructure API', version: '2.1.0', description: 'Live metadata-driven APIs for Ask COGNI, domains, orchestration, replay, simulations, observability, SDK generation, and enterprise settings.' },
+        servers: [{ url: 'https://api-cintent.cognivantalabs.com' }, { url: `http://localhost:${PORT}` }],
+        paths,
+        components: {
+            securitySchemes: { cookieAuth: { type: 'apiKey', in: 'cookie', name: COOKIE_NAME } },
+            schemas: {
+                AskRequest: {
+                    type: 'object',
+                    required: ['query'],
+                    properties: {
+                        query: { type: 'string' },
+                        context: {
+                            type: 'object',
+                            properties: {
+                                domain: { type: 'string' },
+                                applicationId: { type: 'string' },
+                                selectedWorkflow: { type: 'string' },
+                                selectedSimulation: { type: 'string' },
+                                selectedApis: { type: 'array', items: { type: 'string' } },
+                                mode: { type: 'string', enum: ['beginner', 'business', 'technical', 'engineering', 'diagnostic'] }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        security: [{ cookieAuth: [] }]
+    };
+}
+
+function generateSdkSnippet({ method = 'GET', path: apiPath = '/api/catalog', language = 'curl', body = null }) {
+    const normalizedMethod = String(method).toUpperCase();
+    const url = `https://api-cintent.cognivantalabs.com${apiPath}`;
+    const payload = body || (normalizedMethod === 'GET' ? null : { query: 'Explain orchestration replay for the selected workspace.', context: { domain: 'drone', mode: 'technical' } });
+    if (language === 'python') {
+        return [
+            'import requests',
+            '',
+            `url = "${url}"`,
+            payload ? `payload = ${JSON.stringify(payload, null, 2)}` : 'payload = None',
+            `response = requests.${normalizedMethod.toLowerCase()}(url, json=payload, timeout=30)`,
+            'response.raise_for_status()',
+            'print(response.json())'
+        ].join('\n');
+    }
+    if (language === 'javascript') {
+        return [
+            `const response = await fetch("${url}", {`,
+            `  method: "${normalizedMethod}",`,
+            '  credentials: "include",',
+            '  headers: { "Content-Type": "application/json" },',
+            payload ? `  body: JSON.stringify(${JSON.stringify(payload, null, 2)})` : '  body: undefined',
+            '});',
+            'if (!response.ok) throw new Error(await response.text());',
+            'console.log(await response.json());'
+        ].join('\n');
+    }
+    const bodyPart = payload ? ` \\\n  -H "Content-Type: application/json" \\\n  -d '${JSON.stringify(payload)}'` : '';
+    return `curl -X ${normalizedMethod} "${url}" --cookie "${COOKIE_NAME}=<current-session-cookie>"${bodyPart}`;
 }
 
 const fallbackCatalog = [
@@ -2264,6 +2661,21 @@ function rememberAskCogni(user, query, response) {
         answerFingerprint: response.answerFingerprint || ''
     });
     askCogniMemory.set(key, entries.slice(0, 8));
+    persistenceRuntime.persistAskMemory({
+        tenant_id: user.tenant || user.email || 'anonymous',
+        workspace_id: response.workspaceId,
+        session_id: response.sessionId || user.sessionId || user.sub,
+        context_id: response.contextId,
+        domain: response.domain,
+        query: cleanCogniText(query).slice(0, 1000),
+        response_summary: response.directAnswer || response.keyRecommendations[0] || '',
+        metadata: {
+            intent: response.intent,
+            role: response.role,
+            recommendations: response.keyRecommendations,
+            answerFingerprint: response.answerFingerprint
+        }
+    });
     return entries.slice(0, 8);
 }
 
@@ -2472,6 +2884,7 @@ function getAskWorkspaceSession(user, workspaceContext, query, catalog) {
         actionHistory: []
     };
     existing.contextId = contextId;
+    existing.tenant = tenant;
     existing.domain = workspaceContext.domain;
     existing.applicationId = workspaceContext.applicationId;
     existing.selectedApis = workspaceContext.selectedApis || [];
@@ -2479,7 +2892,10 @@ function getAskWorkspaceSession(user, workspaceContext, query, catalog) {
     existing.selectedWorkflow = workspaceContext.selectedWorkflow || '';
     existing.mode = workspaceContext.mode;
     existing.environment = workspaceContext.environment;
-    existing.workflowState = workspaceContext.workflowState || existing.workflowState || { stage: 'select-apis', completed: [], runtimeState: 'idle' };
+    existing.workflowState = inferWorkflowStage({
+        ...workspaceContext,
+        workflowState: workspaceContext.workflowState || existing.workflowState
+    });
     existing.updatedAt = new Date().toISOString();
     existing.validation = buildAskContextValidation(workspaceContext, query, catalog);
     existing.composedContext = {
@@ -2501,6 +2917,23 @@ function getAskWorkspaceSession(user, workspaceContext, query, catalog) {
         validation: existing.validation
     };
     askCogniWorkspaceSessions.set(memoryKey, existing);
+    persistenceRuntime.upsertWorkspaceState({
+        workspace_id: workspaceId,
+        tenant_id: tenant,
+        session_id: sessionId,
+        domain: workspaceContext.domain,
+        application_id: workspaceContext.applicationId,
+        selected_apis: workspaceContext.selectedApis,
+        selected_workflow: workspaceContext.selectedWorkflow,
+        selected_simulation: workspaceContext.selectedSimulation,
+        state: {
+            context_id: contextId,
+            workflow_state: existing.workflowState,
+            validation: existing.validation,
+            composed_context: existing.composedContext
+        },
+        expires_at: user.sandboxExpiresAt || null
+    });
     return { ...existing, memoryKey };
 }
 
@@ -2680,6 +3113,87 @@ function buildAskCogniQuickActions(workspaceContext, intent) {
     if (intent === 'deployment') base.push({ id: 'deploy-runtime', label: 'Deploy Runtime', target: 'studio', prompt: `Plan a ${domain} deployment with sandbox, production, and edge options.` });
     if (intent === 'diagnostic') base.push({ id: 'export-audit', label: 'Export Audit', target: 'audit', prompt: `Prepare diagnostics and audit evidence for this ${domain} workflow.` });
     return base.slice(0, 8);
+}
+
+const ASK_WORKFLOW_STAGES = [
+    'select-domain',
+    'select-apis',
+    'generate-workflow',
+    'run-simulation',
+    'inspect-replay',
+    'generate-sdk',
+    'deploy-runtime'
+];
+
+function inferWorkflowStage(context = {}, eventType = '') {
+    const completed = new Set((context.workflowState && context.workflowState.completed) || []);
+    if (context.domain && context.domain !== 'platform') completed.add('select-domain');
+    if ((context.selectedApis || []).length) completed.add('select-apis');
+    if (context.selectedWorkflow) completed.add('generate-workflow');
+    if (context.selectedSimulation || /simulation/i.test(eventType)) completed.add('run-simulation');
+    if (/replay/i.test(eventType) || context.replayState) completed.add('inspect-replay');
+    if (/sdk/i.test(eventType)) completed.add('generate-sdk');
+    if (/deploy/i.test(eventType) || context.deploymentState) completed.add('deploy-runtime');
+    const stage = ASK_WORKFLOW_STAGES.find(item => !completed.has(item)) || 'deploy-runtime';
+    return {
+        stage,
+        completed: ASK_WORKFLOW_STAGES.filter(item => completed.has(item)),
+        nextStage: stage,
+        progress: Math.round((completed.size / ASK_WORKFLOW_STAGES.length) * 100),
+        runtimeState: context.activeRuntime || context.runtimeState || 'idle'
+    };
+}
+
+function buildStatefulAskContext({ user, context = {}, workspaceSession = null, latestTelemetry = null, latestReplay = null, latestExecution = null }) {
+    return {
+        workspace_id: (workspaceSession && workspaceSession.workspaceId) || context.workspaceId || '',
+        tenant_id: tenantKey(user),
+        session_id: (workspaceSession && workspaceSession.sessionId) || context.sessionId || user.sessionId || user.sub,
+        active_domain: (workspaceSession && workspaceSession.domain) || context.domain || 'platform',
+        active_application: context.applicationName || context.applicationId || '',
+        active_workflow: context.selectedWorkflow || '',
+        active_apis: context.selectedApis || [],
+        active_simulation: context.selectedSimulation || '',
+        orchestration_state: latestExecution || context.orchestrationState || null,
+        replay_state: latestReplay || context.replayState || null,
+        telemetry_state: latestTelemetry || context.telemetryState || null,
+        governance_state: context.governanceState || null,
+        user_mode: context.mode || 'business',
+        runtime_environment: context.environment || 'sandbox',
+        prior_context: workspaceSession ? {
+            priorQuestions: workspaceSession.conversationMemory.slice(0, 5).map(item => item.query),
+            workflowMemory: workspaceSession.workflowMemory.slice(0, 5)
+        } : { priorQuestions: [], workflowMemory: [] },
+        semantic_memory: askCogniMemory.get(workspaceSession && workspaceSession.memoryKey || tenantKey(user)) || []
+    };
+}
+
+function retrieveAskSemanticMemory(user, workspaceSession, query = '') {
+    const tenantMemory = askCogniMemory.get(workspaceSession && workspaceSession.memoryKey || tenantKey(user)) || [];
+    const terms = tokenTermsFromText(query);
+    return tenantMemory
+        .map(item => {
+            const text = `${item.query || ''} ${item.recommendation || ''} ${item.intent || ''} ${item.domain || ''}`.toLowerCase();
+            const score = terms.reduce((sum, term) => sum + (text.includes(term) ? 1 : 0), 0);
+            return { ...item, semanticScore: score };
+        })
+        .filter(item => item.semanticScore > 0)
+        .sort((a, b) => b.semanticScore - a.semanticScore)
+        .slice(0, 5);
+}
+
+function responseLayersForMode(mode, response) {
+    const normalized = String(mode || 'business').toLowerCase();
+    const base = {
+        simpleSummary: response.directAnswer,
+        recommendedActions: response.quickActions,
+        contextCards: response.contextualCards,
+        optionalDetails: response.optionalDetails
+    };
+    if (['diagnostic', 'admin'].includes(normalized)) return { ...base, advancedDiagnostics: response.optionalDiagnostics };
+    if (normalized === 'beginner') return { simpleSummary: response.directAnswer, recommendedActions: response.quickActions.slice(0, 4), contextCards: response.contextualCards.slice(0, 2) };
+    if (normalized === 'business') return { ...base, optionalDetails: { workflow: response.currentContext.workflow, replay: response.replayInsight, governance: response.governanceInsight } };
+    return base;
 }
 
 function buildAdaptiveCogniResponse({ query, ranked, domainMatches, applicationMatches, sdkRecommendation, standardsContext, studioCompile, latestExecutionContext, latestSimulationContext, performanceContext, user, contextBundle = {}, workspaceContext: rawWorkspaceContext = {}, workspaceSession = null }) {
@@ -2879,8 +3393,41 @@ function buildAdaptiveCogniResponse({ query, ranked, domainMatches, applicationM
         advancedDiagnosticsAvailable: true,
         optionalDiagnostics: advancedRequested ? sanitizeCogniPayload(optionalDiagnostics) : { status: 'Advanced diagnostics are hidden. Switch to Diagnostic/Admin Mode or explicitly ask for diagnostics to view telemetry, replay, governance, and runtime internals.' }
     };
+    const latestTelemetry = contextBundle.manufacturingTelemetryContext && contextBundle.manufacturingTelemetryContext.latest || null;
+    if (latestTelemetry && latestTelemetry.anomaly && response.domain === 'manufacturing') {
+        response.keyRecommendations.unshift('Live manufacturing telemetry is above threshold. Run predictive maintenance, capture replay, and inspect governance before increasing throughput.');
+        response.contextualCards.unshift({
+            title: 'Live Telemetry Alert',
+            body: `${latestTelemetry.line}: temperature ${latestTelemetry.temperature}, vibration ${latestTelemetry.vibration}. ${latestTelemetry.recommendation}`,
+            action: 'Run maintenance workflow'
+        });
+        response.directAnswer = cleanCogniText(`${response.directAnswer} Live telemetry is influencing this answer: ${latestTelemetry.recommendation}`);
+    }
+    response.statefulContext = buildStatefulAskContext({
+        user,
+        context: workspaceContext,
+        workspaceSession,
+        latestTelemetry,
+        latestReplay: latestExecutionContext && latestExecutionContext.replay || latestSimulationContext && latestSimulationContext.replayPackage || null,
+        latestExecution: latestExecutionContext
+    });
+    response.semanticMemory = retrieveAskSemanticMemory(user, workspaceSession, query);
+    response.workflowStateMachine = {
+        stages: ASK_WORKFLOW_STAGES,
+        current: workspaceSession && workspaceSession.workflowState || inferWorkflowStage(workspaceContext),
+        nextAction: response.quickActions[0] || null
+    };
+    response.uxLayers = responseLayersForMode(workspaceContext.mode, response);
+    response.enterpriseUx = {
+        layout: 'left-context-center-runtime-right-intelligence',
+        progressiveDisclosure: true,
+        hidesDiagnosticsByDefault: !advancedRequested,
+        cards: response.contextualCards.length,
+        actions: response.quickActions.length
+    };
     response.answerFingerprint = stableHash(`${response.domain}:${response.intent}:${response.directAnswer}:${response.keyRecommendations.join('|')}`);
-    if (isNearDuplicateAskResponse(response.directAnswer, memory)) {
+    const repeatedQuestion = memory.some(item => cleanCogniText(item.query || '').toLowerCase() === cleanCogniText(query || '').slice(0, 240).toLowerCase());
+    if (repeatedQuestion || isNearDuplicateAskResponse(response.directAnswer, memory)) {
         const continuity = workspaceSession && workspaceSession.conversationMemory && workspaceSession.conversationMemory[0]
             ? `Compared with your previous ${response.domain} question, the next useful move is to advance the workflow state instead of repeating discovery.`
             : 'To avoid repeating the same guidance, I am moving this answer into the next operational step.';
@@ -7076,6 +7623,36 @@ app.get('/health', (req, res) => {
 // Routes - Frontend
 app.get(['/login', '/signup', '/forgot-password', '/reset-password'], redirectToPlatformIfAuthenticated, (req, res) => sendLoginPage(res));
 app.get('/', redirectToPlatformIfAuthenticated, (req, res) => sendLoginPage(res));
+app.get('/sandbox', (req, res) => {
+    if (!platformSettings.publicSandboxEnabled) {
+        return res.status(403).send('Public Sandbox is currently disabled by enterprise policy.');
+    }
+    const sandbox = createAnonymousSandboxSession(req);
+    const token = buildToken({
+        sub: sandbox.id,
+        sessionId: sandbox.id,
+        email: `${sandbox.id}@cintent.local`,
+        name: 'Anonymous Sandbox',
+        role: sandbox.role,
+        tenant: sandbox.tenant,
+        scopes: ['read:api', 'search:api', 'execute:sandbox', 'ask:cognitive', 'read:replay'],
+        demo: true,
+        sandbox: true,
+        sandboxExpiresAt: sandbox.expiresAt,
+        emailVerified: true
+    }, DEMO_EXPIRES_IN);
+    sendSessionCookie(res, token, DEMO_EXPIRES_IN);
+    recordTrace('sandbox.session.created', { tenant: sandbox.tenant, sessionId: sandbox.id, role: sandbox.role, sandbox: true, demo: true }, sandbox.preload, {
+        summary: 'Anonymous sandbox session created with a one-hour TTL and a preloaded drone workflow.'
+    });
+    sendProdPage(res, {
+        route: 'sandbox',
+        sandbox: true,
+        expiresAt: sandbox.expiresAt,
+        preload: sandbox.preload,
+        guidedTour: true
+    });
+});
 app.get('/platform', authMiddleware, (req, res) => sendProdPage(res));
 app.get('/admin', authMiddleware, requireRoles('admin'), (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'CINTENT-ADMIN-GOVERNANCE-CONSOLE.html'));
@@ -7105,6 +7682,134 @@ app.get('/api/status', (req, res) => {
             billing: 'ready'
         }
     });
+});
+
+app.get('/company.json', (req, res) => {
+    res.json(COMPANY_PROFILE);
+});
+
+app.get('/api/openapi.json', (req, res) => {
+    res.json(buildOpenApiSpec());
+});
+
+app.get('/api/docs', (req, res) => {
+    res.type('html').send(`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CINTENT Live API Documentation</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+  <style>body{margin:0;background:#f8fafc}.topbar{display:none}.cintent-docs-head{padding:16px 24px;background:#0f172a;color:white;font:600 14px system-ui}.cintent-docs-head a{color:#93c5fd}</style>
+</head>
+<body>
+  <div class="cintent-docs-head">CINTENT Live API Docs - Try it out uses the active login or anonymous sandbox cookie. Open <a href="/sandbox">/sandbox</a> for a no-login session.</div>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    window.ui = SwaggerUIBundle({
+      url: '/api/openapi.json',
+      dom_id: '#swagger-ui',
+      deepLinking: true,
+      persistAuthorization: true,
+      requestInterceptor: req => { req.credentials = 'include'; return req; }
+    });
+  </script>
+</body>
+</html>`);
+});
+
+app.post('/api/sdk/snippet', authMiddleware, requireScopes('read:api'), (req, res) => {
+    const { method, path: apiPath, language, body } = req.body || {};
+    const allowedLanguages = new Set(['python', 'javascript', 'curl']);
+    const selectedLanguage = allowedLanguages.has(language) ? language : 'curl';
+    const snippet = generateSdkSnippet({ method, path: apiPath, language: selectedLanguage, body });
+    recordTrace('sdk.snippet.generated', req.user, { method, path: apiPath, language: selectedLanguage }, { source: 'openapi-snippet-generator' });
+    res.json({ language: selectedLanguage, method: String(method || 'GET').toUpperCase(), path: apiPath || '/api/catalog', snippet });
+});
+
+app.get('/api/traces', authMiddleware, requireScopes('read:replay'), (req, res) => {
+    const tenant = tenantKey(req.user);
+    res.json({ traces: traceEvents.filter(trace => trace.tenant === tenant || !req.user.demo).slice(0, 100) });
+});
+
+app.post('/api/traces/event', authMiddleware, (req, res) => {
+    const { type = 'client.event', payload = {}, decision = {} } = req.body || {};
+    const trace = recordTrace(type, req.user, payload, decision);
+    res.json({ status: 'captured', trace });
+});
+
+app.get('/api/traces/stream', authMiddleware, requireScopes('read:replay'), (req, res) => {
+    const tenant = tenantKey(req.user);
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders && res.flushHeaders();
+    emitSse(res, 'hello', { tenant, timestamp: new Date().toISOString(), recent: traceEvents.filter(trace => trace.tenant === tenant || !req.user.demo).slice(0, 20) });
+    const subscribers = traceSubscribers.get(tenant) || new Set();
+    subscribers.add(res);
+    traceSubscribers.set(tenant, subscribers);
+    const heartbeat = setInterval(() => emitSse(res, 'heartbeat', { timestamp: new Date().toISOString() }), 25000);
+    req.on('close', () => {
+        clearInterval(heartbeat);
+        subscribers.delete(res);
+    });
+});
+
+app.get('/api/telemetry/manufacturing/stream', authMiddleware, requireScopes('read:api'), (req, res) => {
+    const tenant = tenantKey(req.user);
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders && res.flushHeaders();
+    const sendTelemetry = () => {
+        const temperature = Math.round((68 + Math.random() * 22 + (Math.random() > 0.82 ? 18 : 0)) * 10) / 10;
+        const vibration = Math.round((1.2 + Math.random() * 3.4 + (temperature > 86 ? 2.3 : 0)) * 100) / 100;
+        const throughput = Math.round(82 + Math.random() * 18 - (temperature > 86 ? 14 : 0));
+        const telemetry = {
+            id: `mfg-${Date.now()}`,
+            tenant,
+            domain: 'manufacturing',
+            line: 'Assembly Line A',
+            temperature,
+            vibration,
+            throughput,
+            anomaly: temperature > 86 || vibration > 5,
+            recommendation: temperature > 86 || vibration > 5 ? 'Run predictive maintenance workflow and capture replay before resuming full throughput.' : 'Continue normal orchestration.',
+            timestamp: new Date().toISOString()
+        };
+        manufacturingTelemetryByTenant.set(tenant, telemetry);
+        recordTrace('telemetry.manufacturing.tick', req.user, telemetry, { threshold: { temperature: 86, vibration: 5 }, action: telemetry.recommendation });
+        persistenceRuntime.persistTelemetry(telemetry);
+        publishRuntimeEvent('telemetry.manufacturing.tick', req.user, telemetry, { source: 'manufacturing-sse' });
+        const lastTrigger = telemetryTriggerCooldown.get(tenant) || 0;
+        if (telemetry.anomaly && Date.now() - lastTrigger > 15000) {
+            telemetryTriggerCooldown.set(tenant, Date.now());
+            createUnifiedOrchestrationRun({
+                user: req.user,
+                mode: 'sandbox',
+                input: { domain: 'manufacturing', workflow: 'predictive maintenance from telemetry anomaly', telemetry },
+                source: 'manufacturing-telemetry-trigger'
+            }).then(run => recordTrace('telemetry.manufacturing.orchestration-triggered', req.user, { telemetry, orchestrationId: run.orchestrationId, replayId: run.replay.replayId }, { anomaly: true })).catch(error => console.error('Telemetry orchestration trigger failed:', error.message));
+        }
+        emitSse(res, 'telemetry', telemetry);
+    };
+    sendTelemetry();
+    const timer = setInterval(sendTelemetry, 2000);
+    req.on('close', () => clearInterval(timer));
+});
+
+app.get('/api/settings/platform', authMiddleware, requireScopes('read:api'), (req, res) => {
+    res.json({ settings: platformSettings, viewer: { role: req.user.role, tenant: tenantKey(req.user) } });
+});
+
+app.post('/api/settings/platform', authMiddleware, requireRoles('admin'), (req, res) => {
+    const { publicSandboxEnabled, accessMode } = req.body || {};
+    if (typeof publicSandboxEnabled === 'boolean') platformSettings.publicSandboxEnabled = publicSandboxEnabled;
+    if (['public-sandbox', 'authenticated-only'].includes(accessMode)) platformSettings.accessMode = accessMode;
+    platformSettings.updatedAt = new Date().toISOString();
+    recordTrace('enterprise.settings.updated', req.user, { publicSandboxEnabled: platformSettings.publicSandboxEnabled, accessMode: platformSettings.accessMode }, { rbac: 'admin' });
+    res.json({ settings: platformSettings });
 });
 
 app.get('/api/platform/runtime/status', authMiddleware, async (req, res) => {
@@ -7155,6 +7860,247 @@ app.get('/api/platform/runtime/status', authMiddleware, async (req, res) => {
             domainAgnosticCore: true
         }
     });
+});
+
+app.get('/api/persistence/status', authMiddleware, requireScopes('read:api'), async (req, res) => {
+    res.json({
+        source: 'enterprise-cognitive-persistence-runtime',
+        tenant: tenantKey(req.user),
+        stateful: true,
+        stack: await persistenceRuntime.status(),
+        persistedEntities: [
+            'users',
+            'tenants',
+            'workspaces',
+            'orchestration_runs',
+            'replay_events',
+            'telemetry_streams',
+            'ask_cogni_sessions',
+            'workflow_states',
+            'simulations',
+            'governance_events',
+            'sdk_generations',
+            'runtime_metrics'
+        ]
+    });
+});
+
+app.get('/api/workspaces/state', authMiddleware, requireScopes('read:api'), async (req, res) => {
+    const tenant = tenantKey(req.user);
+    const sessions = [...askCogniWorkspaceSessions.values()]
+        .filter(session => session.tenant === tenant || !req.user.demo)
+        .map(session => ({
+            workspace_id: session.workspaceId,
+            tenant_id: tenant,
+            session_id: session.sessionId,
+            context_id: session.contextId,
+            domain: session.domain,
+            application_id: session.applicationId,
+            selected_apis: session.selectedApis,
+            selected_workflow: session.selectedWorkflow,
+            selected_simulation: session.selectedSimulation,
+            workflow_state: session.workflowState,
+            validation: session.validation,
+            updated_at: session.updatedAt
+        }));
+    res.json({ source: 'unified-cognitive-state-engine', tenant, workspaces: sessions });
+});
+
+app.post('/api/workspaces/state', authMiddleware, requireScopes('execute:sandbox'), async (req, res) => {
+    const state = await persistenceRuntime.upsertWorkspaceState({
+        ...req.body,
+        tenant_id: tenantKey(req.user),
+        session_id: req.user.sessionId || req.user.sub
+    });
+    recordTrace('workspace.state.persisted', req.user, state, { stateEngine: 'unified-cognitive-state-engine' });
+    res.json({ status: 'persisted', state });
+});
+
+app.post('/api/ask/context/sync', authMiddleware, requireScopes('ask:cognitive'), async (req, res) => {
+    const catalog = await loadCatalogEntries();
+    const { context = {}, eventType = 'context.sync', query = '' } = req.body || {};
+    const classification = classifyAskCogniIntent(`${query} ${JSON.stringify(context)}`);
+    const normalized = normalizeAskCogniWorkspaceContext({
+        ...context,
+        workflowState: inferWorkflowStage(context, eventType)
+    }, classification, req.user);
+    const session = getAskWorkspaceSession(req.user, normalized, query || eventType, catalog);
+    const latestTelemetry = manufacturingTelemetryByTenant.get(tenantKey(req.user)) || null;
+    const latestReplay = traceEvents.find(trace => trace.tenant === tenantKey(req.user) && /replay/i.test(trace.type)) || null;
+    const latestExecution = executionEvents.find(event => event.tenant === tenantKey(req.user) || !req.user.demo) || null;
+    const statefulContext = buildStatefulAskContext({ user: req.user, context: normalized, workspaceSession: session, latestTelemetry, latestReplay, latestExecution });
+    await persistenceRuntime.upsertWorkspaceState({
+        workspace_id: session.workspaceId,
+        tenant_id: tenantKey(req.user),
+        session_id: session.sessionId,
+        domain: normalized.domain,
+        application_id: normalized.applicationId,
+        selected_apis: normalized.selectedApis,
+        selected_workflow: normalized.selectedWorkflow,
+        selected_simulation: normalized.selectedSimulation,
+        state: statefulContext,
+        expires_at: req.user.sandboxExpiresAt || null
+    });
+    recordTrace('ask.context.synchronized', req.user, statefulContext, { validation: session.validation, workflowState: session.workflowState });
+    res.json({
+        status: 'synchronized',
+        context: statefulContext,
+        validation: session.validation,
+        workflowState: session.workflowState,
+        proactiveGuidance: {
+            assistant: normalized.assistant,
+            summary: normalized.profile.summary,
+            suggestedActions: normalized.profile.suggestedActions,
+            quickActions: buildAskCogniQuickActions(normalized, classification.intent)
+        }
+    });
+});
+
+app.get('/api/ask/memory', authMiddleware, requireScopes('ask:cognitive'), (req, res) => {
+    const { workspaceId, q = '' } = req.query;
+    const memoryKey = workspaceId ? `${tenantKey(req.user)}:${workspaceId}` : tenantKey(req.user);
+    const workspaceSession = { memoryKey };
+    res.json({
+        source: 'stateful-ask-cogni-memory-runtime',
+        tenant: tenantKey(req.user),
+        memories: retrieveAskSemanticMemory(req.user, workspaceSession, q).length
+            ? retrieveAskSemanticMemory(req.user, workspaceSession, q)
+            : (askCogniMemory.get(memoryKey) || askCogniMemory.get(tenantKey(req.user)) || []).slice(0, 10)
+    });
+});
+
+app.post('/api/ask/quick-action', authMiddleware, requireScopes('execute:sandbox'), async (req, res) => {
+    const catalog = await loadCatalogEntries();
+    const { action, context = {} } = req.body || {};
+    const normalizedAction = String(action || '').toLowerCase();
+    const classification = classifyAskCogniIntent(`${normalizedAction} ${JSON.stringify(context)}`);
+    const normalizedContext = normalizeAskCogniWorkspaceContext(context, classification, req.user);
+    const session = getAskWorkspaceSession(req.user, normalizedContext, normalizedAction, catalog);
+    let result;
+    if (normalizedAction === 'run-simulation') {
+        const template = SIMULATION_TEMPLATES.find(item => item.id === normalizedContext.selectedSimulation || item.domain === normalizedContext.domain) || SIMULATION_TEMPLATES.find(item => item.domain === 'drone') || SIMULATION_TEMPLATES[0];
+        const api = catalog.find(entry => entry.api_key === template.apiKey) || catalog[0];
+        result = buildSimulationRuntime(template, api, req.user, 'sandbox', { quickAction: true });
+        simulationEvents.unshift({ id: `sim-${result.simulationId}`, tenant: tenantKey(req.user), templateId: template.id, domain: template.domain, api_name: api.name, status: 'completed', runtime: result, timestamp: new Date().toISOString() });
+        session.workflowState = inferWorkflowStage({ ...normalizedContext, selectedSimulation: template.id }, 'simulation');
+    } else if (normalizedAction === 'generate-sdk') {
+        result = buildSdkIntelligence(catalog, req.user, { apiKeys: normalizedContext.selectedApis, domain: normalizedContext.domain });
+        session.workflowState = inferWorkflowStage(normalizedContext, 'sdk');
+    } else if (normalizedAction === 'create-workflow' || normalizedAction === 'view-orchestration') {
+        const compiled = compileStudioWorkflow(catalog, req.user, { title: normalizedContext.selectedWorkflow || `${normalizedContext.domain} workflow`, apiKeys: normalizedContext.selectedApis });
+        result = { compiledWorkflow: compiled };
+        session.workflowState = inferWorkflowStage({ ...normalizedContext, selectedWorkflow: compiled.title }, 'workflow');
+    } else if (normalizedAction === 'open-replay' || normalizedAction === 'export-replay') {
+        const replayId = `quick-replay-${crypto.randomBytes(5).toString('hex')}`;
+        result = { replayId, events: traceEvents.filter(trace => trace.tenant === tenantKey(req.user)).slice(0, 25), exportable: normalizedAction === 'export-replay' };
+        await persistenceRuntime.persistObject(`replays/${tenantKey(req.user)}/${replayId}.json`, result);
+        session.workflowState = inferWorkflowStage(normalizedContext, 'replay');
+    } else if (normalizedAction === 'show-governance') {
+        result = { policies: selectGovernancePolicies({ domain: normalizedContext.domain, objective: normalizedContext.selectedWorkflow }).slice(0, 5), latest: auditEvents.find(event => event.tenant === tenantKey(req.user)) || null };
+    } else if (normalizedAction === 'deploy-runtime') {
+        result = { status: 'deployment-plan-created', environment: normalizedContext.environment, gates: ['governance validation', 'replay retention', 'tenant entitlement', 'observability baseline'] };
+        session.workflowState = inferWorkflowStage(normalizedContext, 'deploy');
+    } else {
+        result = { status: 'action-not-recognized', supported: ['run-simulation', 'generate-sdk', 'create-workflow', 'open-replay', 'view-orchestration', 'deploy-runtime', 'show-governance', 'export-replay'] };
+    }
+    session.actionHistory.unshift({ action: normalizedAction, resultSummary: result.status || result.replayId || 'completed', at: new Date().toISOString() });
+    session.actionHistory = session.actionHistory.slice(0, 20);
+    askCogniWorkspaceSessions.set(session.memoryKey, session);
+    await persistenceRuntime.persistRuntimeEvent({
+        type: `ask.quick_action.${normalizedAction}`,
+        tenantId: tenantKey(req.user),
+        workspaceId: session.workspaceId,
+        sessionId: session.sessionId,
+        entityId: `${normalizedAction}-${Date.now()}`,
+        payload: { action: normalizedAction, context: normalizedContext, result },
+        metadata: { workflowState: session.workflowState }
+    });
+    recordTrace('ask.quick_action.executed', req.user, { action: normalizedAction, result }, { workflowState: session.workflowState });
+    res.json({ status: 'executed', action: normalizedAction, result, workflowState: session.workflowState, contextId: session.contextId });
+});
+
+app.get('/api/event-bus/stream', authMiddleware, requireScopes('read:replay'), (req, res) => {
+    const tenant = tenantKey(req.user);
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders && res.flushHeaders();
+    emitSse(res, 'hello', { tenant, recent: eventBusHistory.filter(event => event.tenant === tenant || !req.user.demo).slice(0, 30) });
+    const subscribers = eventBusSubscribers.get(tenant) || new Set();
+    subscribers.add(res);
+    eventBusSubscribers.set(tenant, subscribers);
+    const heartbeat = setInterval(() => emitSse(res, 'heartbeat', { timestamp: new Date().toISOString() }), 25000);
+    req.on('close', () => {
+        clearInterval(heartbeat);
+        subscribers.delete(res);
+    });
+});
+
+app.post('/api/orchestration/fabric/execute', authMiddleware, requireScopes('execute:sandbox'), async (req, res) => {
+    const catalog = await loadCatalogEntries();
+    const { workflow = {}, api_key, mode = 'sandbox', input = {} } = req.body || {};
+    const api = api_key ? catalog.find(entry => entry.api_key === api_key) : null;
+    const compiledWorkflow = workflow && (workflow.nodes || workflow.apiKeys || workflow.title)
+        ? compileStudioWorkflow(catalog, req.user, workflow)
+        : null;
+    const run = await createUnifiedOrchestrationRun({ user: req.user, compiledWorkflow, api, mode, input, source: 'api-orchestration-fabric' });
+    recordTrace('orchestration.fabric.executed', req.user, { orchestrationId: run.orchestrationId, replayId: run.replay.replayId, stages: run.stages.length }, { governance: run.governance, confidence: run.confidenceTimeline });
+    res.json({ source: 'unified-cognitive-orchestration-fabric', run });
+});
+
+app.get('/api/orchestration/fabric/:orchestrationId', authMiddleware, requireScopes('read:api'), (req, res) => {
+    const run = orchestrationFabricRuns.get(req.params.orchestrationId);
+    if (!run || (run.tenant !== tenantKey(req.user) && req.user.demo)) return res.status(404).json({ error: 'Orchestration run not found' });
+    res.json({ source: 'unified-cognitive-orchestration-fabric', run });
+});
+
+app.post('/api/orchestration/fabric/:orchestrationId/recover', authMiddleware, requireScopes('execute:sandbox'), async (req, res) => {
+    const run = await recoverOrchestration(req.params.orchestrationId, req.user, (req.body && req.body.action) || 'retry');
+    if (!run) return res.status(404).json({ error: 'Orchestration run not found for recovery' });
+    res.json({ status: 'recovered', run });
+});
+
+app.get('/api/replay/reconstruct/:replayId', authMiddleware, requireScopes('read:replay'), (req, res) => {
+    const replay = reconstructReplay(req.params.replayId, req.user);
+    if (replay.status === 'not-found') return res.status(404).json({ error: 'Replay not found', replay });
+    res.json({ source: 'unified-replay-engine', replay });
+});
+
+app.get('/api/replay/export/:replayId', authMiddleware, requireScopes('read:replay'), async (req, res) => {
+    const replay = reconstructReplay(req.params.replayId, req.user);
+    if (replay.status === 'not-found') return res.status(404).json({ error: 'Replay not found' });
+    await persistenceRuntime.persistObject(`replays/${tenantKey(req.user)}/${req.params.replayId}-export.json`, replay);
+    res.setHeader('Content-Disposition', `attachment; filename="${req.params.replayId}.json"`);
+    res.json(replay);
+});
+
+app.post('/api/telemetry/ingest', authMiddleware, requireScopes('execute:sandbox'), async (req, res) => {
+    const sample = req.body || {};
+    const telemetry = {
+        id: sample.id || `telemetry-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`,
+        tenant: tenantKey(req.user),
+        domain: sample.domain || sample.stream_type || 'runtime',
+        source: sample.source || 'api-telemetry-ingest',
+        anomaly: Boolean(sample.anomaly || Number(sample.temperature) > 86 || Number(sample.vibration) > 5),
+        sample,
+        timestamp: new Date().toISOString()
+    };
+    await persistenceRuntime.persistTelemetry(telemetry);
+    publishRuntimeEvent('telemetry.ingested', req.user, telemetry, { synchronizedWithReplay: true });
+    let orchestration = null;
+    if (telemetry.anomaly) {
+        const catalog = await loadCatalogEntries();
+        const api = catalog.find(entry => /predictive|maintenance|observe|telemetry/i.test(`${entry.api_key} ${entry.name}`)) || catalog[0];
+        orchestration = await createUnifiedOrchestrationRun({
+            user: req.user,
+            api,
+            mode: 'sandbox',
+            input: { telemetryTrigger: telemetry, workflow: 'telemetry-triggered recovery orchestration' },
+            source: 'telemetry-trigger'
+        });
+        recordTrace('telemetry.triggered.orchestration', req.user, { telemetry, orchestrationId: orchestration.orchestrationId }, { anomaly: true });
+    }
+    res.json({ status: 'ingested', telemetry, orchestration });
 });
 
 app.post('/api/auth/signup', async (req, res) => {
@@ -7650,6 +8596,7 @@ app.post('/api/studio/compile', authMiddleware, requireScopes('read:api'), async
     const catalog = await loadCatalogEntries();
     const compiled = compileStudioWorkflow(catalog, req.user, req.body || {});
     recordAudit('studio.workflow.compile', req.user, { workflowId: compiled.workflowId, nodes: compiled.nodes.length, version: compiled.version });
+    recordTrace('orchestration.workflow.compiled', req.user, { workflowId: compiled.workflowId, nodes: compiled.nodes.length, validation: compiled.validation }, { source: 'metadata-driven-orchestration-compiler' });
     res.json(compiled);
 });
 
@@ -7658,6 +8605,15 @@ app.post('/api/studio/execute', authMiddleware, requireScopes('execute:sandbox')
     const compiled = req.body && req.body.compiledWorkflow ? req.body.compiledWorkflow : compileStudioWorkflow(catalog, req.user, req.body || {});
     const event = executeStudioWorkflow(compiled, req.user, req.body && req.body.mode || 'sandbox');
     recordAudit('studio.workflow.execute', req.user, { workflowId: compiled.workflowId, executionId: event.id });
+    recordTrace('orchestration.workflow.executed', req.user, { workflowId: compiled.workflowId, executionId: event.id, status: event.status, replay: event.replay }, { governance: event.governance, confidence: event.confidenceEvolution && event.confidenceEvolution.slice(-1)[0] });
+    persistenceRuntime.persistRuntimeEvent({
+        type: 'orchestration_run.persisted',
+        tenantId: tenantKey(req.user),
+        sessionId: req.user.sessionId || req.user.sub,
+        entityId: event.id,
+        payload: { compiledWorkflow: compiled, runtime: event },
+        metadata: { workflowId: compiled.workflowId, replayId: event.replay && event.replay.replayId }
+    });
     res.json({
         source: 'cognitive-orchestration-studio-live-execution',
         executionId: event.id,
@@ -7712,6 +8668,14 @@ app.post('/api/playground/execute', authMiddleware, requireScopes('execute:sandb
         const session = buildExecutionSession({ api, user: req.user, mode, input, governanceContext });
         const snapshot = materializeExecutionSession(session);
         recordAudit('playground.execute.session.create', req.user, { api_key, mode, executionId: session.id, status: snapshot.status });
+        persistenceRuntime.persistRuntimeEvent({
+            type: 'orchestration_session.created',
+            tenantId: tenantKey(req.user),
+            sessionId: req.user.sessionId || req.user.sub,
+            entityId: session.id,
+            payload: snapshot,
+            metadata: { api_key, mode }
+        });
         res.json({
             api: api.name,
             mode,
@@ -7811,6 +8775,35 @@ app.post('/api/simulations/execute', authMiddleware, requireScopes('execute:sand
         domain: template.domain,
         anomalyDetected: runtime.telemetry.anomalyDetected
     });
+    recordTrace('simulation.executed', req.user, {
+        simulationId: runtime.simulationId,
+        templateId: template.id,
+        domain: template.domain,
+        telemetry: runtime.telemetry,
+        replay: runtime.replayPackage
+    }, {
+        governance: runtime.governance,
+        confidence: runtime.confidenceTimeline && runtime.confidenceTimeline.slice(-1)[0]
+    });
+    persistenceRuntime.persistRuntimeEvent({
+        type: 'simulation.persisted',
+        tenantId: tenantKey(req.user),
+        sessionId: req.user.sessionId || req.user.sub,
+        entityId: runtime.simulationId,
+        payload: runtime,
+        metadata: { domain: template.domain, replayId: runtime.replayPackage && runtime.replayPackage.replayId }
+    });
+    createUnifiedOrchestrationRun({
+        user: req.user,
+        mode,
+        input: {
+            domain: template.domain,
+            workflow: `${template.title} synchronized orchestration`,
+            simulationId: runtime.simulationId,
+            telemetry: runtime.telemetry
+        },
+        source: 'simulation-synchronization'
+    }).catch(error => console.error('Simulation synchronization failed:', error.message));
     res.json(runtime);
 });
 
@@ -7820,6 +8813,7 @@ app.post('/api/ask', authMiddleware, requireScopes('ask:cognitive'), async (req,
         return res.status(400).json({ error: 'Query is required for Ask COGNI.' });
     }
     try {
+        recordTrace('ask.request.received', req.user, { query, context }, { pipeline: 'workspace-context -> memory -> metadata -> adaptive-response' });
         const catalog = await loadCatalogEntries();
         const domainMatches = searchDomains(buildDomainPayload(catalog, req.user), query);
         const applicationMatches = searchApplications(query);
@@ -7922,6 +8916,7 @@ app.post('/api/ask', authMiddleware, requireScopes('ask:cognitive'), async (req,
         const marketplaceMatches = searchMarketplacePackages(query, req.user);
         const enterpriseSummary = buildEnterpriseOperationsSummary(req.user);
         const healthcareSummary = buildHealthcareSummary(catalog, req.user);
+        const latestManufacturingTelemetry = manufacturingTelemetryByTenant.get(tenantKey(req.user)) || null;
 
         const response = {
             query,
@@ -8433,6 +9428,12 @@ app.post('/api/ask', authMiddleware, requireScopes('ask:cognitive'), async (req,
                 })),
                 coreCapabilities: ['Remote ID readiness', 'DGCA/DigitalSky readiness', 'UTM orchestration', 'MAVLink mission telemetry', 'PX4/ArduPilot/DroneKit/MAVSDK compatibility', 'aerial swarm coordination', 'edge UAV runtime readiness']
             },
+            manufacturingTelemetryContext: latestManufacturingTelemetry ? {
+                latest: latestManufacturingTelemetry,
+                askCogniEffect: latestManufacturingTelemetry.anomaly
+                    ? 'Manufacturing telemetry is above threshold; Ask COGNI should recommend predictive maintenance, replay capture, and governance review.'
+                    : 'Manufacturing telemetry is healthy and available as live context.'
+            } : null,
             performanceContext: {
                 api_usage: executionEvents.length,
                 simulation_usage: simulationEvents.length,
@@ -8545,11 +9546,95 @@ app.post('/api/ask', authMiddleware, requireScopes('ask:cognitive'), async (req,
         };
         response.architecture.ragFlow = response.askCogniIntelligence.pipeline;
         recordAudit('ask-cogni.query', req.user, { query, matches: ranked.length, intent: adaptiveResponse.intent, mode: adaptiveResponse.mode });
+        recordTrace('ask.response.generated', req.user, {
+            query,
+            domain: adaptiveResponse.domain,
+            intent: adaptiveResponse.intent,
+            recommendations: adaptiveResponse.keyRecommendations,
+            telemetryAware: Boolean(latestManufacturingTelemetry)
+        }, {
+            contextValidation: adaptiveResponse.contextValidation,
+            sanitized: true,
+            duplicateGuard: true
+        });
         res.json(response);
     } catch (error) {
         console.error('Ask COGNI failed:', error.message);
         res.status(500).json({ error: 'Ask COGNI processing failed.' });
     }
+});
+
+app.post('/api/cogni/ask', authMiddleware, requireScopes('ask:cognitive'), (req, res) => {
+    res.redirect(307, '/api/ask');
+});
+
+app.post('/api/orchestration/compile', authMiddleware, requireScopes('read:api'), (req, res) => {
+    res.redirect(307, '/api/studio/compile');
+});
+
+app.post('/api/orchestration/execute', authMiddleware, requireScopes('execute:sandbox'), (req, res) => {
+    res.redirect(307, '/api/studio/execute');
+});
+
+app.post('/api/replay/execute', authMiddleware, requireScopes('read:replay'), async (req, res) => {
+    const { replayId = `replay-${crypto.randomBytes(5).toString('hex')}`, steps = [] } = req.body || {};
+    if (!Array.isArray(steps) || !steps.length) {
+        return res.status(400).json({ error: 'Replay requires a non-empty steps array.' });
+    }
+    const catalog = await loadCatalogEntries();
+    const results = [];
+    let previous = null;
+    for (const [index, step] of steps.entries()) {
+        const action = String(step.action || step.type || '').toLowerCase();
+        const payload = step.payload || {};
+        let output;
+        if (action.includes('context')) {
+            output = { status: 'context-applied', context: payload, validation: buildAskContextValidation(normalizeAskCogniWorkspaceContext(payload, {}, req.user), payload.query || '', catalog) };
+        } else if (action.includes('ask')) {
+            const classification = classifyAskCogniIntent(`${payload.query || ''} ${JSON.stringify(payload.context || {})}`);
+            const normalized = normalizeAskCogniWorkspaceContext(payload.context || {}, classification, req.user);
+            const session = getAskWorkspaceSession(req.user, normalized, payload.query || '', catalog);
+            output = { status: 'ask-replayed', query: payload.query, domain: session.domain, contextId: session.contextId, validation: session.validation };
+        } else if (action.includes('simulation')) {
+            const template = SIMULATION_TEMPLATES.find(item => item.id === payload.simulationId || item.domain === payload.domain) || SIMULATION_TEMPLATES[0];
+            const api = catalog.find(entry => entry.api_key === template.apiKey) || catalog[0];
+            output = buildSimulationRuntime(template, api, req.user, payload.mode || 'sandbox', payload.input || {});
+        } else if (action.includes('orchestration') || action.includes('workflow')) {
+            const compiled = compileStudioWorkflow(catalog, req.user, payload);
+            output = executeStudioWorkflow(compiled, req.user, payload.mode || 'sandbox');
+        } else if (action.includes('sdk')) {
+            output = buildSdkIntelligence(catalog, req.user, payload);
+        } else {
+            output = { status: 'captured', payload };
+        }
+        const diff = previous ? {
+            changedStatus: previous.status !== output.status,
+            changedDomain: previous.domain !== output.domain,
+            previousStatus: previous.status,
+            currentStatus: output.status
+        } : { baseline: true };
+        results.push({ index, action, input: payload, output, diff });
+        previous = output;
+    }
+    const replay = {
+        replayId,
+        status: 'executed',
+        tenant: tenantKey(req.user),
+        steps: results.length,
+        results,
+        generatedAt: new Date().toISOString()
+    };
+    replayRecordings.set(replayId, replay);
+    await persistenceRuntime.persistObject(`replays/${tenantKey(req.user)}/${replayId}.json`, replay);
+    await persistenceRuntime.persistReplayEvent({
+        replay_id: replayId,
+        tenant_id: tenantKey(req.user),
+        session_id: req.user.sessionId || req.user.sub,
+        event_type: 'replay.sequence.executed',
+        payload: replay
+    });
+    recordTrace('replay.sequence.executed', req.user, { replayId, steps: results.length }, { exactSequence: true, sideBySideDiff: true });
+    res.json(replay);
 });
 
 app.get('/api/visualizer/data', authMiddleware, (req, res) => {
@@ -10868,7 +11953,7 @@ app.post('/api/sdk/generate', authMiddleware, requireScopes('read:api'), async (
         ...context,
         apiKeys: [api_key, ...(context.apiKeys || [])].filter(Boolean)
     });
-    res.json({
+    const output = {
         api_key,
         api_name: selected ? selected.name : api_key,
         language,
@@ -10884,7 +11969,16 @@ app.post('/api/sdk/generate', authMiddleware, requireScopes('read:api'), async (
         session_type: req.user.demo ? 'demo' : 'authenticated',
         source: 'cognitive-sdk-intelligence-runtime',
         note: req.user.demo ? 'Demo Mode SDK output is sample-only.' : 'Production SDK activation awaits entitlement and payment verification.'
+    };
+    persistenceRuntime.persistRuntimeEvent({
+        type: 'sdk_generation.persisted',
+        tenantId: tenantKey(req.user),
+        sessionId: req.user.sessionId || req.user.sub,
+        entityId: `${api_key}-${language}-${Date.now()}`,
+        payload: output,
+        metadata: { api_key, language }
     });
+    res.json(output);
 });
 
 app.post('/api/issues/report', authMiddleware, (req, res) => {

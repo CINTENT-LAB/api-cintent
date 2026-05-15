@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CINTENT Security</title>
+</head>
+<body>
+  <main>
+    <h1>CINTENT Security Contact</h1>
+    <p>Report vulnerabilities to <a href="mailto:security@cognivantalabs.com">security@cognivantalabs.com</a>.</p>
+    <p>Do not include protected health information, secrets, or customer data in initial reports.</p>
+  </main>
+</body>
+</html>

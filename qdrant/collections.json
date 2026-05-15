@@ -1,0 +1,26 @@
+{
+  "collections": [
+    {
+      "name": "ask_cogni_memory",
+      "vectors": { "size": 1536, "distance": "Cosine" },
+      "payload_schema": {
+        "tenant_id": "keyword",
+        "workspace_id": "keyword",
+        "domain": "keyword",
+        "session_id": "keyword",
+        "context_id": "keyword",
+        "created_at": "datetime"
+      }
+    },
+    {
+      "name": "replay_semantic_index",
+      "vectors": { "size": 1536, "distance": "Cosine" },
+      "payload_schema": {
+        "tenant_id": "keyword",
+        "replay_id": "keyword",
+        "event_type": "keyword",
+        "created_at": "datetime"
+      }
+    }
+  ]
+}

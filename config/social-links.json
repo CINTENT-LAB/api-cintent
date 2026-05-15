@@ -1,0 +1,13 @@
+{
+  "company": "Cognivanta Labs",
+  "links": [
+    {
+      "label": "CINTENT Platform",
+      "url": "https://api-cintent.cognivantalabs.com"
+    }
+  ],
+  "policy": {
+    "allowPlaceholderLinks": false,
+    "blockedPatterns": ["#", "javascript:", "example.com", "lorem", "placeholder"]
+  }
+}

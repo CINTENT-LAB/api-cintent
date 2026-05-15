@@ -1,0 +1,127 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: cintent-postgres
+    environment:
+      POSTGRES_DB: cintent
+      POSTGRES_USER: cintent
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cintent_dev_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./migrations/001_enterprise_persistence.sql:/docker-entrypoint-initdb.d/001_enterprise_persistence.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cintent -d cintent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: cintent-timescaledb
+    environment:
+      POSTGRES_DB: cintent_telemetry
+      POSTGRES_USER: cintent
+      POSTGRES_PASSWORD: ${TIMESCALE_PASSWORD:-cintent_timescale_password}
+    ports:
+      - "5433:5432"
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+      - ./migrations/001_enterprise_persistence.sql:/docker-entrypoint-initdb.d/001_enterprise_persistence.sql:ro
+      - ./migrations/002_timescale_telemetry.sql:/docker-entrypoint-initdb.d/002_timescale_telemetry.sql:ro
+
+  redis:
+    image: redis:7-alpine
+    container_name: cintent-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  neo4j:
+    image: neo4j:5-community
+    container_name: cintent-neo4j
+    environment:
+      NEO4J_AUTH: ${NEO4J_AUTH:-neo4j/cintent_neo4j_password}
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j-data:/data
+      - ./graph:/var/lib/neo4j/import:ro
+
+  qdrant:
+    image: qdrant/qdrant:v1.9.7
+    container_name: cintent-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant-data:/qdrant/storage
+      - ./qdrant:/qdrant/config/cintent:ro
+
+  minio:
+    image: minio/minio:RELEASE.2024-06-29T01-20-47Z
+    container_name: cintent-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-cintent}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-cintent_minio_password}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+
+  cintent-api:
+    build: .
+    container_name: cintent-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET:-change-me-for-production}
+      DATABASE_URL: postgres://cintent:${POSTGRES_PASSWORD:-cintent_dev_password}@postgres:5432/cintent
+      REDIS_URL: redis://redis:6379
+      NEO4J_URI: bolt://neo4j:7687
+      QDRANT_URL: http://qdrant:6333
+      MINIO_ENDPOINT: http://minio:9000
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  trace-streamer:
+    build: .
+    container_name: cintent-trace-streamer
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      JWT_SECRET: ${JWT_SECRET:-change-me-for-production}
+      DATABASE_URL: postgres://cintent:${POSTGRES_PASSWORD:-cintent_dev_password}@postgres:5432/cintent
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3001:3001"
+    command: ["node", "server.js"]
+
+volumes:
+  postgres-data:
+  timescale-data:
+  redis-data:
+  neo4j-data:
+  qdrant-data:
+  minio-data:

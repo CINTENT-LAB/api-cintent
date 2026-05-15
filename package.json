@@ -7,7 +7,12 @@
     "start": "node server.js",
     "start:prod": "node server.js",
     "start:metadata": "node server-metadata-driven.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "check:social-links": "node scripts/check_social_links.js",
+    "test:ask-cogni-state": "node scripts/test_ask_cogni_state_engine.js",
+    "test:persistence": "node scripts/test_persistence_runtime.js",
+    "test:ask-cogni-runtime": "node scripts/test_ask_cogni_runtime.js",
+    "test:orchestration-replay": "node scripts/test_orchestration_replay_runtime.js"
   },
   "dependencies": {
     "express": "^4.18.2",

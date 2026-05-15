@@ -3466,7 +3466,15 @@
       const moduleBtn = event.target.closest('[data-module]');
       if (moduleBtn) { state.module = moduleBtn.dataset.module; if (state.module === 'billing') state.cartOpen = false; render(); return; }
       const domainBtn = event.target.closest('[data-domain]');
-      if (domainBtn) { state.domain = domainBtn.dataset.domain; els.search.value = ''; state.module = domains.find(d => d.id === state.domain && d.status === 'coming_soon') ? 'docs' : state.module; render(); return; }
+      if (domainBtn) {
+        const previousDomain = state.domain;
+        state.domain = domainBtn.dataset.domain;
+        els.search.value = '';
+        state.module = domains.find(d => d.id === state.domain && d.status === 'coming_soon') ? 'docs' : state.module;
+        fetch('/api/traces/event', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'workspace.domain.changed', payload: { previousDomain, domain: state.domain }, decision: { contextSync: 'Ask COGNI, API filters, simulations, and replay context must refresh' } }) }).catch(() => {});
+        render();
+        return;
+      }
       const stageBtn = event.target.closest('[data-stage]');
       if (stageBtn) { state.stage = stageBtn.dataset.stage; state.module = 'docs'; render(); return; }
       const apiBtn = event.target.closest('[data-api]');
@@ -4531,6 +4539,58 @@
       location.href = '/login';
     });
 
+    function applyBootstrapContext() {
+      const bootstrap = window.__CINTENT_BOOTSTRAP__;
+      if (!bootstrap || !bootstrap.preload) return;
+      const preload = bootstrap.preload;
+      state.module = 'ask';
+      state.domain = preload.domain || state.domain;
+      state.askDomain = preload.domain || state.askDomain;
+      state.askApplicationId = (preload.application || '').toLowerCase() || state.askApplicationId;
+      state.askSelectedWorkflow = preload.workflow || state.askSelectedWorkflow;
+      state.askSelectedSimulation = preload.simulation || state.askSelectedSimulation;
+      state.askSelectedApis = Array.isArray(preload.selectedApis) ? preload.selectedApis : state.askSelectedApis;
+      state.askDraftQuestion = `Guide me through ${preload.workflow || 'this sandbox workflow'} with orchestration, replay, governance, simulation, SDK, and next actions.`;
+      ensureAskWorkspaceSession();
+    }
+
+    function initExecutionTracePanel() {
+      if (document.getElementById('executionTracePanel')) return;
+      const panel = document.createElement('aside');
+      panel.id = 'executionTracePanel';
+      panel.style.cssText = 'position:fixed;right:14px;bottom:14px;width:380px;max-height:62vh;z-index:9999;background:#fff;border:1px solid #cbd5e1;border-radius:8px;box-shadow:0 18px 50px rgba(15,23,42,.18);font-size:12px;overflow:hidden;';
+      panel.innerHTML = '<button id="traceToggle" type="button" style="width:100%;padding:10px 12px;border:0;background:#0f172a;color:#fff;font-weight:800;text-align:left;">Execution Trace</button><div id="traceList" style="display:grid;gap:6px;padding:10px;max-height:32vh;overflow:auto;"></div><pre id="traceDetail" style="display:none;margin:0;padding:10px;background:#f8fafc;border-top:1px solid #e2e8f0;max-height:22vh;overflow:auto;white-space:pre-wrap;"></pre>';
+      document.body.appendChild(panel);
+      const list = panel.querySelector('#traceList');
+      const detail = panel.querySelector('#traceDetail');
+      panel.querySelector('#traceToggle').addEventListener('click', () => {
+        list.style.display = list.style.display === 'none' ? 'grid' : 'none';
+        detail.style.display = 'none';
+      });
+      const addTrace = trace => {
+        const row = document.createElement('button');
+        row.type = 'button';
+        row.style.cssText = 'text-align:left;border:1px solid #e2e8f0;background:#f8fafc;border-radius:7px;padding:8px;color:#0f172a;';
+        row.innerHTML = `<strong>${escapeHtml(trace.type || 'event')}</strong><br><span>${escapeHtml(trace.timestamp || '')}</span>`;
+        row.addEventListener('click', () => {
+          detail.style.display = 'block';
+          detail.textContent = JSON.stringify({ payload: trace.payload, decision: trace.decision }, null, 2);
+        });
+        list.prepend(row);
+        while (list.children.length > 40) list.lastChild.remove();
+      };
+      try {
+        const source = new EventSource('/api/traces/stream', { withCredentials: true });
+        source.addEventListener('hello', event => {
+          const payload = JSON.parse(event.data);
+          (payload.recent || []).reverse().forEach(addTrace);
+        });
+        source.addEventListener('trace', event => addTrace(JSON.parse(event.data)));
+      } catch (error) {
+        list.innerHTML = '<div style="color:#64748b;">Execution trace stream unavailable.</div>';
+      }
+    }
+
     async function initializeSession() {
       try {
         const response = await fetch('/api/auth/session', { credentials: 'include' });
@@ -4542,7 +4602,9 @@
         await loadBackendBilling();
         await loadBackendSimulations();
         await loadPlatformRuntimeStatus();
+        applyBootstrapContext();
         render();
+        initExecutionTracePanel();
       } catch (error) {
         location.href = '/login';
       }
