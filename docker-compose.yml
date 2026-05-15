@@ -21,6 +21,7 @@ services:
   timescaledb:
     image: timescale/timescaledb:latest-pg16
     container_name: cintent-timescaledb
+    profiles: ["advanced"]
     environment:
       POSTGRES_DB: cintent_telemetry
       POSTGRES_USER: cintent
@@ -44,6 +45,7 @@ services:
   neo4j:
     image: neo4j:5-community
     container_name: cintent-neo4j
+    profiles: ["advanced"]
     environment:
       NEO4J_AUTH: ${NEO4J_AUTH:-neo4j/cintent_neo4j_password}
     ports:
@@ -56,6 +58,7 @@ services:
   qdrant:
     image: qdrant/qdrant:v1.9.7
     container_name: cintent-qdrant
+    profiles: ["advanced"]
     ports:
       - "6333:6333"
       - "6334:6334"
@@ -66,6 +69,7 @@ services:
   minio:
     image: minio/minio:RELEASE.2024-06-29T01-20-47Z
     container_name: cintent-minio
+    profiles: ["advanced"]
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-cintent}
@@ -90,9 +94,6 @@ services:
       JWT_SECRET: ${JWT_SECRET:-change-me-for-production}
       DATABASE_URL: postgres://cintent:${POSTGRES_PASSWORD:-cintent_dev_password}@postgres:5432/cintent
       REDIS_URL: redis://redis:6379
-      NEO4J_URI: bolt://neo4j:7687
-      QDRANT_URL: http://qdrant:6333
-      MINIO_ENDPOINT: http://minio:9000
     ports:
       - "3000:3000"
     healthcheck:
