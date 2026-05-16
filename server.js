@@ -79,6 +79,9 @@ const anonymousSandboxSessions = new Map();
 const traceEvents = [];
 const traceSubscribers = new Map();
 const replayRecordings = new Map();
+const policyViewLogsFallback = [];
+const licenseAcceptanceFallback = new Map();
+const consentAuditFallback = [];
 const manufacturingTelemetryByTenant = new Map();
 const telemetryTriggerCooldown = new Map();
 const orchestrationFabricRuns = new Map();
@@ -114,6 +117,24 @@ const platformSettings = {
     rbacRoles: ['admin', 'developer', 'viewer'],
     updatedAt: new Date().toISOString()
 };
+
+const LICENSE_POLICY = {
+    policyKey: 'enterprise-license',
+    version: '2026.05.16',
+    title: 'CINTENT Enterprise License Agreement',
+    effectiveAt: '2026-05-16T00:00:00.000Z',
+    summary: 'Mandatory enterprise license terms covering API usage, SDK generation, orchestration, replay, deployment responsibility, AI-assisted output limitations, commercial restrictions, redistribution, reverse engineering, compliance responsibilities, prohibited usage, and intellectual property ownership.',
+    requiredInteractions: ['open_policy', 'review_checkbox', 'accept_current_version']
+};
+
+function loadLicensePolicyContent() {
+    const policyPath = path.join(__dirname, 'policies', 'ENTERPRISE_LICENSE_AGREEMENT.md');
+    try {
+        return fs.readFileSync(policyPath, 'utf8');
+    } catch (_) {
+        return `${LICENSE_POLICY.title}\n\nVersion: ${LICENSE_POLICY.version}\n\n${LICENSE_POLICY.summary}`;
+    }
+}
 
 const COMPANY_PROFILE = {
     name: 'Cognivanta Labs',
@@ -1120,12 +1141,21 @@ function requireNonDemo(req, res, next) {
 }
 
 function requireScopes(...scopes) {
-    return (req, res, next) => {
+    return async (req, res, next) => {
         const grantedScopes = req.user && Array.isArray(req.user.scopes) ? req.user.scopes : [];
         const allowed = scopes.every(scope => grantedScopes.includes(scope));
         if (!allowed) {
             runtimeMetrics.securityDenials += 1;
             return res.status(403).json({ error: 'Required API scope is not available for this session' });
+        }
+        if (isLicenseProtectedRequest(req) && !(await hasAcceptedCurrentLicense(req.user))) {
+            runtimeMetrics.securityDenials += 1;
+            return res.status(451).json({
+                error: 'Enterprise license acceptance required',
+                policyVersion: LICENSE_POLICY.version,
+                policyUrl: '/api/license/policy',
+                requiredActions: LICENSE_POLICY.requiredInteractions
+            });
         }
         next();
     };
@@ -1133,6 +1163,288 @@ function requireScopes(...scopes) {
 
 function tenantKey(user) {
     return (user && (user.tenant || user.email || user.sub)) || 'anonymous';
+}
+
+function userKey(user) {
+    return user && (user.sub || user.id || user.email || user.sessionId) || 'anonymous';
+}
+
+function sessionKey(user) {
+    return user && (user.sessionId || user.sub || user.id || user.email) || 'anonymous-session';
+}
+
+function requestIp(req) {
+    return String(req.headers['x-forwarded-for'] || req.ip || req.socket?.remoteAddress || '').split(',')[0].trim();
+}
+
+function licenseAcceptanceKey(user, version = LICENSE_POLICY.version) {
+    return `${LICENSE_POLICY.policyKey}:${version}:${tenantKey(user)}:${userKey(user)}:${sessionKey(user)}`;
+}
+
+function isLicenseExemptPath(req) {
+    const pathName = req.path || '';
+    return pathName.startsWith('/api/auth/')
+        || pathName.startsWith('/api/license/')
+        || pathName === '/api/health'
+        || pathName === '/api/status'
+        || pathName === '/api/ready'
+        || pathName === '/api/metrics'
+        || pathName === '/api/openapi.json'
+        || pathName === '/api/docs';
+}
+
+function isLicenseProtectedRequest(req) {
+    if (!req || !req.path || isLicenseExemptPath(req)) return false;
+    const protectedPrefixes = [
+        '/api/sdk',
+        '/api/replay',
+        '/api/studio',
+        '/api/playground',
+        '/api/simulations',
+        '/api/orchestration',
+        '/api/telemetry',
+        '/api/agents',
+        '/api/governance',
+        '/api/marketplace',
+        '/api/enterprise-os',
+        '/api/healthcare',
+        '/api/v1/healthcare',
+        '/api/ask',
+        '/api/workspaces',
+        '/api/workspace',
+        '/api/canonical',
+        '/api/lineage',
+        '/api/audit'
+    ];
+    return protectedPrefixes.some(prefix => req.path.startsWith(prefix));
+}
+
+let licenseSchemaReady = false;
+async function ensureLicenseSchema() {
+    if (!dbEnabled || licenseSchemaReady) return dbEnabled && licenseSchemaReady;
+    try {
+        await pool.query(`CREATE TABLE IF NOT EXISTS license_policy_versions (
+            policy_version text primary key,
+            policy_key text not null default 'enterprise-license',
+            title text not null,
+            summary text not null,
+            content text not null,
+            effective_at timestamptz not null default now(),
+            requires_reconsent boolean not null default true,
+            tenant_scope text not null default 'global',
+            status text not null default 'active',
+            created_at timestamptz not null default now()
+        )`);
+        await pool.query(`CREATE INDEX IF NOT EXISTS idx_license_policy_status ON license_policy_versions(policy_key, tenant_scope, status, effective_at desc)`);
+        await pool.query(`CREATE TABLE IF NOT EXISTS policy_view_logs (
+            view_id text primary key,
+            policy_version text not null,
+            policy_key text not null default 'enterprise-license',
+            user_id text,
+            tenant_id text not null,
+            session_id text,
+            ip_address text,
+            user_agent text,
+            view_mode text not null,
+            viewed_at timestamptz not null default now(),
+            metadata jsonb not null default '{}'
+        )`);
+        await pool.query(`CREATE INDEX IF NOT EXISTS idx_policy_view_tenant_user ON policy_view_logs(tenant_id, user_id, policy_version, viewed_at desc)`);
+        await pool.query(`CREATE TABLE IF NOT EXISTS license_acceptance_logs (
+            acceptance_id text primary key,
+            policy_version text not null,
+            policy_key text not null default 'enterprise-license',
+            user_id text,
+            tenant_id text not null,
+            session_id text,
+            ip_address text,
+            user_agent text,
+            accepted boolean not null default false,
+            acknowledged_review boolean not null default false,
+            accepted_at timestamptz not null default now(),
+            metadata jsonb not null default '{}'
+        )`);
+        await pool.query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_license_acceptance_unique_subject ON license_acceptance_logs(policy_key, policy_version, tenant_id, coalesce(user_id, session_id))`);
+        await pool.query(`CREATE INDEX IF NOT EXISTS idx_license_acceptance_active ON license_acceptance_logs(tenant_id, user_id, policy_version, accepted_at desc) WHERE accepted = true`);
+        await pool.query(`CREATE TABLE IF NOT EXISTS consent_audit_logs (
+            audit_id text primary key,
+            policy_version text,
+            policy_key text not null default 'enterprise-license',
+            user_id text,
+            tenant_id text not null,
+            session_id text,
+            action text not null,
+            decision text not null,
+            ip_address text,
+            user_agent text,
+            metadata jsonb not null default '{}',
+            created_at timestamptz not null default now()
+        )`);
+        await pool.query(`CREATE INDEX IF NOT EXISTS idx_consent_audit_tenant_action ON consent_audit_logs(tenant_id, action, created_at desc)`);
+        await pool.query(
+            `INSERT INTO license_policy_versions (policy_version, policy_key, title, summary, content, effective_at, requires_reconsent, tenant_scope, status)
+             VALUES ($1,$2,$3,$4,$5,$6,true,'global','active')
+             ON CONFLICT (policy_version) DO UPDATE SET title=excluded.title, summary=excluded.summary, content=excluded.content, status='active'`,
+            [LICENSE_POLICY.version, LICENSE_POLICY.policyKey, LICENSE_POLICY.title, LICENSE_POLICY.summary, loadLicensePolicyContent(), LICENSE_POLICY.effectiveAt]
+        );
+        licenseSchemaReady = true;
+        return true;
+    } catch (error) {
+        console.warn('License governance schema unavailable, using in-memory consent fallback:', error.message);
+        return false;
+    }
+}
+
+async function logConsentAudit({ req, action, decision, metadata = {} }) {
+    const user = req.user || {};
+    const audit = {
+        audit_id: `consent-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
+        policy_version: LICENSE_POLICY.version,
+        policy_key: LICENSE_POLICY.policyKey,
+        user_id: userKey(user),
+        tenant_id: tenantKey(user),
+        session_id: sessionKey(user),
+        action,
+        decision,
+        ip_address: requestIp(req),
+        user_agent: req.headers['user-agent'] || '',
+        metadata,
+        created_at: new Date().toISOString()
+    };
+    consentAuditFallback.unshift(audit);
+    if (consentAuditFallback.length > 500) consentAuditFallback.pop();
+    if (await ensureLicenseSchema()) {
+        await pool.query(
+            `INSERT INTO consent_audit_logs (audit_id, policy_version, policy_key, user_id, tenant_id, session_id, action, decision, ip_address, user_agent, metadata, created_at)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb,$12)`,
+            [audit.audit_id, audit.policy_version, audit.policy_key, audit.user_id, audit.tenant_id, audit.session_id, audit.action, audit.decision, audit.ip_address, audit.user_agent, JSON.stringify(audit.metadata), audit.created_at]
+        );
+    }
+    persistenceRuntime.persistRuntimeEvent({
+        type: `license.${action}`,
+        tenantId: audit.tenant_id,
+        sessionId: audit.session_id,
+        entityId: audit.audit_id,
+        payload: audit,
+        metadata: { licenseGovernance: true }
+    });
+    return audit;
+}
+
+async function hasViewedCurrentPolicy(user) {
+    const tenant = tenantKey(user);
+    const subject = userKey(user);
+    const session = sessionKey(user);
+    if (policyViewLogsFallback.some(log => log.policy_version === LICENSE_POLICY.version && log.tenant_id === tenant && (log.user_id === subject || log.session_id === session))) return true;
+    if (await ensureLicenseSchema()) {
+        const result = await pool.query(
+            `SELECT 1 FROM policy_view_logs WHERE policy_version = $1 AND tenant_id = $2 AND (user_id = $3 OR session_id = $4) LIMIT 1`,
+            [LICENSE_POLICY.version, tenant, subject, session]
+        );
+        return result.rowCount > 0;
+    }
+    return false;
+}
+
+async function hasAcceptedCurrentLicense(user) {
+    const key = licenseAcceptanceKey(user);
+    if (licenseAcceptanceFallback.has(key)) return true;
+    if (await ensureLicenseSchema()) {
+        const result = await pool.query(
+            `SELECT 1 FROM license_acceptance_logs WHERE policy_key = $1 AND policy_version = $2 AND tenant_id = $3 AND (user_id = $4 OR session_id = $5) AND accepted = true LIMIT 1`,
+            [LICENSE_POLICY.policyKey, LICENSE_POLICY.version, tenantKey(user), userKey(user), sessionKey(user)]
+        );
+        return result.rowCount > 0;
+    }
+    return false;
+}
+
+async function recordPolicyView(req, viewMode = 'modal') {
+    const user = req.user || {};
+    const log = {
+        view_id: `policy-view-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
+        policy_version: LICENSE_POLICY.version,
+        policy_key: LICENSE_POLICY.policyKey,
+        user_id: userKey(user),
+        tenant_id: tenantKey(user),
+        session_id: sessionKey(user),
+        ip_address: requestIp(req),
+        user_agent: req.headers['user-agent'] || '',
+        view_mode: viewMode,
+        viewed_at: new Date().toISOString(),
+        metadata: { route: req.path, acknowledgedReadRequirement: true }
+    };
+    policyViewLogsFallback.unshift(log);
+    if (policyViewLogsFallback.length > 500) policyViewLogsFallback.pop();
+    if (await ensureLicenseSchema()) {
+        await pool.query(
+            `INSERT INTO policy_view_logs (view_id, policy_version, policy_key, user_id, tenant_id, session_id, ip_address, user_agent, view_mode, viewed_at, metadata)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb)`,
+            [log.view_id, log.policy_version, log.policy_key, log.user_id, log.tenant_id, log.session_id, log.ip_address, log.user_agent, log.view_mode, log.viewed_at, JSON.stringify(log.metadata)]
+        );
+    }
+    await logConsentAudit({ req, action: 'policy.viewed', decision: 'recorded', metadata: { viewMode } });
+    return log;
+}
+
+async function acceptCurrentLicense(req, acknowledgedReview) {
+    const user = req.user || {};
+    const viewed = await hasViewedCurrentPolicy(user);
+    if (!viewed || !acknowledgedReview) {
+        await logConsentAudit({ req, action: 'license.acceptance_denied', decision: 'blocked', metadata: { viewed, acknowledgedReview: !!acknowledgedReview } });
+        return { accepted: false, reason: 'Policy must be opened and the review acknowledgement must be checked before acceptance.' };
+    }
+    const acceptance = {
+        acceptance_id: `license-accept-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
+        policy_version: LICENSE_POLICY.version,
+        policy_key: LICENSE_POLICY.policyKey,
+        user_id: userKey(user),
+        tenant_id: tenantKey(user),
+        session_id: sessionKey(user),
+        ip_address: requestIp(req),
+        user_agent: req.headers['user-agent'] || '',
+        accepted: true,
+        acknowledged_review: true,
+        accepted_at: new Date().toISOString(),
+        metadata: { demo: !!user.demo, role: user.role || 'viewer', requiredInteractions: LICENSE_POLICY.requiredInteractions }
+    };
+    licenseAcceptanceFallback.set(licenseAcceptanceKey(user), acceptance);
+    if (await ensureLicenseSchema()) {
+        await pool.query(
+            `DELETE FROM license_acceptance_logs
+              WHERE policy_key = $1 AND policy_version = $2 AND tenant_id = $3 AND coalesce(user_id, session_id) = coalesce($4, $5)`,
+            [acceptance.policy_key, acceptance.policy_version, acceptance.tenant_id, acceptance.user_id, acceptance.session_id]
+        );
+        await pool.query(
+            `INSERT INTO license_acceptance_logs (acceptance_id, policy_version, policy_key, user_id, tenant_id, session_id, ip_address, user_agent, accepted, acknowledged_review, accepted_at, metadata)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,true,true,$9,$10::jsonb)`,
+            [acceptance.acceptance_id, acceptance.policy_version, acceptance.policy_key, acceptance.user_id, acceptance.tenant_id, acceptance.session_id, acceptance.ip_address, acceptance.user_agent, acceptance.accepted_at, JSON.stringify(acceptance.metadata)]
+        );
+    }
+    await logConsentAudit({ req, action: 'license.accepted', decision: 'accepted', metadata: acceptance.metadata });
+    return { accepted: true, acceptance };
+}
+
+async function licenseEnforcementMiddleware(req, res, next) {
+    if (!isLicenseProtectedRequest(req)) return next();
+    const token = getAuthToken(req);
+    if (!token) return next();
+    try {
+        const payload = jwt.verify(token, JWT_SECRET);
+        if (!(await hasAcceptedCurrentLicense(payload))) {
+            runtimeMetrics.securityDenials += 1;
+            return res.status(451).json({
+                error: 'Enterprise license acceptance required',
+                policyVersion: LICENSE_POLICY.version,
+                policyUrl: '/api/license/policy',
+                acceptUrl: '/api/license/accept',
+                requiredActions: LICENSE_POLICY.requiredInteractions
+            });
+        }
+        return next();
+    } catch (_) {
+        return next();
+    }
 }
 
 function stableHash(value) {
@@ -8168,6 +8480,75 @@ app.get('/api/docs', (req, res) => {
 </html>`);
 });
 
+app.get('/api/license/policy', authMiddleware, async (req, res) => {
+    await ensureLicenseSchema();
+    const content = loadLicensePolicyContent();
+    res.json({
+        policy: {
+            policyKey: LICENSE_POLICY.policyKey,
+            version: LICENSE_POLICY.version,
+            title: LICENSE_POLICY.title,
+            summary: LICENSE_POLICY.summary,
+            effectiveAt: LICENSE_POLICY.effectiveAt,
+            content,
+            requiredInteractions: LICENSE_POLICY.requiredInteractions,
+            aiLiabilityDisclosure: [
+                'AI-assisted outputs may be inaccurate or incomplete.',
+                'Generated SDKs and workflows require independent validation.',
+                'Replay is a diagnostic and audit-support tool, not a final regulated determination.',
+                'Users remain responsible for deployment decisions and production approvals.',
+                'Regulated industry workflows require qualified professional oversight.'
+            ],
+            views: {
+                modal: '/api/license/policy',
+                fullPage: '/license',
+                separateTab: '/license'
+            }
+        }
+    });
+});
+
+app.get('/license', authMiddleware, async (req, res) => {
+    await recordPolicyView(req, 'full-page');
+    const policy = loadLicensePolicyContent()
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;');
+    res.type('html').send(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${LICENSE_POLICY.title}</title><style>body{margin:0;background:#f8fafc;color:#0f172a;font:16px/1.6 Inter,system-ui,sans-serif}.wrap{max-width:960px;margin:0 auto;padding:40px 24px}.card{background:white;border:1px solid #dbe4f0;border-radius:12px;box-shadow:0 24px 80px rgba(15,23,42,.08);padding:28px}pre{white-space:pre-wrap;font:15px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.tag{display:inline-flex;padding:6px 10px;border-radius:999px;background:#e0f2fe;color:#075985;font-weight:700}</style></head><body><main class="wrap"><div class="card"><span class="tag">Version ${LICENSE_POLICY.version}</span><pre>${policy}</pre></div></main></body></html>`);
+});
+
+app.get('/api/license/status', authMiddleware, async (req, res) => {
+    const accepted = await hasAcceptedCurrentLicense(req.user);
+    const viewed = await hasViewedCurrentPolicy(req.user);
+    res.json({
+        accepted,
+        viewed,
+        policyVersion: LICENSE_POLICY.version,
+        policyKey: LICENSE_POLICY.policyKey,
+        required: true,
+        requiredInteractions: LICENSE_POLICY.requiredInteractions,
+        blockedCapabilities: accepted ? [] : ['api-execution', 'sdk-generation', 'orchestration-execution', 'replay-export', 'deployment-runtime', 'ask-cogni-runtime'],
+        user: { tenant: tenantKey(req.user), subject: userKey(req.user), session: sessionKey(req.user), role: req.user.role || 'viewer', demo: !!req.user.demo }
+    });
+});
+
+app.post('/api/license/view', authMiddleware, async (req, res) => {
+    const viewMode = ['modal', 'full-page', 'separate-tab', 'scroll'].includes(req.body && req.body.viewMode) ? req.body.viewMode : 'modal';
+    const log = await recordPolicyView(req, viewMode);
+    res.json({ status: 'recorded', viewed: true, policyVersion: LICENSE_POLICY.version, view: { id: log.view_id, mode: log.view_mode, viewedAt: log.viewed_at } });
+});
+
+app.post('/api/license/accept', authMiddleware, async (req, res) => {
+    const acknowledgedReview = Boolean(req.body && req.body.acknowledgedReview);
+    const result = await acceptCurrentLicense(req, acknowledgedReview);
+    if (!result.accepted) {
+        return res.status(409).json({ accepted: false, error: result.reason, policyVersion: LICENSE_POLICY.version });
+    }
+    res.json({ accepted: true, policyVersion: LICENSE_POLICY.version, acceptedAt: result.acceptance.accepted_at, accessEnabled: true });
+});
+
+app.use('/api', licenseEnforcementMiddleware);
+
 app.post('/api/sdk/snippet', authMiddleware, requireScopes('read:api'), (req, res) => {
     const { method, path: apiPath, language, body } = req.body || {};
     const allowedLanguages = new Set(['python', 'javascript', 'curl']);
@@ -8925,10 +9306,17 @@ app.post('/api/auth/logout', (req, res) => {
     res.json({ message: 'Logged out successfully.' });
 });
 
-app.get('/api/auth/session', authMiddleware, (req, res) => {
+app.get('/api/auth/session', authMiddleware, async (req, res) => {
     const { sub, email, name, role, tenant, demo, scopes } = req.user;
     const entitlement = getSessionEntitlement(req.user);
     const keys = apiKeys.get(sub) || [];
+    const license = {
+        required: true,
+        accepted: await hasAcceptedCurrentLicense(req.user),
+        viewed: await hasViewedCurrentPolicy(req.user),
+        policyVersion: LICENSE_POLICY.version,
+        policyKey: LICENSE_POLICY.policyKey
+    };
     res.json({
         user: { id: sub, email, name, role, tenant, demo: !!demo, scopes: scopes || [], subscription: entitlement },
         session: {
@@ -8936,6 +9324,7 @@ app.get('/api/auth/session', authMiddleware, (req, res) => {
             rbac: role,
             tenant,
             entitlement,
+            license,
             apiKeys: keys.map(key => ({ id: key.id, label: key.label, prefix: key.prefix, scopes: key.scopes, createdAt: key.createdAt, lastUsedAt: key.lastUsedAt || null })),
             future_ready: ['phone-verification', 'otp', 'payment-verification', 'enterprise-sso', 'mfa']
         }

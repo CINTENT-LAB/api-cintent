@@ -807,6 +807,72 @@
       cursor: not-allowed;
     }
 
+    .policy-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(15, 23, 42, 0.64);
+      backdrop-filter: blur(8px);
+    }
+    .policy-gate.open { display: flex; }
+    .policy-card {
+      width: min(980px, 100%);
+      max-height: calc(100vh - 48px);
+      display: grid;
+      grid-template-rows: auto minmax(220px, 1fr) auto;
+      background: var(--surface);
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      box-shadow: 0 32px 90px rgba(15, 23, 42, 0.34);
+      overflow: hidden;
+    }
+    .policy-head, .policy-actions {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+    .policy-actions {
+      border-top: 1px solid var(--line);
+      border-bottom: 0;
+      display: grid;
+      gap: 12px;
+      background: var(--surface-2);
+    }
+    .policy-head h2 { margin: 0; font-size: 20px; }
+    .policy-head p { margin: 6px 0 0; color: var(--muted); line-height: 1.5; }
+    .policy-body {
+      overflow: auto;
+      padding: 18px 22px;
+    }
+    .policy-reader {
+      white-space: pre-wrap;
+      margin: 0;
+      font: 13px/1.65 var(--mono);
+      color: #223044;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+    .policy-check {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 750;
+    }
+    .policy-check input { margin-top: 3px; }
+    .policy-status {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
     .tile { padding: 15px; min-height: 132px; box-shadow: none; }
     .tile h3 { margin: 0; font-size: 14px; }
     .tile p { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
@@ -1259,6 +1325,34 @@
     </main>
   </div>
 
+  <div class="policy-gate" id="policyGate" aria-modal="true" role="dialog" aria-labelledby="policyGateTitle">
+    <div class="policy-card">
+      <div class="policy-head">
+        <span class="tag warn" id="policyVersionTag">License review required</span>
+        <h2 id="policyGateTitle">Enterprise License Agreement</h2>
+        <p id="policySummary">CINTENT requires explicit license review and acceptance before workspace runtimes are enabled.</p>
+      </div>
+      <div class="policy-body">
+        <div class="toolbar" style="margin-bottom:12px;">
+          <button class="secondary-btn" type="button" data-license-action="open-modal">Open Policy</button>
+          <a class="secondary-btn" href="/license" target="_blank" rel="noopener" data-license-action="open-tab" style="text-decoration:none;display:inline-flex;align-items:center;">Open in New Tab</a>
+        </div>
+        <pre class="policy-reader" id="policyReader">Loading enterprise license policy...</pre>
+      </div>
+      <div class="policy-actions">
+        <label class="policy-check">
+          <input type="checkbox" id="policyReviewCheck">
+          <span><strong>Review checkbox:</strong> I opened and reviewed the current CINTENT Enterprise License Agreement, including AI-assisted output limitations, deployment responsibility, replay restrictions, and commercial usage restrictions.</span>
+        </label>
+        <div class="toolbar">
+          <button class="action-btn" type="button" data-license-action="accept" disabled>Accept and Continue</button>
+          <button class="secondary-btn" type="button" data-license-action="refresh">Refresh Status</button>
+        </div>
+        <div class="policy-status" id="policyStatusText">Open the policy and check the acknowledgement to enable access.</div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const modules = [
       { id: 'learn', mark: 'L', title: 'Learn CINTENT', sub: 'Guided platform mentor' },
@@ -1418,6 +1512,7 @@
       healthcareHardeningValidation: null,
       healthcareHardeningDashboard: null,
       platformRuntimeStatus: null,
+      licenseGovernance: { required: true, accepted: false, viewed: false, policy: null, opened: false, acknowledged: false },
       enterpriseUxStatus: null,
       enterpriseNotifications: [],
       enterpriseEventSource: null,
@@ -1471,7 +1566,13 @@
       applicationGrid: document.getElementById('applicationGrid'),
       hideHero: document.getElementById('hideHeroBtn'),
       sessionChip: document.getElementById('sessionChip'),
-      logout: document.getElementById('logoutBtn')
+      logout: document.getElementById('logoutBtn'),
+      policyGate: document.getElementById('policyGate'),
+      policyReader: document.getElementById('policyReader'),
+      policyReviewCheck: document.getElementById('policyReviewCheck'),
+      policyStatusText: document.getElementById('policyStatusText'),
+      policyVersionTag: document.getElementById('policyVersionTag'),
+      policySummary: document.getElementById('policySummary')
     };
 
     function domainById(id) { return domains.find(d => d.id === id) || domains[0]; }
@@ -1508,6 +1609,94 @@
       return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
     }
     function pretty(value) { return escapeHtml(JSON.stringify(value, null, 2)); }
+
+    function licenseAccepted() {
+      return Boolean(state.licenseGovernance && state.licenseGovernance.accepted);
+    }
+
+    function updateLicenseCta() {
+      const accept = document.querySelector('[data-license-action="accept"]');
+      if (!accept) return;
+      const gate = state.licenseGovernance || {};
+      const enabled = Boolean(gate.opened && gate.viewed && gate.acknowledged);
+      accept.disabled = !enabled;
+      if (els.policyStatusText) {
+        els.policyStatusText.textContent = gate.accepted
+          ? `License accepted for version ${gate.policyVersion || gate.policy?.version || 'current'}. Workspace access is enabled.`
+          : enabled
+            ? 'Required policy interactions completed. You can accept and continue.'
+            : 'Open the policy and check the acknowledgement to enable access.';
+      }
+    }
+
+    function renderLicenseGate(open = true) {
+      if (!els.policyGate) return;
+      const gate = state.licenseGovernance || {};
+      els.policyGate.classList.toggle('open', open && !gate.accepted);
+      if (els.policyVersionTag) els.policyVersionTag.textContent = gate.policy ? `Version ${gate.policy.version}` : `Version ${gate.policyVersion || 'current'}`;
+      if (els.policySummary && gate.policy) els.policySummary.textContent = gate.policy.summary || 'Mandatory enterprise license review is required before workspace access.';
+      if (els.policyReader && gate.policy && gate.policy.content) els.policyReader.textContent = gate.policy.content;
+      updateLicenseCta();
+    }
+
+    async function recordPolicyView(viewMode = 'modal') {
+      const response = await fetch('/api/license/view', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ viewMode })
+      });
+      if (!response.ok) throw new Error('Policy view tracking failed');
+      state.licenseGovernance.viewed = true;
+      state.licenseGovernance.opened = true;
+      updateLicenseCta();
+    }
+
+    async function loadLicenseGovernance() {
+      const [policyResponse, statusResponse] = await Promise.all([
+        fetch('/api/license/policy', { credentials: 'include' }),
+        fetch('/api/license/status', { credentials: 'include' })
+      ]);
+      if (!policyResponse.ok || !statusResponse.ok) throw new Error('License governance unavailable');
+      const policyPayload = await policyResponse.json();
+      const status = await statusResponse.json();
+      state.licenseGovernance = {
+        ...status,
+        policy: policyPayload.policy,
+        opened: Boolean(status.viewed),
+        acknowledged: false
+      };
+      renderLicenseGate(!status.accepted);
+      return state.licenseGovernance;
+    }
+
+    async function acceptLicenseGovernance() {
+      const response = await fetch('/api/license/accept', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ acknowledgedReview: Boolean(state.licenseGovernance && state.licenseGovernance.acknowledged) })
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || 'License acceptance failed');
+      state.licenseGovernance.accepted = true;
+      state.licenseGovernance.policyVersion = payload.policyVersion;
+      renderLicenseGate(false);
+      await loadProtectedPlatformData();
+      resetActiveWorkspaceState({ initialized: false, lifecycle: 'initializing', module: 'workspace-init' });
+      render();
+      initExecutionTracePanel();
+      connectEnterpriseEventStream();
+    }
+
+    async function loadProtectedPlatformData() {
+      await loadBackendMetadata();
+      await loadBackendBilling();
+      await loadBackendSimulations();
+      await loadPlatformRuntimeStatus();
+      await loadEnterpriseUxStatus();
+      await loadWorkspaceCandidates();
+    }
 
     function normalizeMetadataApi(entry) {
       const endpoint = Array.isArray(entry.endpoints) ? entry.endpoints[0] || {} : {};
@@ -4050,7 +4239,31 @@
       renderShell();
     }
 
-    document.addEventListener('click', event => {
+    document.addEventListener('click', async event => {
+      const licenseBtn = event.target.closest('[data-license-action]');
+      if (licenseBtn) {
+        const action = licenseBtn.dataset.licenseAction;
+        try {
+          if (action === 'open-modal') {
+            await recordPolicyView('modal');
+            renderLicenseGate(true);
+          }
+          if (action === 'open-tab') {
+            state.licenseGovernance.opened = true;
+            state.licenseGovernance.viewed = true;
+            updateLicenseCta();
+          }
+          if (action === 'refresh') {
+            await loadLicenseGovernance();
+          }
+          if (action === 'accept') {
+            await acceptLicenseGovernance();
+          }
+        } catch (error) {
+          if (els.policyStatusText) els.policyStatusText.textContent = error.message;
+        }
+        return;
+      }
       const lifecycleBtn = event.target.closest('[data-workspace-lifecycle]');
       if (lifecycleBtn) {
         const action = lifecycleBtn.dataset.workspaceLifecycle;
@@ -4258,6 +4471,10 @@
     });
 
     document.addEventListener('change', event => {
+      if (event.target.id === 'policyReviewCheck') {
+        state.licenseGovernance.acknowledged = Boolean(event.target.checked);
+        updateLicenseCta();
+      }
       if (event.target.id === 'playApi') { state.selectedApiId = event.target.value; state.executionRuntime = null; stopExecutionSubscription(); render(); }
       if (event.target.id === 'playMode') { state.playgroundMode = event.target.value; render(); }
       if (event.target.id === 'playEcosystem') { state.roboticsEcosystem = event.target.value; render(); }
@@ -5225,13 +5442,13 @@
         state.session = await response.json();
         state.apiKeys = (state.session.session && state.session.session.apiKeys) || [];
         if (state.session.user.demo) state.playgroundMode = 'sandbox';
-        await loadBackendMetadata();
-        await loadBackendBilling();
-        await loadBackendSimulations();
-        await loadPlatformRuntimeStatus();
-        await loadEnterpriseUxStatus();
-        await loadWorkspaceCandidates();
+        await loadLicenseGovernance();
         resetActiveWorkspaceState({ initialized: false, lifecycle: 'initializing', module: 'workspace-init' });
+        if (!licenseAccepted()) {
+          render();
+          return;
+        }
+        await loadProtectedPlatformData();
         if (window.__CINTENT_BOOTSTRAP__ && window.__CINTENT_BOOTSTRAP__.preload && location.pathname.includes('/sandbox')) {
           await openSandboxExample();
           return;

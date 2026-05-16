@@ -27,6 +27,7 @@ or specialized deployments.
 | `migrations/001_enterprise_persistence.sql` | PostgreSQL, optional TimescaleDB | Yes | Core platform persistence tables and runtime indexes |
 | `migrations/002_timescale_telemetry.sql` | Optional TimescaleDB | Advanced profile | Telemetry hypertable and time-series persistence |
 | `migrations/003_canonical_data_governance.sql` | PostgreSQL | Yes | Canonical metadata registry, schema governance, policy fabric, and lineage normalization |
+| `migrations/004_license_governance.sql` | PostgreSQL | Yes | Enterprise license policy versions, acceptance logs, policy view tracking, and consent audit logs |
 
 ## Apply Notes
 
