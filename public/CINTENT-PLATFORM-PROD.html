@@ -196,75 +196,85 @@
     .site-header {
       min-height: 74px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 18px;
+      grid-template-columns: minmax(280px, 1fr) auto;
       align-items: center;
+      gap: 18px;
       padding: 14px 24px;
       background: #ffffff;
       border-bottom: 1px solid var(--line);
     }
     .site-header-brand {
-      display: grid;
-      grid-template-columns: 42px minmax(0, 1fr);
+      display: flex;
       gap: 12px;
       align-items: center;
-      min-width: 0;
+      flex-shrink: 0;
     }
     .site-header-brand img {
-      width: 42px;
-      height: 42px;
+      width: 38px;
+      height: 38px;
       object-fit: contain;
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 6px;
       background: #fff;
-      padding: 5px;
+      padding: 4px;
+      flex-shrink: 0;
     }
     .site-header-title {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 880;
       line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .site-header-subtitle {
       margin-top: 3px;
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11px;
       line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .site-header-links {
       display: flex;
       align-items: center;
-      justify-content: end;
+      justify-content: flex-end;
       gap: 8px;
       flex-wrap: wrap;
+      min-width: 0;
     }
     .session-chip {
       border: 1px solid var(--line);
       background: var(--surface-2);
       color: var(--ink);
-      border-radius: var(--radius);
-      padding: 6px 10px 6px 6px;
-      font-size: 12px;
+      border-radius: 6px;
+      padding: 5px 8px 5px 5px;
+      font-size: 11px;
       font-weight: 800;
-      max-width: 280px;
+      max-width: 120px;
       display: inline-grid;
-      grid-template-columns: 28px minmax(0, 1fr);
-      gap: 8px;
+      grid-template-columns: 24px minmax(0, 1fr);
+      gap: 6px;
       align-items: center;
+      white-space: nowrap;
     }
     .header-logo-pair {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding-right: 6px;
+      gap: 6px;
+      padding-right: 8px;
       border-right: 1px solid var(--line);
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .header-logo-pair img {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       object-fit: contain;
-      border-radius: 6px;
+      border-radius: 4px;
       background: #070b1a;
-      padding: 3px;
+      padding: 2px;
     }
     .session-chip.demo {
       background: var(--amber-soft);
@@ -272,16 +282,17 @@
       border-color: #f0d48a;
     }
     .session-avatar {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       border-radius: 999px;
       display: grid;
       place-items: center;
       background: var(--teal);
       color: #fff;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 900;
       text-transform: uppercase;
+      flex-shrink: 0;
     }
     .session-chip.demo .session-avatar {
       background: var(--amber);
@@ -293,17 +304,24 @@
       white-space: nowrap;
     }
     .header-link {
-      min-height: 34px;
+      min-height: 32px;
       display: inline-flex;
       align-items: center;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 7px 11px;
-      color: var(--muted);
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      padding: 6px 10px;
+      color: var(--ink);
       background: var(--surface);
       text-decoration: none;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .header-link:hover {
+      background: var(--bg);
+      border-color: var(--line);
     }
     .header-link.primary {
       border-color: var(--blue);
@@ -311,17 +329,24 @@
       color: #fff;
     }
     .cart-button {
-      min-height: 34px;
+      min-height: 32px;
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
       border: 1px solid var(--blue);
-      border-radius: 8px;
-      padding: 7px 11px;
+      border-radius: 6px;
+      padding: 6px 10px;
       color: #fff;
       background: var(--blue);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 850;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .cart-button:hover {
+      background: #1450b0;
+      border-color: #1450b0;
     }
     .cart-button .cart-count {
       min-width: 20px;
@@ -399,17 +424,20 @@
       position: sticky;
       top: 0;
       z-index: 20;
-      min-height: 70px;
+      min-height: 96px;
       display: grid;
-      grid-template-columns: minmax(260px, 0.8fr) minmax(320px, 1.2fr) auto;
-      gap: 14px;
+      grid-template-columns: minmax(280px, 1fr) auto;
+      grid-template-areas:
+        "search actions"
+        "status filters";
+      gap: 10px 14px;
       align-items: center;
       padding: 12px 24px;
       background: rgba(255, 255, 255, 0.94);
       border-bottom: 1px solid var(--line);
       backdrop-filter: blur(10px);
     }
-    .search-wrap { position: relative; max-width: 760px; }
+    .search-wrap { grid-area: search; position: relative; max-width: none; min-width: 0; }
     .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #697789; }
     .search {
       width: 100%;
@@ -422,7 +450,16 @@
       background: var(--surface);
     }
     .search:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(27, 99, 201, 0.12); }
-    .top-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: 8px; }
+    .top-actions,
+    .filter-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .top-actions { grid-area: actions; justify-content: end; }
+    .filter-actions { grid-area: filters; justify-content: end; }
     .pill, .reset-btn {
       min-height: 34px;
       border-radius: 999px;
@@ -438,8 +475,9 @@
     .pill.status { background: var(--green-soft); color: var(--green); border-color: #bce7cb; }
     .pill.status.active { background: var(--green); color: #fff; border-color: var(--green); }
     .enterprise-status-strip {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(92px, 1fr));
+      grid-area: status;
+      display: flex;
+      flex-wrap: wrap;
       gap: 7px;
       align-items: stretch;
       min-width: 0;
@@ -453,6 +491,8 @@
       display: grid;
       align-content: center;
       gap: 2px;
+      flex: 1 1 122px;
+      max-width: 180px;
     }
     .runtime-chip span {
       color: var(--muted);
@@ -844,7 +884,7 @@
     .policy-head h2 { margin: 0; font-size: 20px; }
     .policy-head p { margin: 6px 0 0; color: var(--muted); line-height: 1.5; }
     .policy-body {
-      overflow: auto;
+      overflow: hidden;
       padding: 18px 22px;
     }
     .policy-reader {
@@ -1109,8 +1149,15 @@
       .hero, .two-col { grid-template-columns: 1fr; }
       .metrics, .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .three-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .topbar { grid-template-columns: 1fr; }
-      .enterprise-status-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .topbar {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "search"
+          "status"
+          "actions"
+          "filters";
+      }
+      .top-actions, .filter-actions { justify-content: start; }
       .enterprise-workspace-shell { grid-template-columns: 1fr; }
       .enterprise-assistant { position: relative; top: auto; }
     }
@@ -1123,6 +1170,7 @@
       .site-footer { grid-template-columns: 1fr; margin: 0 14px 14px; }
       .nav-list, .domain-list, .metrics, .stat-grid, .info-grid, .form-grid, .three-col { grid-template-columns: 1fr; }
       .enterprise-status-strip, .runtime-board, .enterprise-context-grid, .quick-action-grid { grid-template-columns: 1fr; }
+      .runtime-chip { max-width: none; flex-basis: 100%; }
       .detail-head { grid-template-columns: 1fr; }
       .endpoint-box { min-width: 0; }
       h1 { font-size: 28px; }
@@ -1173,9 +1221,9 @@
           <span class="session-chip demo" id="sessionChip"><span class="session-avatar">D</span><span class="session-name">Demo</span></span>
           <button class="header-link primary" type="button" data-module="learn">Learn CINTENT</button>
           <button class="cart-button" type="button" id="cartBtn" aria-label="Open API cart">Cart <span class="cart-count" id="cartCount">0</span></button>
-          <a class="header-link" href="https://cognivantalabs.com">Cognivanta Labs</a>
-          <a class="header-link" href="https://cintent.cognivantalabs.com">CINTENT</a>
-          <a class="header-link" href="/health">Health</a>
+          <a class="header-link" href="https://cognivantalabs.com" target="_blank" rel="noopener">Cognivanta Labs</a>
+          <a class="header-link" href="https://cintent.cognivantalabs.com" target="_blank" rel="noopener">CINTENT</a>
+          <a class="header-link" href="/api/health" target="_blank" rel="noopener">Health</a>
           <button class="header-link primary" type="button" id="logoutBtn">Logout</button>
         </nav>
       </header>
@@ -1198,6 +1246,8 @@
         <div class="top-actions">
           <button class="pill status" type="button" id="sandboxBtn">Enterprise sandbox</button>
           <button class="pill" type="button" data-context-learn>Ask COGNI About This Page</button>
+        </div>
+        <div class="filter-actions" aria-label="API filters">
           <button class="pill active" type="button" data-stage="all">All</button>
           <button class="pill" type="button" data-stage="production">Production</button>
           <button class="pill" type="button" data-stage="beta">Beta</button>
@@ -1348,7 +1398,7 @@
           <button class="action-btn" type="button" data-license-action="accept" disabled>Accept and Continue</button>
           <button class="secondary-btn" type="button" data-license-action="refresh">Refresh Status</button>
         </div>
-        <div class="policy-status" id="policyStatusText">Open the policy and check the acknowledgement to enable access.</div>
+        <div class="policy-status" id="policyStatusText">Check the acknowledgement checkbox to enable access.</div>
       </div>
     </div>
   </div>
@@ -1618,14 +1668,16 @@
       const accept = document.querySelector('[data-license-action="accept"]');
       if (!accept) return;
       const gate = state.licenseGovernance || {};
-      const enabled = Boolean(gate.opened && gate.viewed && gate.acknowledged);
+      // FIX: Only require acknowledged (checkbox checked), not opened/viewed
+      // The acknowledgement itself demonstrates review
+      const enabled = Boolean(gate.acknowledged);
       accept.disabled = !enabled;
       if (els.policyStatusText) {
         els.policyStatusText.textContent = gate.accepted
           ? `License accepted for version ${gate.policyVersion || gate.policy?.version || 'current'}. Workspace access is enabled.`
           : enabled
-            ? 'Required policy interactions completed. You can accept and continue.'
-            : 'Open the policy and check the acknowledgement to enable access.';
+            ? 'Policy acknowledged. You can accept and continue.'
+            : 'Check the acknowledgement checkbox to enable access.';
       }
     }
 

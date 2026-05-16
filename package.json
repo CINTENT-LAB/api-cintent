@@ -20,7 +20,8 @@
     "test:runtime-integration": "node scripts/test_runtime_integration_x2b.js",
     "test:canonical-governance": "node scripts/test_canonical_data_governance_x2c.js",
     "test:workspace-lifecycle": "node scripts/test_workspace_lifecycle.js",
-    "test:license-governance": "node scripts/test_license_governance.js"
+    "test:license-governance": "node scripts/test_license_governance.js",
+    "test:navigation": "node scripts/test_platform_navigation_contract.js"
   },
   "dependencies": {
     "express": "^4.18.2",
