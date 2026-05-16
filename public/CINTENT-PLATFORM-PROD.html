@@ -970,7 +970,21 @@
     .sim-node[data-state="degraded"] .trace-num, .sim-node[data-state="recovered"] .trace-num { background: var(--amber-soft); color: var(--amber); }
     .sim-node[data-state="failed"] .trace-num { background: #fee2e2; color: var(--red); }
     .agent-strip { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
-    .agent-chip { border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px; padding: 7px 10px; font-size: 11px; font-weight: 800; }
+    .agent-chip {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .agent-chip:hover,
+    .agent-chip:focus-visible { border-color: var(--blue); color: var(--blue); box-shadow: 0 0 0 3px rgba(27, 99, 201, 0.08); outline: none; }
+    .agent-chip.active { background: var(--blue-soft); color: #174ea6; border-color: #b8cef9; }
+    .agent-chip.ok { background: var(--green-soft); color: var(--green); border-color: #bce7cb; }
     .progress { height: 8px; background: #e5ebf3; border-radius: 999px; overflow: hidden; }
     .bar { height: 100%; background: var(--blue); border-radius: 999px; }
     .bar.green { background: var(--green); }
@@ -2671,7 +2685,7 @@
 
     function renderAskWorkflowState() {
       const current = state.askWorkflowState || { stage: 'select-apis', completed: [] };
-      return `<div class="cogni-section"><h4>Workflow Continuity</h4><div class="agent-strip">${askWorkflowStages.map(([id, label]) => `<span class="agent-chip ${current.completed && current.completed.includes(id) ? 'ok' : id === current.stage ? 'active' : ''}">${escapeHtml(label)}</span>`).join('')}</div></div>`;
+      return `<div class="cogni-section"><h4>Workflow Continuity</h4><div class="agent-strip">${askWorkflowStages.map(([id, label]) => `<button class="agent-chip ${current.completed && current.completed.includes(id) ? 'ok' : id === current.stage ? 'active' : ''}" type="button" data-ask-stage="${escapeHtml(id)}" aria-label="${escapeHtml(label)}">${escapeHtml(label)}</button>`).join('')}</div></div>`;
     }
 
     function cleanWorkspaceChat() {
@@ -3275,14 +3289,72 @@
       return `Recommended ${matches.map(a => a.name).join(', ')}. Start in sandbox mode, enable governance validation, request replay capture, and inspect confidence evolution before production entitlement. For enterprise rollout, add Tenant Governance API and Cognitive Observability API.`;
     }
 
+    function setAskStageResponse(stage, response) {
+      advanceAskWorkflowStage(stage, { status: response.status || 'ready', domain: state.askDomain || 'unselected' });
+      state.askLastResponse = {
+        assistantName: askProfileForDomain(state.askDomain).title,
+        workspaceMode: state.askMode || 'guided',
+        intent: stage,
+        domain: state.askDomain || 'platform',
+        directAnswer: response.directAnswer,
+        keyRecommendations: response.keyRecommendations || [],
+        suggestedNextSteps: response.suggestedNextSteps || [],
+        quickActions: response.quickActions || [],
+        currentContext: askWorkspaceContext(),
+        optionalDetails: response.optionalDetails || {},
+        optionalDiagnostics: response.optionalDiagnostics || {}
+      };
+      state.chat.push({ role: 'Ask COGNI', response: state.askLastResponse });
+      renderAsk();
+    }
+
     async function executeAskQuickAction(action) {
       ensureAskWorkspaceSession();
+      if (action === 'generate-orchestration') action = 'create-workflow';
+      if (action === 'select-apis') {
+        const apiOptions = askApiOptionsForDomain(state.askDomain);
+        setAskStageResponse('select-apis', {
+          status: 'waiting-for-selection',
+          directAnswer: state.askDomain
+            ? `Select the APIs you want for ${state.askDomain}. I will keep orchestration, replay, SDK, and governance recommendations tied to those choices.`
+            : 'Choose a domain first. Then I will show compatible APIs instead of guessing.',
+          keyRecommendations: state.askDomain
+            ? apiOptions.slice(0, 4).map(api => api.name || api.api_key)
+            : ['Select a domain', 'Choose an application only after the domain is set', 'Avoid starting orchestration from an empty context'],
+          suggestedNextSteps: ['Select APIs', 'Generate architecture'],
+          quickActions: [{ id: 'generate-architecture', label: 'Generate Architecture', prompt: 'Generate architecture for this selected workspace context' }]
+        });
+        return;
+      }
+      if (action === 'generate-architecture') {
+        setAskStageResponse('generate-architecture', {
+          status: 'generated',
+          directAnswer: state.askDomain
+            ? `Here is the architecture direction for the ${state.askDomain} workspace: resolve metadata, select APIs, compile orchestration, capture replay, enforce governance, then generate SDK/runtime outputs.`
+            : 'Architecture generation needs a selected domain or a written goal. Start by selecting a domain or typing what you want to build.',
+          keyRecommendations: [
+            state.askApplicationId ? `Anchor the architecture to ${state.askApplicationId}.` : 'Choose an application or keep it platform-level.',
+            state.askSelectedWorkflow ? `Use "${state.askSelectedWorkflow}" as the workflow spine.` : 'Describe the workflow objective before orchestration.',
+            effectiveAskSelectedApis().length ? 'Use the selected APIs as execution nodes.' : 'Select APIs before compiling execution.'
+          ],
+          suggestedNextSteps: ['Generate orchestration', 'Run simulation', 'Generate SDK'],
+          quickActions: [
+            { id: 'create-workflow', label: 'Generate Orchestration', prompt: 'Generate orchestration for this architecture' },
+            { id: 'run-simulation', label: 'Run Simulation', prompt: 'Run a compatible simulation for this architecture' }
+          ],
+          optionalDetails: { selectedApis: effectiveAskSelectedApis(), simulation: effectiveAskSimulation(), environment: state.askEnvironment || 'not selected' }
+        });
+        return;
+      }
       if (action === 'run-simulation') {
         const simulationId = effectiveAskSimulation();
         if (!simulationId) {
-          state.askLastResponse = { assistantName: askProfileForDomain(state.askDomain).title, workspaceMode: state.askMode, intent: 'simulation', domain: state.askDomain, directAnswer: `No matching ${state.askDomain} simulation is available yet. Select a compatible simulation or continue as a cross-domain workflow intentionally.`, keyRecommendations: ['Choose a matching simulation before runtime execution.', 'Use Create Workflow to compile orchestration while simulation coverage is added.'], suggestedNextSteps: ['Switch simulation', 'Create workflow'], quickActions: [], currentContext: askWorkspaceContext(), optionalDetails: {}, optionalDiagnostics: {} };
-          state.chat.push({ role: 'Ask COGNI', response: state.askLastResponse });
-          renderAsk();
+          setAskStageResponse('run-simulation', {
+            status: 'needs-context',
+            directAnswer: state.askDomain ? `No matching ${state.askDomain} simulation is selected yet. Pick a compatible simulation before running.` : 'Select a domain before running a simulation.',
+            keyRecommendations: ['Choose a compatible simulation.', 'Generate orchestration first if the simulation is not obvious.'],
+            suggestedNextSteps: ['Select simulation', 'Create workflow']
+          });
           return;
         }
         state.selectedSimulationId = simulationId;
@@ -4439,6 +4511,9 @@
         const prompt = cogniActionBtn.dataset.askPrompt;
         if (prompt) state.chat.push({ role: 'You', text: prompt });
         const actionMap = {
+          'select-apis': 'select-apis',
+          'generate-architecture': 'generate-architecture',
+          'generate-orchestration': 'create-workflow',
           'run-simulation': 'run-simulation',
           'create-workflow': 'create-workflow',
           'generate-sdk': 'generate-sdk',
@@ -4454,6 +4529,24 @@
           return;
         }
         render();
+        return;
+      }
+      const askStageBtn = event.target.closest('[data-ask-stage]');
+      if (askStageBtn) {
+        const stageActionMap = {
+          'select-apis': 'select-apis',
+          'generate-architecture': 'generate-architecture',
+          'generate-orchestration': 'create-workflow',
+          'run-simulation': 'run-simulation',
+          'open-replay': 'open-replay',
+          'inspect-governance': 'inspect-governance',
+          'generate-sdk': 'generate-sdk',
+          'deploy-runtime': 'deploy-runtime'
+        };
+        executeAskQuickAction(stageActionMap[askStageBtn.dataset.askStage] || askStageBtn.dataset.askStage).catch(error => {
+          state.chat.push({ role: 'Ask COGNI', text: `Action failed: ${error.message}` });
+          renderAsk();
+        });
         return;
       }
       const askPromptBtn = event.target.closest('[data-ask-prompt]');

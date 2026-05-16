@@ -64,6 +64,22 @@ async function request(path, options = {}, jar = {}) {
   assert.equal(duplicate.response.status, 200);
   assert.notEqual(duplicate.body.adaptiveResponse.answerFingerprint, adaptive.answerFingerprint, 'duplicate response should be varied');
 
+  const page = require('fs').readFileSync(require('path').join(process.cwd(), 'public', 'CINTENT-PLATFORM-PROD.html'), 'utf8');
+  [
+    "['select-apis', 'Select APIs']",
+    "['generate-architecture', 'Generate Architecture']",
+    "['generate-orchestration', 'Generate Orchestration']",
+    "['run-simulation', 'Run Simulation']",
+    "['open-replay', 'Open Replay']",
+    "['inspect-governance', 'Inspect Governance']",
+    "['generate-sdk', 'Generate SDK']",
+    "['deploy-runtime', 'Deploy Runtime']",
+    'data-ask-stage="${escapeHtml(id)}"',
+    "const askStageBtn = event.target.closest('[data-ask-stage]')",
+    "if (action === 'generate-architecture')",
+    "if (action === 'select-apis')"
+  ].forEach(marker => assert.ok(page.includes(marker), `missing Ask COGNI workflow control marker: ${marker}`));
+
   const mismatch = await request('/api/ask/context/sync', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
