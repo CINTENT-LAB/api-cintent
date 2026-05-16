@@ -11,6 +11,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./migrations/001_enterprise_persistence.sql:/docker-entrypoint-initdb.d/001_enterprise_persistence.sql:ro
+      - ./migrations/002_api_metadata_registry.sql:/docker-entrypoint-initdb.d/002_api_metadata_registry.sql:ro
       - ./migrations/003_canonical_data_governance.sql:/docker-entrypoint-initdb.d/003_canonical_data_governance.sql:ro
       - ./migrations/004_license_governance.sql:/docker-entrypoint-initdb.d/004_license_governance.sql:ro
     healthcheck:

@@ -1,0 +1,123 @@
+================================================================================
+PHASE-X.10 LOCAL DOCKER OPERATIONALIZATION
+Real Database Activation, Runtime Stabilization
+================================================================================
+
+CRITICAL: Run the following commands in PowerShell (as administrator) from the
+api-cintent directory:
+
+================================================================================
+STEP 1: Navigate to api-cintent directory
+================================================================================
+
+cd C:\Users\rpm_T\RAJA_REP\api-cintent
+
+================================================================================
+STEP 2: Start PostgreSQL container
+================================================================================
+
+docker-compose up -d postgres
+docker-compose logs postgres
+
+# Wait for message: "database system is ready to accept connections"
+# This takes 10-30 seconds
+
+================================================================================
+STEP 3: Verify PostgreSQL is running
+================================================================================
+
+docker-compose ps
+
+# You should see cintent-postgres container with status "Up"
+
+================================================================================
+STEP 4: Load database migrations
+================================================================================
+
+# Get the container ID
+$CONTAINER_ID = docker-compose ps -q postgres
+
+# Load migration 001 (core persistence)
+docker exec $CONTAINER_ID psql -U cintent -d cintent -f /docker-entrypoint-initdb.d/001_enterprise_persistence.sql
+
+# Load migration 003 (governance)
+docker exec $CONTAINER_ID psql -U cintent -d cintent -f /docker-entrypoint-initdb.d/003_canonical_data_governance.sql
+
+# Load migration 004 (license)
+docker exec $CONTAINER_ID psql -U cintent -d cintent -f /docker-entrypoint-initdb.d/004_license_governance.sql
+
+================================================================================
+STEP 5: Verify schemas loaded
+================================================================================
+
+docker exec $CONTAINER_ID psql -U cintent -d cintent -c "\dt"
+
+# You should see 20+ tables listed
+
+================================================================================
+STEP 6: Verify pgvector extension
+================================================================================
+
+docker exec $CONTAINER_ID psql -U cintent -d cintent -c "SELECT extname FROM pg_extension WHERE extname = 'vector';"
+
+# You should see: extname = vector
+
+================================================================================
+STEP 7: Start Redis container
+================================================================================
+
+docker-compose up -d redis
+docker-compose logs redis
+
+# Redis should start instantly
+
+================================================================================
+STEP 8: Start full Docker stack
+================================================================================
+
+docker-compose up -d
+
+# This will start all 10 services:
+# postgres, timescaledb, redis, neo4j, qdrant, minio, cintent-api,
+# trace-streamer, prometheus, grafana
+
+================================================================================
+STEP 9: Verify all containers are running
+================================================================================
+
+docker-compose ps
+
+# All containers should show "Up" status
+
+================================================================================
+STEP 10: Check API health
+================================================================================
+
+# Wait 10 seconds for API to fully start
+Start-Sleep -Seconds 10
+
+# Test health endpoint
+curl -s http://localhost:3000/api/health | ConvertFrom-Json
+
+# Should return: status = "operational"
+
+================================================================================
+NEXT ACTIONS:
+================================================================================
+
+1. Verify PostgreSQL operationalization (all tables created)
+2. Start Redis operationalization (move session persistence)
+3. Test Ask COGNI real backend wiring
+4. Implement governance enforcement
+5. Test replay persistence
+6. Validate full user workflow end-to-end
+
+================================================================================
+
+If you encounter issues:
+- docker-compose logs <service> to see detailed logs
+- docker-compose down to stop all containers
+- docker volume ls to see persistent volumes
+- docker-compose logs -f to follow logs in real-time
+
+================================================================================
