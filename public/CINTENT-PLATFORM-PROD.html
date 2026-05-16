@@ -1479,7 +1479,7 @@
       invoice: null,
       invoiceHtml: '',
       simulations: [],
-      selectedSimulationId: 'travel-orchestration',
+      selectedSimulationId: '',
       sdkDomain: 'robotics-cobotics',
       sdkDeploymentMode: 'edge',
       sdkProblem: 'I want to build autonomous warehouse robotics with multilingual human interaction.',
@@ -1582,9 +1582,9 @@
       domainDetails: {},
       selectedApplicationId: '',
       askDomain: '',
-      askApplicationId: 'platform',
-      askMode: 'beginner',
-      askEnvironment: 'sandbox',
+      askApplicationId: '',
+      askMode: '',
+      askEnvironment: '',
       askSelectedApis: [],
       askSelectedSimulation: '',
       askSelectedWorkflow: '',
@@ -2686,9 +2686,9 @@
       state.module = options.module || (options.initialized ? 'ask' : 'workspace-init');
       state.selectedApplicationId = '';
       state.askDomain = options.domain || '';
-      state.askApplicationId = options.applicationId || 'platform';
-      state.askMode = options.mode || 'beginner';
-      state.askEnvironment = options.environment || 'sandbox';
+      state.askApplicationId = options.applicationId || '';
+      state.askMode = options.mode || '';
+      state.askEnvironment = options.environment || '';
       state.askSelectedApis = Array.isArray(options.selectedApis) ? options.selectedApis : [];
       state.askSelectedSimulation = options.selectedSimulation || '';
       state.askSelectedWorkflow = options.selectedWorkflow || '';
@@ -2758,7 +2758,7 @@
     }
 
     async function startFreshWorkspace() {
-      resetActiveWorkspaceState({ initialized: true, lifecycle: 'fresh', choice: 'fresh', module: 'ask', question: 'What would you like to build today?' });
+      resetActiveWorkspaceState({ initialized: true, lifecycle: 'fresh', choice: 'fresh', module: 'ask' });
       state.workspaceLifecycleMessage = 'Fresh workspace started. No previous domain, APIs, workflow, replay, telemetry, or Ask COGNI prompt was hydrated.';
       await fetch('/api/traces/event', {
         method: 'POST',
@@ -3058,6 +3058,7 @@
     }
 
     function askApiOptionsForDomain(domain) {
+      if (!domain) return [];
       const profile = askProfileForDomain(domain);
       const terms = [domain, ...(profile.searchTerms || [])].map(term => String(term || '').toLowerCase()).filter(Boolean);
       const matches = apiCatalog.filter(api => {
@@ -3068,6 +3069,7 @@
     }
 
     function askSimulationOptionsForDomain(domain) {
+      if (!domain) return [];
       const profile = askProfileForDomain(domain);
       const terms = [domain, ...(profile.simulationTerms || [])].map(term => String(term || '').toLowerCase()).filter(Boolean);
       const matches = state.simulations.filter(sim => {
@@ -3083,8 +3085,7 @@
       if (!domain) return [];
       const options = askApiOptionsForDomain(domain);
       const validKeys = new Set(options.map(api => api.api_key).filter(Boolean));
-      const selected = (state.askSelectedApis || []).filter(key => validKeys.has(key));
-      return selected.length ? selected : options.slice(0, 3).map(api => api.api_key).filter(Boolean);
+      return (state.askSelectedApis || []).filter(key => validKeys.has(key));
     }
 
     function effectiveAskSimulation(domain = state.askDomain) {
@@ -3098,11 +3099,11 @@
       saveAskWorkspaceSession();
       const profile = askProfileForDomain(domain);
       state.askDomain = domain;
-      state.askApplicationId = profile.defaultApplication || state.askApplicationId || 'platform';
-      state.askSelectedWorkflow = profile.defaultWorkflow || state.askSelectedWorkflow || '';
-      state.askSelectedSimulation = effectiveAskSimulation(domain);
-      state.askSelectedApis = effectiveAskSelectedApis(domain);
-      if (options.resetQuestion || !state.askDraftQuestion) state.askDraftQuestion = profile.defaultQuestion || '';
+      state.askApplicationId = '';
+      state.askSelectedWorkflow = '';
+      state.askSelectedSimulation = '';
+      state.askSelectedApis = [];
+      if (options.resetQuestion) state.askDraftQuestion = '';
       state.askLastResponse = null;
       state.askOverrideMismatch = false;
       const nextKey = askWorkspaceKey(domain, state.askApplicationId);
@@ -3116,7 +3117,7 @@
         state.chat = existing.chat || state.chat;
       } else {
         state.askWorkflowState = { stage: 'select-apis', completed: [], lastAction: '', runtimeState: 'idle', artifacts: {} };
-        state.chat = [{ role: 'Ask COGNI', text: `${profile.title} is ready. I will keep this workspace memory isolated from other domains.` }];
+        state.chat = [{ role: 'Ask COGNI', text: `${profile.title} is ready. Choose an application, workflow, simulation, or API when you are ready.` }];
       }
       ensureAskWorkspaceSession();
     }
@@ -3229,13 +3230,14 @@
       const simulationOptions = askSimulationOptionsForDomain(state.askDomain);
       const selectedSimulation = effectiveAskSimulation();
       const context = askWorkspaceContext();
+      const contextTarget = context.applicationName || context.domain || 'No context selected';
       document.getElementById('view-ask').innerHTML = `<div class="panel"><div class="panel-head"><div><h2>Ask COGNI Workspace</h2><div class="sub">Context-aware multi-domain cognitive workspace intelligence. Choose the operational context first, then ask for guidance.</div></div><span class="tag prod">${escapeHtml(profile.title)}</span></div><div class="panel-body">
         <div class="stat-grid">${[
           ['Workspace', state.workspaceLifecycle === 'sandbox' ? 'Sandbox Active' : 'Session Active'],
           ['Domain', context.domain || 'Not selected'],
           ['Application', context.applicationName || 'Not selected'],
-          ['Environment', context.environment],
-          ['Mode', context.mode],
+          ['Environment', context.environment || 'Not selected'],
+          ['Mode', context.mode || 'Not selected'],
           ['APIs', context.selectedApis.length],
           ['Simulation', context.selectedSimulation || 'Not selected'],
           ['Stage', state.askWorkflowState.stage]
@@ -3245,18 +3247,18 @@
         <div class="panel"><div class="panel-head"><div><h2>Workspace Context</h2><div class="sub">Ask COGNI synchronizes with these selections without a page refresh.</div></div></div><div class="panel-body">
           ${renderAskValidation()}
           <div class="field"><label>Domain</label><select class="select" id="askDomain"><option value="" ${!state.askDomain ? 'selected' : ''}>Select a domain</option>${domainOptions.map(item => `<option value="${item}" ${state.askDomain === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
-          <div class="field" style="margin-top:10px;"><label>Application</label><select class="select" id="askApplicationId">${appOptions.map(app => `<option value="${app.id}" ${state.askApplicationId === app.id ? 'selected' : ''}>${app.name}</option>`).join('')}</select></div>
-          <div class="field" style="margin-top:10px;"><label>User mode</label><select class="select" id="askMode">${['beginner','business','technical','engineering','diagnostic'].map(item => `<option value="${item}" ${state.askMode === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
-          <div class="field" style="margin-top:10px;"><label>Environment</label><select class="select" id="askEnvironment">${['sandbox','production','edge','hybrid','sovereign'].map(item => `<option value="${item}" ${state.askEnvironment === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
-          <div class="field" style="margin-top:10px;"><label>Workflow</label><input class="input" id="askSelectedWorkflow" value="${escapeHtml(state.askSelectedWorkflow)}"></div>
-          <div class="field" style="margin-top:10px;"><label>Simulation</label><select class="select" id="askSelectedSimulation">${simulationOptions.length ? simulationOptions.slice(0, 14).map(sim => `<option value="${sim.id}" ${selectedSimulation === sim.id ? 'selected' : ''}>${sim.title}</option>`).join('') : '<option value="">No matching simulation yet</option>'}</select></div>
+          <div class="field" style="margin-top:10px;"><label>Application</label><select class="select" id="askApplicationId"><option value="" ${!state.askApplicationId ? 'selected' : ''}>Select an application</option>${appOptions.map(app => `<option value="${app.id}" ${state.askApplicationId === app.id ? 'selected' : ''}>${app.name}</option>`).join('')}</select></div>
+          <div class="field" style="margin-top:10px;"><label>User mode</label><select class="select" id="askMode"><option value="" ${!state.askMode ? 'selected' : ''}>Select user mode</option>${['beginner','business','technical','engineering','diagnostic'].map(item => `<option value="${item}" ${state.askMode === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
+          <div class="field" style="margin-top:10px;"><label>Environment</label><select class="select" id="askEnvironment"><option value="" ${!state.askEnvironment ? 'selected' : ''}>Select environment</option>${['sandbox','production','edge','hybrid','sovereign'].map(item => `<option value="${item}" ${state.askEnvironment === item ? 'selected' : ''}>${item}</option>`).join('')}</select></div>
+          <div class="field" style="margin-top:10px;"><label>Workflow</label><input class="input" id="askSelectedWorkflow" placeholder="Describe or choose a workflow" value="${escapeHtml(state.askSelectedWorkflow)}"></div>
+          <div class="field" style="margin-top:10px;"><label>Simulation</label><select class="select" id="askSelectedSimulation"><option value="" ${!selectedSimulation ? 'selected' : ''}>Select a simulation</option>${simulationOptions.length ? simulationOptions.slice(0, 14).map(sim => `<option value="${sim.id}" ${selectedSimulation === sim.id ? 'selected' : ''}>${sim.title}</option>`).join('') : ''}</select></div>
           <div class="field" style="margin-top:10px;"><label>Selected APIs</label><div class="api-list" style="max-height:260px;overflow:auto;">${apiOptions.map(api => `<label class="api-card" style="cursor:pointer;"><span class="api-top"><span class="api-name">${escapeHtml(api.name)}</span><input type="checkbox" data-ask-api="${escapeHtml(api.api_key)}" ${selectedApiKeys.includes(api.api_key) ? 'checked' : ''}></span><span class="api-desc">${escapeHtml(api.description || api.short_description || '')}</span></label>`).join('') || empty('No APIs for this domain yet.')}</div></div>
         </div></div>
-        <div class="panel"><div class="panel-head"><div><h2>Operational Workspace</h2><div class="sub">${escapeHtml(profile.title)} for ${escapeHtml(context.applicationName || context.domain)}.</div></div></div><div class="panel-body">
+        <div class="panel"><div class="panel-head"><div><h2>Operational Workspace</h2><div class="sub">${escapeHtml(profile.title)} for ${escapeHtml(contextTarget)}.</div></div></div><div class="panel-body">
           ${renderAskWorkflowState()}
           ${renderRuntimeProof()}
-          <div class="three-col">${profile.actions.map(action => `<button class="tile" type="button" data-ask-prompt="${escapeHtml(action)} for ${escapeHtml(context.applicationName || context.domain)}"><h3>${escapeHtml(action)}</h3><p>Ask for guided recommendations, workflow steps, simulations, replay, SDKs, and governance.</p></button>`).join('')}</div>
-          <div class="field" style="margin-top:12px;"><label>Ask COGNI in this workspace</label><textarea class="textarea" id="askInput">${escapeHtml(state.askDraftQuestion || profile.defaultQuestion || '')}</textarea></div>
+          <div class="three-col">${profile.actions.map(action => `<button class="tile" type="button" data-ask-prompt="${escapeHtml(action)}${context.domain ? ` for ${escapeHtml(contextTarget)}` : ''}"><h3>${escapeHtml(action)}</h3><p>Ask for guided recommendations, workflow steps, simulations, replay, SDKs, and governance.</p></button>`).join('')}</div>
+          <div class="field" style="margin-top:12px;"><label>Ask COGNI in this workspace</label><textarea class="textarea" id="askInput" placeholder="What would you like to build today?">${escapeHtml(state.askDraftQuestion || '')}</textarea></div>
           <div class="toolbar" style="margin-top:12px;"><button class="action-btn" type="button" id="askBtn">Ask COGNI</button><button class="secondary-btn" type="button" data-ask-action="run-simulation">Run Simulation</button><button class="secondary-btn" type="button" data-ask-action="create-workflow">Create Workflow</button><button class="secondary-btn" type="button" data-ask-action="generate-sdk">Generate SDK</button><button class="secondary-btn" type="button" data-ask-action="open-replay">Open Replay</button></div>
           <div class="chat" id="chatBox" style="margin-top:14px;">${state.chat.map(renderChatMessage).join('')}</div>
         </div></div>

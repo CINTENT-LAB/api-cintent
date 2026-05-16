@@ -17,6 +17,14 @@ async function request(path, options = {}, jar = {}) {
 (async () => {
   const jar = {};
   await request('/sandbox', {}, jar);
+  const policyView = await request('/api/license/view', { method: 'POST' }, jar);
+  assert.equal(policyView.response.status, 200);
+  const policyAccept = await request('/api/license/accept', {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: 'acknowledgedReview=true'
+  }, jar);
+  assert.equal(policyAccept.response.status, 200);
 
   const droneContext = {
     domain: 'drone',

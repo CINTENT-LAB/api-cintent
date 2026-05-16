@@ -31,9 +31,19 @@ function save(name, payload) {
   assert.ok(page.includes('Start Fresh Workspace'), 'frontend should expose fresh workspace option');
   assert.ok(page.includes('Resume Previous Workspace'), 'frontend should expose resume option');
   assert.ok(page.includes('Open Sandbox Example'), 'frontend should expose sandbox option');
-  assert.ok(page.includes("await loadWorkspaceCandidates();\n        resetActiveWorkspaceState"), 'initializeSession should not call restore before user choice');
+  assert.ok(page.includes("resetActiveWorkspaceState({ initialized: false, lifecycle: 'initializing', module: 'workspace-init' });"), 'initializeSession should clear workspace before rendering');
   assert.ok(!page.includes('await restoreBackendWorkspaceSession().catch(() => false);'), 'auto restore must be removed from initialization');
   assert.ok(page.includes('What would you like to build today?'), 'Ask COGNI must initialize cleanly');
+  assert.ok(page.includes("askApplicationId: ''"), 'Ask COGNI application must start unselected');
+  assert.ok(page.includes("askMode: ''"), 'Ask COGNI user mode must start unselected');
+  assert.ok(page.includes("askEnvironment: ''"), 'Ask COGNI environment must start unselected');
+  assert.ok(page.includes("selectedSimulationId: ''"), 'global simulation must start unselected');
+  assert.ok(page.includes('Select an application'), 'Ask COGNI application dropdown must expose an empty placeholder');
+  assert.ok(page.includes('Select user mode'), 'Ask COGNI mode dropdown must expose an empty placeholder');
+  assert.ok(page.includes('Select environment'), 'Ask COGNI environment dropdown must expose an empty placeholder');
+  assert.ok(page.includes('Select a simulation'), 'Ask COGNI simulation dropdown must expose an empty placeholder');
+  assert.ok(page.includes('placeholder="What would you like to build today?"'), 'Ask COGNI textarea should use placeholder instead of prefilled prompt');
+  assert.ok(!page.includes("resetActiveWorkspaceState({ initialized: true, lifecycle: 'fresh', choice: 'fresh', module: 'ask', question:"), 'fresh workspace must not prefill Ask COGNI prompt');
   assert.ok(page.includes('/api/workspace/reset'), 'reset button must call backend reset');
   save('frontend-lifecycle-static.json', {
     initializationScreen: true,
@@ -44,6 +54,15 @@ function save(name, payload) {
 
   const demo = await request('/api/auth/demo', { method: 'POST', body: '{}' });
   assert.equal(demo.status, 200, 'demo auth should work');
+
+  const policyView = await request('/api/license/view', { method: 'POST' });
+  assert.equal(policyView.status, 200, 'license policy view should be tracked before protected workspace tests');
+  const policyAccept = await request('/api/license/accept', {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: 'acknowledgedReview=true'
+  });
+  assert.equal(policyAccept.status, 200, 'license acceptance should unlock protected workspace tests');
 
   const invalidWorkspace = await request('/api/workspaces/state', {
     method: 'POST',
