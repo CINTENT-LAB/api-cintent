@@ -483,6 +483,7 @@
       min-width: 0;
     }
     .runtime-chip {
+      appearance: none;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--surface-2);
@@ -493,7 +494,10 @@
       gap: 2px;
       flex: 1 1 122px;
       max-width: 180px;
+      text-align: left;
+      cursor: pointer;
     }
+    .runtime-chip:hover { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(27, 99, 201, 0.08); }
     .runtime-chip span {
       color: var(--muted);
       font-size: 9px;
@@ -1237,11 +1241,11 @@
           <input id="globalSearch" class="search" type="search" placeholder="Search APIs, workflows, billing, governance, replay, Ask COGNI, SDKs..." aria-label="Search platform">
         </div>
         <div class="enterprise-status-strip" id="enterpriseStatusStrip" aria-label="Live runtime status">
-          <div class="runtime-chip" data-state="standby"><span>Workspace</span><strong>Initializing</strong></div>
-          <div class="runtime-chip" data-state="standby"><span>Orchestration</span><strong>Ready</strong></div>
-          <div class="runtime-chip" data-state="standby"><span>Replay</span><strong>Ready</strong></div>
-          <div class="runtime-chip" data-state="standby"><span>Telemetry</span><strong>Standby</strong></div>
-          <div class="runtime-chip" data-state="standby"><span>Governance</span><strong>Guarded</strong></div>
+          <button class="runtime-chip" type="button" data-state="standby" data-module="workspace"><span>Workspace</span><strong>Initializing</strong></button>
+          <button class="runtime-chip" type="button" data-state="standby" data-module="operating"><span>Orchestration</span><strong>Ready</strong></button>
+          <button class="runtime-chip" type="button" data-state="standby" data-module="visualizer"><span>Replay</span><strong>Ready</strong></button>
+          <button class="runtime-chip" type="button" data-state="standby" data-module="observability"><span>Telemetry</span><strong>Standby</strong></button>
+          <button class="runtime-chip" type="button" data-state="standby" data-module="governance"><span>Governance</span><strong>Guarded</strong></button>
         </div>
         <div class="top-actions">
           <button class="pill status" type="button" id="sandboxBtn">Enterprise sandbox</button>
@@ -1635,13 +1639,47 @@
     function hasTier(tier) { return tierRank(currentEntitlement().tier) >= tierRank(tier); }
     function isLockedApi(api) { return Boolean(api && api.accessPolicy && api.accessPolicy.locked); }
     function lockBanner(message) { return `<div class="lock-banner">${message}</div>`; }
-    function queryTokens() { return els.search.value.trim().toLowerCase().split(/\s+/).filter(Boolean); }
+    const SEARCH_STOP_WORDS = new Set(['a', 'an', 'and', 'api', 'apis', 'app', 'application', 'build', 'create', 'for', 'in', 'management', 'of', 'platform', 'solution', 'solutions', 'system', 'systems', 'the', 'to', 'with', 'workflow', 'workflows']);
+    const SEARCH_SYNONYMS = {
+      healthcare: ['healthcare', 'health', 'clinical', 'patient', 'hospital', 'medical', 'medicine', 'care', 'telemedicine', 'ehr', 'emr'],
+      patient: ['patient', 'clinical', 'record', 'records', 'timeline', 'longitudinal', 'healthcare', 'hospital'],
+      drone: ['drone', 'uav', 'uas', 'px4', 'mavlink', 'flight', 'mission', 'swarm', 'autonomy'],
+      robotics: ['robotics', 'robot', 'cobot', 'cobotics', 'manufacturing', 'industrial', 'automation'],
+      travel: ['travel', 'tourism', 'itinerary', 'airport', 'baggage', 'flight', 'localization'],
+      legal: ['legal', 'judicial', 'court', 'case', 'evidence', 'nyaynetra'],
+      manufacturing: ['manufacturing', 'factory', 'sensor', 'predictive', 'maintenance', 'quality', 'industrial'],
+      multilingual: ['multilingual', 'translation', 'language', 'localization', 'transcription', 'voice']
+    };
+    function rawQueryText() { return (els.search && els.search.value ? els.search.value : '').trim().toLowerCase(); }
+    function expandedQueryTokens() {
+      const rawTokens = rawQueryText().split(/\s+/).filter(Boolean);
+      const tokenSet = new Set();
+      rawTokens.forEach(token => {
+        const clean = token.replace(/[^a-z0-9-]/g, '');
+        if (!clean || SEARCH_STOP_WORDS.has(clean)) return;
+        tokenSet.add(clean);
+        Object.entries(SEARCH_SYNONYMS).forEach(([key, values]) => {
+          if (key === clean || values.includes(clean)) values.forEach(value => tokenSet.add(value));
+        });
+      });
+      return [...tokenSet];
+    }
+    function queryTokens() { return expandedQueryTokens(); }
     function apiHaystack(a) {
       return [a.name, a.domain, a.originalCategory, a.domainStatus, a.endpoint, a.overview, a.capability, a.billing, a.tags.join(' '), a.outputs.join(' '), a.governance.join(' '), a.workflow.join(' '), JSON.stringify(a.compliance || {})].join(' ').toLowerCase();
     }
+    function searchScore(api, tokens, rawQuery) {
+      if (!rawQuery) return 1;
+      const haystack = apiHaystack(api);
+      let score = tokens.reduce((total, token) => total + (haystack.includes(token) ? 1 : 0), 0);
+      const directPhrases = rawQuery.split(/\s+/).filter(token => token.length > 4 && !SEARCH_STOP_WORDS.has(token));
+      directPhrases.forEach(token => { if (haystack.includes(token)) score += 2; });
+      return score;
+    }
     function filteredApis() {
       const tokens = queryTokens();
-      return apiCatalog.filter(a => {
+      const rawQuery = rawQueryText();
+      const results = apiCatalog.filter(a => {
         const domainMatch = tokens.length ? true : state.domain === 'all' || a.domain === state.domain;
         const stageMatch =
           state.stage === 'all' ||
@@ -1650,9 +1688,10 @@
           (state.stage === 'active' && a.domainStatus !== 'coming_soon' && !isLockedApi(a)) ||
           a.stage === state.stage ||
           a.domainStatus === state.stage;
-        const searchMatch = !tokens.length || tokens.every(t => apiHaystack(a).includes(t));
+        const searchMatch = !rawQuery || searchScore(a, tokens, rawQuery) > 0;
         return domainMatch && stageMatch && searchMatch;
       });
+      return rawQuery ? results.sort((a, b) => searchScore(b, tokens, rawQuery) - searchScore(a, tokens, rawQuery)) : results;
     }
     function money(value) { return `$${value.toLocaleString()}`; }
     function escapeHtml(value) {
@@ -1898,13 +1937,13 @@
       const workspace = ux.workspace || {};
       const runtime = ux.runtime || {};
       const chips = [
-        ['Workspace', state.workspaceInitialized ? 'Session Active' : 'Needs Setup', state.workspaceInitialized ? 'operational' : 'standby'],
-        ['Orchestration', state.workspaceInitialized ? (runtime.orchestrationState || 'Ready') : 'Not started', runtime.orchestrationState || 'standby'],
-        ['Replay', state.workspaceInitialized ? (runtime.replayState || 'Ready') : 'Not started', runtime.replayState || 'standby'],
-        ['Telemetry', state.workspaceInitialized ? (runtime.telemetryState || 'Standby') : 'Not started', runtime.telemetryState || 'standby'],
-        ['Governance', runtime.governanceState || 'guarded', runtime.governanceState || 'active']
+        ['Workspace', state.workspaceInitialized ? 'Session Active' : 'Needs Setup', state.workspaceInitialized ? 'operational' : 'standby', 'workspace'],
+        ['Orchestration', state.workspaceInitialized ? (runtime.orchestrationState || 'Ready') : 'Not started', runtime.orchestrationState || 'standby', 'operating'],
+        ['Replay', state.workspaceInitialized ? (runtime.replayState || 'Ready') : 'Not started', runtime.replayState || 'standby', 'visualizer'],
+        ['Telemetry', state.workspaceInitialized ? (runtime.telemetryState || 'Standby') : 'Not started', runtime.telemetryState || 'standby', 'observability'],
+        ['Governance', runtime.governanceState || 'guarded', runtime.governanceState || 'active', 'governance']
       ];
-      els.enterpriseStatusStrip.innerHTML = chips.map(([label, value, status]) => `<div class="runtime-chip" data-state="${escapeHtml(String(status).toLowerCase())}"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join('');
+      els.enterpriseStatusStrip.innerHTML = chips.map(([label, value, status, module]) => `<button class="runtime-chip" type="button" data-state="${escapeHtml(String(status).toLowerCase())}" data-module="${escapeHtml(module)}" aria-label="Open ${escapeHtml(label)}"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></button>`).join('');
     }
 
     function connectEnterpriseEventStream() {
@@ -4291,6 +4330,23 @@
       renderShell();
     }
 
+    function focusActiveWorkspaceView() {
+      window.requestAnimationFrame(() => {
+        const activeView = document.querySelector('.content .view.active');
+        if (activeView) activeView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    function navigateToModule(moduleId, options = {}) {
+      state.module = moduleId;
+      if (options.hideIntro) state.introHidden = true;
+      if (!state.workspaceInitialized && state.module !== 'workspace' && state.module !== 'workspace-init') {
+        state.workspaceLifecycleMessage = 'Initialize a workspace before opening platform runtimes.';
+      }
+      render();
+      if (options.focus !== false) focusActiveWorkspaceView();
+    }
+
     document.addEventListener('click', async event => {
       const licenseBtn = event.target.closest('[data-license-action]');
       if (licenseBtn) {
@@ -4331,7 +4387,10 @@
         return;
       }
       const moduleBtn = event.target.closest('[data-module]');
-      if (moduleBtn) { state.module = moduleBtn.dataset.module; if (!state.workspaceInitialized && state.module !== 'workspace') state.workspaceLifecycleMessage = 'Initialize a workspace before opening platform runtimes.'; if (state.module === 'billing') state.cartOpen = false; render(); return; }
+      if (moduleBtn) {
+        navigateToModule(moduleBtn.dataset.module, { hideIntro: Boolean(moduleBtn.closest('.hero-actions')) });
+        return;
+      }
       const domainBtn = event.target.closest('[data-domain]');
       if (domainBtn) {
         const previousDomain = state.domain;
@@ -4344,7 +4403,7 @@
         return;
       }
       const stageBtn = event.target.closest('[data-stage]');
-      if (stageBtn) { state.stage = stageBtn.dataset.stage; state.module = 'docs'; render(); return; }
+      if (stageBtn) { state.stage = stageBtn.dataset.stage; navigateToModule('docs', { hideIntro: true }); return; }
       const apiBtn = event.target.closest('[data-api]');
       if (apiBtn) { state.selectedApiId = apiBtn.dataset.api; state.executionRuntime = null; stopExecutionSubscription(); render(); return; }
       const addBtn = event.target.closest('[data-add-cart]');
@@ -4510,10 +4569,15 @@
       if (footerAction && footerAction.dataset.footerAction === 'onboarding') { state.module = 'issues'; render(); setTimeout(() => { const summary = document.getElementById('issueSummary'); if (summary) summary.value = 'Enterprise onboarding request for API-CINTENT workspace, API enablement, quota planning, and production access.'; }, 0); return; }
     });
 
-    els.search.addEventListener('input', () => { state.domain = 'all'; render(); });
-    els.cartBtn.addEventListener('click', () => { state.cartOpen = true; state.module = 'billing'; render(); });
+    els.search.addEventListener('input', () => {
+      state.domain = 'all';
+      state.module = 'docs';
+      state.introHidden = true;
+      render();
+    });
+    els.cartBtn.addEventListener('click', () => { state.cartOpen = true; navigateToModule('billing', { hideIntro: true }); });
     els.sandboxBtn.addEventListener('click', () => { openSandboxExample(); });
-    els.hideHero.addEventListener('click', () => { state.introHidden = true; renderShell(); });
+    els.hideHero.addEventListener('click', () => { state.introHidden = true; render(); focusActiveWorkspaceView(); });
     els.reset.addEventListener('click', async () => {
       await fetch('/api/workspace/reset', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason: 'user-reset' }) }).catch(() => {});
       resetActiveWorkspaceState({ initialized: false, lifecycle: 'initializing', module: 'workspace-init' });
@@ -5431,8 +5495,11 @@
     });
 
     els.logout.addEventListener('click', async () => {
-      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-      location.href = '/login';
+      try {
+        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      } finally {
+        location.href = '/login';
+      }
     });
 
     function applyBootstrapContext() {

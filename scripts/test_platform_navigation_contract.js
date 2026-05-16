@@ -40,9 +40,18 @@ for (const id of moduleIds) {
   'const moduleBtn = event.target.closest(\'[data-module]\')',
   'const stageBtn = event.target.closest(\'[data-stage]\')',
   'const contextualLearn = event.target.closest(\'[data-context-learn]\')',
+  'function navigateToModule(',
+  'function searchScore(',
+  'function expandedQueryTokens()',
   'els.search.addEventListener(\'input\'',
   'class="filter-actions"',
   'grid-template-areas:',
+  'class="runtime-chip" type="button" data-state',
+  'data-module="workspace"',
+  'data-module="operating"',
+  'data-module="visualizer"',
+  'data-module="observability"',
+  'data-module="governance"',
   'href="/api/health" target="_blank"',
   'href="https://cognivantalabs.com" target="_blank"',
   'href="https://cintent.cognivantalabs.com" target="_blank"'
@@ -50,6 +59,23 @@ for (const id of moduleIds) {
 
 const stageButtons = [...html.matchAll(/data-stage="([^"]+)"/g)].map(match => match[1]);
 assert.deepStrictEqual([...new Set(stageButtons)].sort(), ['active', 'all', 'beta', 'production'].sort(), 'stage filter buttons must be present');
+
+const referencedModules = [...html.matchAll(/data-module="([^"]+)"/g)]
+  .map(match => match[1])
+  .filter(id => !id.includes('${'));
+for (const id of referencedModules) {
+  assert(moduleIds.includes(id), `data-module="${id}" must point to a registered view`);
+}
+
+[
+  ['Explore APIs', 'data-module="docs"'],
+  ['Learn CINTENT', 'data-module="learn"'],
+  ['Launch Playground', 'data-module="playground"'],
+  ['Ask COGNI', 'data-module="ask"'],
+  ['Enterprise Access', 'data-module="usecase"']
+].forEach(([label, marker]) => {
+  assertIncludes(html, marker, `${label} CTA target`);
+});
 
 async function runtimeSmoke(baseUrl) {
   const cookieJar = [];
