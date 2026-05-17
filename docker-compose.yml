@@ -3,8 +3,8 @@ services:
     image: pgvector/pgvector:pg16
     container_name: cintent-postgres
     environment:
-      POSTGRES_DB: cintent
-      POSTGRES_USER: cintent
+      POSTGRES_DB: ${POSTGRES_DB:-cintent}
+      POSTGRES_USER: ${POSTGRES_USER:-cintent}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cintent_dev_password}
     ports:
       - "5432:5432"
@@ -15,7 +15,7 @@ services:
       - ./migrations/003_canonical_data_governance.sql:/docker-entrypoint-initdb.d/003_canonical_data_governance.sql:ro
       - ./migrations/004_license_governance.sql:/docker-entrypoint-initdb.d/004_license_governance.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cintent -d cintent"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cintent} -d ${POSTGRES_DB:-cintent}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -94,7 +94,8 @@ services:
       NODE_ENV: production
       PORT: 3000
       JWT_SECRET: ${JWT_SECRET:-change-me-for-production}
-      DATABASE_URL: postgres://cintent:${POSTGRES_PASSWORD:-cintent_dev_password}@postgres:5432/cintent
+      DATABASE_URL: postgres://${POSTGRES_USER:-cintent}:${POSTGRES_PASSWORD:-cintent_dev_password}@postgres:5432/${POSTGRES_DB:-cintent}
+      DB_SSL: "false"
       REDIS_URL: redis://redis:6379
     ports:
       - "3000:3000"
@@ -116,7 +117,8 @@ services:
       NODE_ENV: production
       PORT: 3001
       JWT_SECRET: ${JWT_SECRET:-change-me-for-production}
-      DATABASE_URL: postgres://cintent:${POSTGRES_PASSWORD:-cintent_dev_password}@postgres:5432/cintent
+      DATABASE_URL: postgres://${POSTGRES_USER:-cintent}:${POSTGRES_PASSWORD:-cintent_dev_password}@postgres:5432/${POSTGRES_DB:-cintent}
+      DB_SSL: "false"
       REDIS_URL: redis://redis:6379
     ports:
       - "3001:3001"

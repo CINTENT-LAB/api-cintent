@@ -4,14 +4,14 @@
   "tenant": "demo-tenant",
   "message": "Active workspace runtime state was cleared. Historical audit and replay records remain available for governed review.",
   "event": {
-    "id": "event-57952c35e1159942",
+    "id": "event-ac5214d139f12490",
     "type": "workspace.lifecycle.reset",
     "tenantId": "demo-tenant",
     "workspaceId": null,
-    "sessionId": "demo-12679a807c53",
-    "entityId": "workspace-reset-1778938051046",
+    "sessionId": "demo-dc3f68838160",
+    "entityId": "workspace-reset-1778947508195",
     "payload": {
-      "resetAt": "2026-05-16T13:27:31.046Z",
+      "resetAt": "2026-05-16T16:05:08.195Z",
       "cleared": [
         "active-orchestration",
         "active-replay",
@@ -25,6 +25,6 @@
     "metadata": {
       "lifecycle": "explicit-user-reset"
     },
-    "timestamp": "2026-05-16T13:27:31.046Z"
+    "timestamp": "2026-05-16T16:05:08.195Z"
   }
 }

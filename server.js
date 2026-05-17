@@ -35,21 +35,32 @@ const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Database connection
+const databaseSslEnabled = /^true$/i.test(process.env.DB_SSL || process.env.DATABASE_SSL || '');
+const databaseSslRejectUnauthorized = !/^false$/i.test(process.env.DB_SSL_REJECT_UNAUTHORIZED || process.env.DATABASE_SSL_REJECT_UNAUTHORIZED || '');
+const databaseSslConfig = databaseSslEnabled ? { rejectUnauthorized: databaseSslRejectUnauthorized } : false;
 const hasPostgresEnv = Boolean(process.env.DATABASE_URL || (process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME && process.env.DB_PASSWORD));
 const dbConfig = process.env.DATABASE_URL ? {
     connectionString: process.env.DATABASE_URL,
-    ssl: NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    ssl: databaseSslConfig
 } : (hasPostgresEnv ? {
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT, 10) || 5432,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    ssl: NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    ssl: databaseSslConfig
 } : null);
 
 const pool = dbConfig ? new Pool(dbConfig) : null;
 const dbEnabled = !!pool;
+const databaseState = {
+    configured: dbEnabled,
+    connected: false,
+    currentUser: null,
+    currentDatabase: null,
+    lastError: dbEnabled ? 'not checked yet' : 'postgres environment not configured',
+    lastCheckedAt: null
+};
 const persistenceRuntime = createPersistenceRuntime({ pool, rootDir: __dirname, enabled: true });
 
 const COOKIE_NAME = 'cintent_session';
@@ -1545,7 +1556,13 @@ function computeProductionReadiness() {
         { id: 'sse-streams', status: 'pass', detail: `${runtimeMetrics.sseClients} active event stream clients` },
         { id: 'rate-limits', status: 'pass', detail: `${runtimeMetrics.rateLimitedTotal} requests throttled` },
         { id: 'p95-latency', status: p95 < 1000 ? 'pass' : 'warn', detail: `${p95}ms p95 response latency` },
-        { id: 'database', status: dbEnabled ? 'pass' : 'warn', detail: dbEnabled ? 'PostgreSQL pool configured' : 'Using in-memory fallback; configure DATABASE_URL for production' },
+        {
+            id: 'database',
+            status: databaseState.connected ? 'pass' : 'warn',
+            detail: databaseState.connected
+                ? `PostgreSQL connected as ${databaseState.currentUser} to ${databaseState.currentDatabase}`
+                : `PostgreSQL unavailable: ${databaseState.lastError || 'not configured'}`
+        },
         { id: 'jwt-secret', status: JWT_SECRET !== 'cintent-demo-secret' && JWT_SECRET !== 'change-me-for-production' ? 'pass' : 'warn', detail: JWT_SECRET === 'cintent-demo-secret' ? 'Demo JWT secret in use' : 'JWT secret configured' }
     ];
     return {
@@ -1554,6 +1571,26 @@ function computeProductionReadiness() {
         p95LatencyMs: p95,
         uptimeSeconds: Number(process.uptime().toFixed(2))
     };
+}
+
+async function refreshDatabaseState() {
+    databaseState.lastCheckedAt = new Date().toISOString();
+    if (!pool) {
+        databaseState.connected = false;
+        databaseState.lastError = 'postgres environment not configured';
+        return databaseState;
+    }
+    try {
+        const result = await pool.query('select current_user as current_user, current_database() as current_database');
+        databaseState.connected = true;
+        databaseState.currentUser = result.rows[0].current_user;
+        databaseState.currentDatabase = result.rows[0].current_database;
+        databaseState.lastError = null;
+    } catch (error) {
+        databaseState.connected = false;
+        databaseState.lastError = error.message;
+    }
+    return databaseState;
 }
 
 function emitSse(res, event, payload) {
@@ -2239,9 +2276,38 @@ app.use(cors({
     credentials: true
 }));
 
+
+// Enable gzip compression for responses
+app.use((req, res, next) => {
+    const zlib = require('zlib');
+    const acceptEncoding = req.headers['accept-encoding'] || '';
+    
+    if (!acceptEncoding.includes('gzip') || req.headers['x-no-compression']) {
+        return next();
+    }
+    
+    // Store original send
+    const originalSend = res.send;
+    res.send = function(data) {
+        if (typeof data === 'string' || Buffer.isBuffer(data)) {
+            const size = typeof data === 'string' ? Buffer.byteLength(data) : data.length;
+            // Only compress if larger than 1KB
+            if (size > 1024) {
+                res.setHeader('Content-Encoding', 'gzip');
+                return originalSend.call(this, zlib.gzipSync(data));
+            }
+        }
+        return originalSend.call(this, data);
+    };
+    next();
+});
+
 // Explicit CSP override to allow the PROD page inline script execution
 app.use((req, res, next) => {
     res.setHeader('Content-Security-Policy', "default-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; connect-src 'self' https:; font-src 'self' data:; object-src 'none'; frame-ancestors 'self';");
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
     next();
 });
 
@@ -2251,6 +2317,18 @@ app.use((req, res, next) => {
     runtimeMetrics.requestsTotal += 1;
     res.setHeader('X-CINTENT-Request-Id', req.requestId);
     res.setHeader('X-CINTENT-Runtime', 'production-hardened');
+    // Optimize cache headers for different file types
+    if (req.url.match(/\.(js|css|png|jpg|jpeg|gif|ico|woff|woff2)$/i)) {
+        // Static assets: cache for 1 day
+        res.setHeader('Cache-Control', 'public, max-age=86400, immutable');
+    } else if (req.url.match(/\.(html|json)$/i)) {
+        // HTML/JSON: revalidate frequently
+        res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+    } else {
+        // API responses: don't cache by default
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+
     res.on('finish', () => {
         runtimeMetrics.responsesTotal += 1;
         if (res.statusCode >= 500) runtimeMetrics.errorsTotal += 1;
@@ -8257,7 +8335,12 @@ app.use((req, res, next) => {
     }
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files with optimized cache headers
+app.use(express.static(path.join(__dirname, 'public'), {
+    maxAge: '1d',
+    etag: false,
+    immutable: true
+}));
 
 
 // Asset fallbacks for PROD page image references
@@ -8339,7 +8422,8 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-app.get('/api/status', (req, res) => {
+app.get('/api/status', async (req, res) => {
+    await refreshDatabaseState();
     const readiness = computeProductionReadiness();
     res.json({
         platform: 'CINTENT Developer Platform v2',
@@ -8360,8 +8444,9 @@ app.get('/api/status', (req, res) => {
 });
 
 app.get('/ready', async (req, res) => {
+    await refreshDatabaseState();
     const readiness = computeProductionReadiness();
-    const database = dbEnabled ? await pool.query('SELECT 1 AS ok').then(() => 'ready').catch(error => `degraded: ${error.message}`) : 'fallback';
+    const database = databaseState.connected ? 'ready' : `degraded: ${databaseState.lastError}`;
     const payload = {
         status: readiness.status,
         timestamp: new Date().toISOString(),
@@ -8379,8 +8464,9 @@ app.get('/ready', async (req, res) => {
 });
 
 app.get('/api/ready', async (req, res) => {
+    await refreshDatabaseState();
     const readiness = computeProductionReadiness();
-    const database = dbEnabled ? await pool.query('SELECT 1 AS ok').then(() => 'ready').catch(error => `degraded: ${error.message}`) : 'fallback';
+    const database = databaseState.connected ? 'ready' : `degraded: ${databaseState.lastError}`;
     res.json({
         status: readiness.status,
         timestamp: new Date().toISOString(),
@@ -13462,6 +13548,13 @@ app.use((err, req, res, next) => {
 
 // Start server
 const server = app.listen(PORT, '0.0.0.0', () => {
+    refreshDatabaseState().then(state => {
+        if (state.connected) {
+            console.log(`PostgreSQL connected as ${state.currentUser} to ${state.currentDatabase}`);
+        } else {
+            console.error(`PostgreSQL unavailable: ${state.lastError}`);
+        }
+    });
     console.log(`
 ╔═════════════════════════════════════════════════════════╗
 ║  CINTENT Developer Platform v2                         ║
