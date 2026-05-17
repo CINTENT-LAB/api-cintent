@@ -1159,6 +1159,153 @@
     .admin-table th, .admin-table td { border-bottom: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; }
     .admin-table th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
     .hidden { display: none !important; }
+    .runtime-activity {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 1400;
+      max-width: min(420px, calc(100vw - 28px));
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(191, 211, 240, 0.18);
+      background: rgba(16, 24, 39, 0.94);
+      box-shadow: 0 20px 44px rgba(15, 23, 42, 0.34);
+      color: #fff;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(14px) scale(0.98);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+    .runtime-activity.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    .runtime-activity-visual {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: #fff;
+      padding: 7px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 14px 24px rgba(27, 99, 201, 0.24);
+      animation: runtimePulse 1.45s ease-in-out infinite;
+    }
+    .runtime-activity-logo {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      animation: runtimeSpin 1.9s linear infinite;
+    }
+    .runtime-activity-body {
+      min-width: 0;
+      display: grid;
+      gap: 4px;
+    }
+    .runtime-activity-body strong {
+      font-size: 13px;
+      line-height: 1.25;
+    }
+    .runtime-activity-body span {
+      color: rgba(226, 232, 240, 0.84);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .runtime-activity-progress {
+      margin-top: 6px;
+      width: 100%;
+      height: 5px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(148, 163, 184, 0.18);
+    }
+    .runtime-activity-progress::after {
+      content: "";
+      display: block;
+      width: 42%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #5eead4 0%, #60a5fa 100%);
+      animation: runtimeSweep 1.1s ease-in-out infinite;
+    }
+    .runtime-feedback {
+      position: fixed;
+      right: 22px;
+      top: 22px;
+      z-index: 1410;
+      max-width: min(480px, calc(100vw - 28px));
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.97);
+      box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-12px) scale(0.98);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+    .runtime-feedback.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+    .runtime-feedback[data-kind="warn"] {
+      border-color: #f4d08e;
+      background: #fff8e8;
+    }
+    .runtime-feedback[data-kind="err"] {
+      border-color: #f4c2bc;
+      background: #fff5f3;
+    }
+    .runtime-feedback[data-kind="ok"] {
+      border-color: #bfe5cb;
+      background: #effaf3;
+    }
+    .runtime-feedback-copy {
+      min-width: 0;
+      display: grid;
+      gap: 4px;
+    }
+    .runtime-feedback-copy strong {
+      font-size: 13px;
+      line-height: 1.25;
+    }
+    .runtime-feedback-copy span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .runtime-feedback-close {
+      align-self: start;
+      border: 0;
+      border-radius: 999px;
+      width: 28px;
+      height: 28px;
+      background: rgba(148, 163, 184, 0.16);
+      color: var(--ink);
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    @keyframes runtimeSpin {
+      from { transform: rotate(0deg) scale(1); }
+      to { transform: rotate(360deg) scale(1); }
+    }
+    @keyframes runtimePulse {
+      0%, 100% { transform: scale(0.94); }
+      50% { transform: scale(1.06); }
+    }
+    @keyframes runtimeSweep {
+      0% { transform: translateX(-120%); }
+      100% { transform: translateX(260%); }
+    }
 
     @media (max-width: 1220px) {
       .app { grid-template-columns: 1fr; }
@@ -1191,6 +1338,11 @@
       .runtime-chip { max-width: none; flex-basis: 100%; }
       .detail-head { grid-template-columns: 1fr; }
       .endpoint-box { min-width: 0; }
+      .runtime-activity, .runtime-feedback {
+        right: 14px;
+        left: 14px;
+        max-width: none;
+      }
       h1 { font-size: 28px; }
     }
   </style>
@@ -1421,6 +1573,23 @@
     </div>
   </div>
 
+  <div class="runtime-activity" id="runtimeActivity" role="status" aria-live="polite" aria-atomic="true">
+    <span class="runtime-activity-visual" aria-hidden="true"><img class="runtime-activity-logo" src="/ui/assets/cognivanta-favicon.png" alt="Cognivanta Labs activity"></span>
+    <div class="runtime-activity-body">
+      <strong id="runtimeActivityTitle">Cognivanta runtime is working</strong>
+      <span id="runtimeActivityDetail">Preparing the requested action.</span>
+      <div class="runtime-activity-progress" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div class="runtime-feedback" id="runtimeFeedback" data-kind="warn" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="runtime-feedback-copy">
+      <strong id="runtimeFeedbackTitle">Action needs attention</strong>
+      <span id="runtimeFeedbackDetail">The platform will explain why this command cannot continue.</span>
+    </div>
+    <button class="runtime-feedback-close" type="button" id="runtimeFeedbackClose" aria-label="Dismiss status">×</button>
+  </div>
+
   <script defer>
     // ============================================================
     // AUTHENTICATION
@@ -1645,7 +1814,14 @@
       policyReviewCheck: document.getElementById('policyReviewCheck'),
       policyStatusText: document.getElementById('policyStatusText'),
       policyVersionTag: document.getElementById('policyVersionTag'),
-      policySummary: document.getElementById('policySummary')
+      policySummary: document.getElementById('policySummary'),
+      runtimeActivity: document.getElementById('runtimeActivity'),
+      runtimeActivityTitle: document.getElementById('runtimeActivityTitle'),
+      runtimeActivityDetail: document.getElementById('runtimeActivityDetail'),
+      runtimeFeedback: document.getElementById('runtimeFeedback'),
+      runtimeFeedbackTitle: document.getElementById('runtimeFeedbackTitle'),
+      runtimeFeedbackDetail: document.getElementById('runtimeFeedbackDetail'),
+      runtimeFeedbackClose: document.getElementById('runtimeFeedbackClose')
     };
 
     function domainById(id) { return domains.find(d => d.id === id) || domains[0]; }
@@ -1717,6 +1893,230 @@
       return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
     }
     function pretty(value) { return escapeHtml(JSON.stringify(value, null, 2)); }
+    const backendUiState = {
+      pending: 0,
+      openTimer: null,
+      closeTimer: null,
+      openedAt: 0,
+      activityLabel: null,
+      feedbackTimer: null
+    };
+
+    function shouldTrackBackendRequest(pathname) {
+      return /^\/api\//.test(pathname || '') && !/^\/api\/traces\/event/.test(pathname || '');
+    }
+
+    function inferBackendActivity(pathname = '', method = 'GET') {
+      const route = String(pathname || '');
+      const verb = String(method || 'GET').toUpperCase();
+      if (route.startsWith('/api/ask')) return { title: 'Ask COGNI is reasoning', detail: 'Gathering context, memory, orchestration lineage, and guided next steps.' };
+      if (route.startsWith('/api/studio')) return { title: 'Orchestration Studio is working', detail: verb === 'POST' ? 'Compiling or executing the workflow runtime.' : 'Loading cognitive orchestration graph metadata.' };
+      if (route.startsWith('/api/playground')) return { title: 'Sandbox execution is running', detail: 'Preparing a governed execution session and runtime trace.' };
+      if (route.startsWith('/api/simulations')) return { title: 'Simulation runtime is executing', detail: 'Synchronizing telemetry, replay, and governance context for the selected environment.' };
+      if (route.startsWith('/api/workspace') || route.startsWith('/api/workspaces')) return { title: 'Workspace context is synchronizing', detail: 'Persisting or restoring tenant-aware runtime state.' };
+      if (route.startsWith('/api/billing')) return { title: 'Billing infrastructure is processing', detail: 'Validating subscription, invoice, quota, or commercial entitlement state.' };
+      if (route.startsWith('/api/sdk')) return { title: 'SDK intelligence is preparing', detail: 'Generating implementation guidance, contracts, or code artifacts.' };
+      if (route.startsWith('/api/agents')) return { title: 'Multi-agent runtime is coordinating', detail: 'Dispatching governed agents and replay-aware execution tasks.' };
+      if (route.startsWith('/api/governance')) return { title: 'Governance fabric is evaluating', detail: 'Checking policy propagation, compliance, and explainability requirements.' };
+      if (route.startsWith('/api/marketplace')) return { title: 'Marketplace package is processing', detail: 'Compiling package intelligence, replay context, and package readiness.' };
+      if (route.startsWith('/api/healthcare')) return { title: 'Healthcare runtime is processing', detail: 'Executing healthcare orchestration, replay, and governance checks.' };
+      if (route.startsWith('/api/license')) return { title: 'License governance is updating', detail: 'Validating review state and workspace access permissions.' };
+      if (route.startsWith('/api/auth')) return { title: 'Session security is updating', detail: 'Validating authentication, session, and access requirements.' };
+      return {
+        title: verb === 'GET' ? 'Cognivanta runtime is loading' : 'Cognivanta runtime is processing',
+        detail: 'Please wait while the backend completes the requested action.'
+      };
+    }
+
+    function hideRuntimeFeedback() {
+      if (!els.runtimeFeedback) return;
+      els.runtimeFeedback.classList.remove('open');
+      if (backendUiState.feedbackTimer) {
+        clearTimeout(backendUiState.feedbackTimer);
+        backendUiState.feedbackTimer = null;
+      }
+    }
+
+    function showRuntimeFeedback({ kind = 'warn', title, detail, persist = false }) {
+      if (!els.runtimeFeedback || !els.runtimeFeedbackTitle || !els.runtimeFeedbackDetail) return;
+      if (backendUiState.feedbackTimer) clearTimeout(backendUiState.feedbackTimer);
+      els.runtimeFeedback.dataset.kind = kind;
+      els.runtimeFeedbackTitle.textContent = title || 'Action needs attention';
+      els.runtimeFeedbackDetail.textContent = detail || 'The requested command needs review before it can continue.';
+      els.runtimeFeedback.classList.add('open');
+      if (!persist) {
+        backendUiState.feedbackTimer = setTimeout(() => {
+          els.runtimeFeedback.classList.remove('open');
+          backendUiState.feedbackTimer = null;
+        }, 9000);
+      }
+    }
+
+    function normalizeBackendFailure(status, detail, pathname = '') {
+      const message = String(detail || '').trim() || `Request failed with status ${status}`;
+      const lowered = message.toLowerCase();
+      if (status === 401 || lowered.includes('token required') || lowered.includes('session expired') || lowered.includes('log in') || lowered.includes('unauthorized')) {
+        return {
+          kind: 'warn',
+          title: 'Session or token required',
+          detail: 'This action needs a valid signed-in session or required token. Please log in again or provide the required credential and retry.'
+        };
+      }
+      if (status === 451 || lowered.includes('license acceptance required')) {
+        return {
+          kind: 'warn',
+          title: 'License acceptance required',
+          detail: 'This command is blocked until the current enterprise license is reviewed and accepted for this session.'
+        };
+      }
+      if (status === 402 || lowered.includes('insufficient balance') || lowered.includes('insufficient quota') || lowered.includes('billing') || lowered.includes('quota') || lowered.includes('upgrade to') || lowered.includes('tier')) {
+        return {
+          kind: 'warn',
+          title: 'Plan, balance, or quota is insufficient',
+          detail: 'The requested action needs more billing entitlement, available balance, or quota before it can continue.'
+        };
+      }
+      if (status === 403 || lowered.includes('not authorized') || lowered.includes('not entitled') || lowered.includes('forbidden') || lowered.includes('not available for this session') || lowered.includes('not allowed')) {
+        return {
+          kind: 'err',
+          title: 'Action denied',
+          detail: 'The current session is not allowed to perform this command. Check the active role, scope, plan, or execution mode.'
+        };
+      }
+      if (status === 404) {
+        return {
+          kind: 'warn',
+          title: 'Requested runtime action was not found',
+          detail: 'The selected operation or artifact is not available right now. Refresh the workspace context and try again.'
+        };
+      }
+      if (status === 429 || lowered.includes('rate limit')) {
+        return {
+          kind: 'warn',
+          title: 'Request limit reached',
+          detail: 'The platform is throttling this action for safety. Wait a moment, then retry the command.'
+        };
+      }
+      return {
+        kind: 'err',
+        title: pathname.startsWith('/api/') ? 'Backend action could not complete' : 'Action could not complete',
+        detail: message
+      };
+    }
+
+    function openRuntimeActivity(pathname, method) {
+      backendUiState.pending += 1;
+      backendUiState.activityLabel = inferBackendActivity(pathname, method);
+      if (backendUiState.closeTimer) {
+        clearTimeout(backendUiState.closeTimer);
+        backendUiState.closeTimer = null;
+      }
+      const label = backendUiState.activityLabel;
+      if (els.runtimeActivityTitle) els.runtimeActivityTitle.textContent = label.title;
+      if (els.runtimeActivityDetail) els.runtimeActivityDetail.textContent = label.detail;
+      if (els.runtimeActivity && els.runtimeActivity.classList.contains('open')) return;
+      if (backendUiState.openTimer) return;
+      backendUiState.openTimer = setTimeout(() => {
+        backendUiState.openTimer = null;
+        if (!backendUiState.pending || !els.runtimeActivity) return;
+        const activeLabel = backendUiState.activityLabel || inferBackendActivity(pathname, method);
+        if (els.runtimeActivityTitle) els.runtimeActivityTitle.textContent = activeLabel.title;
+        if (els.runtimeActivityDetail) els.runtimeActivityDetail.textContent = activeLabel.detail;
+        backendUiState.openedAt = Date.now();
+        els.runtimeActivity.classList.add('open');
+      }, 80);
+    }
+
+    function closeRuntimeActivity() {
+      backendUiState.pending = Math.max(0, backendUiState.pending - 1);
+      if (backendUiState.pending > 0) return;
+      if (backendUiState.openTimer) {
+        clearTimeout(backendUiState.openTimer);
+        backendUiState.openTimer = null;
+      }
+      if (!els.runtimeActivity) return;
+      const elapsed = backendUiState.openedAt ? Date.now() - backendUiState.openedAt : 0;
+      const finalize = () => {
+        if (!els.runtimeActivity) return;
+        els.runtimeActivity.classList.remove('open');
+        backendUiState.activityLabel = null;
+        backendUiState.openedAt = 0;
+        backendUiState.closeTimer = null;
+      };
+      if (els.runtimeActivity.classList.contains('open') && elapsed < 500) {
+        backendUiState.closeTimer = setTimeout(finalize, 500 - elapsed);
+        return;
+      }
+      finalize();
+    }
+
+    async function parseBackendFailure(response) {
+      try {
+        const clone = response.clone();
+        const contentType = clone.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const payload = await clone.json();
+          return payload.error || payload.message || payload.detail || `Request failed: ${response.status}`;
+        }
+        const text = await clone.text();
+        return text || `Request failed: ${response.status}`;
+      } catch {
+        return `Request failed: ${response.status}`;
+      }
+    }
+
+    if (els.runtimeFeedbackClose) {
+      els.runtimeFeedbackClose.addEventListener('click', hideRuntimeFeedback);
+    }
+
+    if (!window.__cintentFetchWrapped) {
+      const nativeFetch = window.fetch.bind(window);
+      window.fetch = async (input, init = {}) => {
+        const requestUrl = typeof input === 'string' ? input : (input && input.url) || '';
+        const pathname = new URL(requestUrl, window.location.origin).pathname;
+        const method = (init && init.method) || (input && input.method) || 'GET';
+        const tracked = shouldTrackBackendRequest(pathname);
+        if (tracked) openRuntimeActivity(pathname, method);
+        try {
+          const response = await nativeFetch(input, init);
+          if (tracked && !response.ok) {
+            const detail = await parseBackendFailure(response);
+            showRuntimeFeedback({ ...normalizeBackendFailure(response.status, detail, pathname), persist: true });
+          }
+          return response;
+        } catch (error) {
+          if (tracked) {
+            showRuntimeFeedback({
+              kind: 'err',
+              title: 'Connection problem',
+              detail: error && error.message ? error.message : 'The backend request could not be completed because the connection failed.',
+              persist: true
+            });
+          }
+          throw error;
+        } finally {
+          if (tracked) closeRuntimeActivity();
+        }
+      };
+      window.__cintentFetchWrapped = true;
+    }
+
+    if (!window.__cintentRuntimeErrorHooks) {
+      window.addEventListener('unhandledrejection', event => {
+        const message = event && event.reason && event.reason.message ? event.reason.message : 'A runtime action failed before it could complete.';
+        showRuntimeFeedback({ kind: 'err', title: 'Runtime action failed', detail: message, persist: true });
+      });
+      window.addEventListener('error', event => {
+        const message = event && event.message ? event.message : 'The interface hit an unexpected runtime error.';
+        showRuntimeFeedback({ kind: 'err', title: 'Interface action failed', detail: message, persist: true });
+      });
+      window.__cintentRuntimeErrorHooks = true;
+    }
+
+    function surfaceActionError(error, title = 'Action could not complete') {
+      const detail = error && error.message ? error.message : 'The requested command could not complete.';
+      showRuntimeFeedback({ kind: 'err', title, detail, persist: true });
+    }
 
     function licenseAccepted() {
       return Boolean(state.licenseGovernance && state.licenseGovernance.accepted);
@@ -4447,6 +4847,7 @@
             await acceptLicenseGovernance();
           }
         } catch (error) {
+          surfaceActionError(error, 'License governance action failed');
           if (els.policyStatusText) els.policyStatusText.textContent = error.message;
         }
         return;
@@ -4528,6 +4929,7 @@
         };
         if (actionMap[cogniActionBtn.dataset.cogniAction]) {
           executeAskQuickAction(actionMap[cogniActionBtn.dataset.cogniAction]).catch(error => {
+            surfaceActionError(error, 'Ask COGNI action failed');
             state.chat.push({ role: 'Ask COGNI', text: `Action failed: ${error.message}` });
             renderAsk();
           });
@@ -4549,6 +4951,7 @@
           'deploy-runtime': 'deploy-runtime'
         };
         executeAskQuickAction(stageActionMap[askStageBtn.dataset.askStage] || askStageBtn.dataset.askStage).catch(error => {
+          surfaceActionError(error, 'Ask COGNI stage action failed');
           state.chat.push({ role: 'Ask COGNI', text: `Action failed: ${error.message}` });
           renderAsk();
         });
@@ -4578,6 +4981,7 @@
       if (askActionBtn) {
         const action = askActionBtn.dataset.askAction;
         executeAskQuickAction(action).catch(error => {
+          surfaceActionError(error, 'Ask COGNI action failed');
           state.chat.push({ role: 'Ask COGNI', text: `Action failed: ${error.message}` });
           renderAsk();
         });
@@ -4589,6 +4993,7 @@
           await loadEnterpriseUxStatus();
           render();
         }).catch(error => {
+          surfaceActionError(error, 'Operating workspace quick action failed');
           state.enterpriseNotifications = [{ id: `ux-error-${Date.now()}`, title: 'quick action failed', message: error.message, timestamp: new Date().toISOString(), severity: 'warning' }, ...(state.enterpriseNotifications || [])];
           renderOperatingWorkspace();
         });

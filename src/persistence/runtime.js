@@ -24,12 +24,23 @@ function createPersistenceRuntime({ pool = null, rootDir = process.cwd(), enable
   const ledgerPath = path.join(artifactDir, 'runtime-ledger.jsonl');
   const objectDir = path.join(artifactDir, 'objects');
   ensureDir(objectDir);
+  const DB_FAILURE_COOLDOWN_MS = 30000;
+  const dbState = {
+    unavailableUntil: 0
+  };
+  const localLedgerCache = {
+    loaded: false,
+    events: [],
+    mtimeMs: 0
+  };
 
   async function dbQuery(sql, params) {
     if (!enabled || !pool) return null;
+    if (dbState.unavailableUntil > Date.now()) return null;
     try {
       return await pool.query(sql, params);
     } catch (error) {
+      dbState.unavailableUntil = Date.now() + DB_FAILURE_COOLDOWN_MS;
       appendLocal('persistence.db_error', { sql: sql.slice(0, 120), error: error.message });
       return null;
     }
@@ -43,18 +54,37 @@ function createPersistenceRuntime({ pool = null, rootDir = process.cwd(), enable
       timestamp: now()
     };
     fs.appendFileSync(ledgerPath, `${safeJson(event)}\n`);
+    localLedgerCache.events.push(event);
+    localLedgerCache.loaded = true;
+    try {
+      localLedgerCache.mtimeMs = fs.statSync(ledgerPath).mtimeMs;
+    } catch (_) {
+      localLedgerCache.mtimeMs = Date.now();
+    }
     return event;
   }
 
   function readLocalLedger() {
-    if (!fs.existsSync(ledgerPath)) return [];
-    return fs.readFileSync(ledgerPath, 'utf8')
+    if (!fs.existsSync(ledgerPath)) {
+      localLedgerCache.loaded = true;
+      localLedgerCache.events = [];
+      localLedgerCache.mtimeMs = 0;
+      return localLedgerCache.events;
+    }
+    const mtimeMs = fs.statSync(ledgerPath).mtimeMs;
+    if (localLedgerCache.loaded && localLedgerCache.mtimeMs === mtimeMs) {
+      return localLedgerCache.events;
+    }
+    localLedgerCache.events = fs.readFileSync(ledgerPath, 'utf8')
       .split('\n')
       .filter(Boolean)
       .map(line => {
         try { return JSON.parse(line); } catch (_) { return null; }
       })
       .filter(Boolean);
+    localLedgerCache.loaded = true;
+    localLedgerCache.mtimeMs = mtimeMs;
+    return localLedgerCache.events;
   }
 
   async function queryRows(sql, params = []) {

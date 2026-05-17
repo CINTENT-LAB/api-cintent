@@ -122,6 +122,85 @@
     }
     .status.ok { border-color: #bfe5cb; background: #effaf3; color: var(--green); }
     .status.err { border-color: #f4c2bc; background: #fff5f3; color: var(--red); }
+    .runtime-activity {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 1200;
+      max-width: min(380px, calc(100vw - 28px));
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(16, 24, 39, 0.94);
+      border: 1px solid rgba(191, 211, 240, 0.18);
+      color: #fff;
+      box-shadow: 0 20px 44px rgba(15, 23, 42, 0.34);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(14px) scale(0.98);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+    .runtime-activity.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    .runtime-activity-visual {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: #fff;
+      padding: 7px;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 14px 24px rgba(27, 99, 201, 0.24);
+      animation: runtimePulse 1.45s ease-in-out infinite;
+    }
+    .runtime-activity img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      animation: runtimeSpin 1.9s linear infinite;
+    }
+    .runtime-activity-copy { display: grid; gap: 4px; min-width: 0; }
+    .runtime-activity-copy strong { font-size: 13px; line-height: 1.25; }
+    .runtime-activity-copy span { color: rgba(226, 232, 240, 0.84); font-size: 12px; line-height: 1.45; }
+    .runtime-feedback {
+      position: fixed;
+      right: 22px;
+      top: 22px;
+      z-index: 1210;
+      max-width: min(420px, calc(100vw - 28px));
+      border-radius: 16px;
+      border: 1px solid #f4d08e;
+      background: #fff8e8;
+      padding: 14px 16px;
+      box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-12px) scale(0.98);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+    .runtime-feedback.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+    .runtime-feedback.err {
+      border-color: #f4c2bc;
+      background: #fff5f3;
+    }
+    .runtime-feedback strong { display: block; font-size: 13px; margin-bottom: 4px; }
+    .runtime-feedback span { display: block; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    @keyframes runtimeSpin {
+      from { transform: rotate(0deg) scale(1); }
+      to { transform: rotate(360deg) scale(1); }
+    }
+    @keyframes runtimePulse {
+      0%, 100% { transform: scale(0.94); }
+      50% { transform: scale(1.06); }
+    }
     .fine-print { color: var(--muted); font-size: 12px; line-height: 1.6; }
     @media (max-width: 900px) {
       body { padding: 14px; }
@@ -129,6 +208,11 @@
       .identity { min-height: auto; padding: 28px; }
       h1 { font-size: 34px; }
       .trust-grid { grid-template-columns: 1fr; }
+      .runtime-activity, .runtime-feedback {
+        right: 14px;
+        left: 14px;
+        max-width: none;
+      }
     }
   </style>
 </head>
@@ -192,6 +276,19 @@
     </section>
   </main>
 
+  <div class="runtime-activity" id="runtimeActivity" role="status" aria-live="polite" aria-atomic="true">
+    <span class="runtime-activity-visual" aria-hidden="true"><img src="/ui/assets/cognivanta-favicon.png" alt="Cognivanta Labs activity"></span>
+    <div class="runtime-activity-copy">
+      <strong id="runtimeActivityTitle">Cognivanta access gateway is working</strong>
+      <span id="runtimeActivityDetail">Validating the requested secure access action.</span>
+    </div>
+  </div>
+
+  <div class="runtime-feedback" id="runtimeFeedback" role="alert" aria-live="assertive" aria-atomic="true">
+    <strong id="runtimeFeedbackTitle">Action needs attention</strong>
+    <span id="runtimeFeedbackDetail">If access is denied or a token is missing, the reason will appear here.</span>
+  </div>
+
   <script>
     const statusBox = document.getElementById('statusBox');
     const loginEmail = document.getElementById('loginEmail');
@@ -203,20 +300,104 @@
     const forgotEmail = document.getElementById('forgotEmail');
     const resetToken = document.getElementById('resetToken');
     const resetPassword = document.getElementById('resetPassword');
+    const runtimeActivity = document.getElementById('runtimeActivity');
+    const runtimeActivityTitle = document.getElementById('runtimeActivityTitle');
+    const runtimeActivityDetail = document.getElementById('runtimeActivityDetail');
+    const runtimeFeedback = document.getElementById('runtimeFeedback');
+    const runtimeFeedbackTitle = document.getElementById('runtimeFeedbackTitle');
+    const runtimeFeedbackDetail = document.getElementById('runtimeFeedbackDetail');
     let verificationToken = '';
+    let runtimeBusy = 0;
+    let runtimeBusyTimer = null;
+    let runtimeBusyCloseTimer = null;
+    let runtimeBusyOpenedAt = 0;
+    let runtimeFeedbackTimer = null;
     function setStatus(text, kind) {
       statusBox.textContent = text;
       statusBox.className = `status ${kind || ''}`.trim();
     }
+    function showRuntimeFeedback(title, detail, kind = 'warn') {
+      runtimeFeedbackTitle.textContent = title;
+      runtimeFeedbackDetail.textContent = detail;
+      runtimeFeedback.className = `runtime-feedback open ${kind === 'err' ? 'err' : ''}`.trim();
+      if (runtimeFeedbackTimer) clearTimeout(runtimeFeedbackTimer);
+      runtimeFeedbackTimer = setTimeout(() => {
+        runtimeFeedback.classList.remove('open', 'err');
+      }, 9000);
+    }
+    function normalizeAuthFailure(message = '', status = 0) {
+      const lowered = String(message || '').toLowerCase();
+      if (status === 401 || lowered.includes('token required') || lowered.includes('session') || lowered.includes('unauthorized')) {
+        return ['Session or token required', 'This action needs a valid session or required token. Please sign in again or provide the required credential.', 'err'];
+      }
+      if (status === 403 || lowered.includes('not authorized') || lowered.includes('not allowed') || lowered.includes('denied')) {
+        return ['Access denied', 'The current session is not allowed to complete this access action. Please verify the active account or role.', 'err'];
+      }
+      if (status === 402 || lowered.includes('insufficient balance') || lowered.includes('billing') || lowered.includes('quota') || lowered.includes('upgrade')) {
+        return ['Billing or quota required', 'This action needs sufficient balance, quota, or plan entitlement before it can continue.', 'warn'];
+      }
+      return ['Secure access action failed', message || `Request failed: ${status}`, 'err'];
+    }
+    function beginRuntimeActivity(title, detail) {
+      runtimeBusy += 1;
+      if (runtimeActivityTitle) runtimeActivityTitle.textContent = title;
+      if (runtimeActivityDetail) runtimeActivityDetail.textContent = detail;
+      if (runtimeBusyCloseTimer) {
+        clearTimeout(runtimeBusyCloseTimer);
+        runtimeBusyCloseTimer = null;
+      }
+      if (runtimeActivity.classList.contains('open')) return;
+      if (runtimeBusyTimer) return;
+      runtimeBusyTimer = setTimeout(() => {
+        runtimeBusyTimer = null;
+        if (runtimeBusy > 0) {
+          runtimeBusyOpenedAt = Date.now();
+          runtimeActivity.classList.add('open');
+        }
+      }, 80);
+    }
+    function endRuntimeActivity() {
+      runtimeBusy = Math.max(0, runtimeBusy - 1);
+      if (runtimeBusy > 0) return;
+      if (runtimeBusyTimer) {
+        clearTimeout(runtimeBusyTimer);
+        runtimeBusyTimer = null;
+      }
+      const elapsed = runtimeBusyOpenedAt ? Date.now() - runtimeBusyOpenedAt : 0;
+      const finalize = () => {
+        runtimeActivity.classList.remove('open');
+        runtimeBusyOpenedAt = 0;
+        runtimeBusyCloseTimer = null;
+      };
+      if (runtimeActivity.classList.contains('open') && elapsed < 500) {
+        runtimeBusyCloseTimer = setTimeout(finalize, 500 - elapsed);
+        return;
+      }
+      finalize();
+    }
     async function api(path, options = {}) {
-      const response = await fetch(path, {
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        ...options
-      });
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(payload.error || payload.message || `Request failed: ${response.status}`);
-      return payload;
+      beginRuntimeActivity('Cognivanta access gateway is working', 'Validating secure access, session, and gateway requirements.');
+      try {
+        const response = await fetch(path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          const [title, detail, kind] = normalizeAuthFailure(payload.error || payload.message || `Request failed: ${response.status}`, response.status);
+          showRuntimeFeedback(title, detail, kind);
+          throw new Error(payload.error || payload.message || `Request failed: ${response.status}`);
+        }
+        return payload;
+      } catch (error) {
+        if (!/Request failed:/.test(String(error && error.message || ''))) {
+          showRuntimeFeedback('Connection problem', error.message || 'The secure access request could not reach the backend.', 'err');
+        }
+        throw error;
+      } finally {
+        endRuntimeActivity();
+      }
     }
     document.querySelectorAll('[data-tab]').forEach(tab => {
       tab.addEventListener('click', () => {

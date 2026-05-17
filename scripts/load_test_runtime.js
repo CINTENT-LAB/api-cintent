@@ -17,6 +17,25 @@ async function post(path, cookie, body, idempotencyKey) {
   return { response, payload: await response.json() };
 }
 
+async function jsonRequest(path, cookie, body) {
+  const response = await fetch(`${baseUrl}${path}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': body && typeof body === 'string' ? 'application/x-www-form-urlencoded' : 'application/json',
+      Cookie: cookie
+    },
+    body: body && typeof body === 'string' ? body : JSON.stringify(body || {})
+  });
+  const text = await response.text();
+  let payload;
+  try {
+    payload = JSON.parse(text);
+  } catch {
+    payload = text;
+  }
+  return { response, payload };
+}
+
 async function main() {
   const demo = await fetch(`${baseUrl}/api/auth/demo`, {
     method: 'POST',
@@ -25,6 +44,12 @@ async function main() {
   });
   assert.equal(demo.status, 200, 'demo auth should work for load validation');
   const cookie = demo.headers.get('set-cookie');
+  assert(cookie, 'demo auth should return a session cookie');
+
+  const licenseView = await jsonRequest('/api/license/view', cookie, {});
+  assert.equal(licenseView.response.status, 200, 'license view should succeed for load validation');
+  const licenseAccept = await jsonRequest('/api/license/accept', cookie, 'acknowledgedReview=true');
+  assert.equal(licenseAccept.response.status, 200, 'license accept should succeed for load validation');
 
   const latencies = [];
   for (let round = 0; round < rounds; round += 1) {

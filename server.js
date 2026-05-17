@@ -123,6 +123,12 @@ const HARDENING_POLICY = {
     replayIntegrityAlgorithm: 'sha256',
     sseHeartbeatMs: Number(process.env.CINTENT_SSE_HEARTBEAT_MS || 25000)
 };
+const METADATA_REGISTRY_PATH = path.join(__dirname, 'api-metadata-registry.json');
+const CATALOG_CACHE_TTL_MS = Number(process.env.CINTENT_CATALOG_CACHE_TTL_MS || 30000);
+const metadataRegistryCache = { mtimeMs: 0, data: null };
+const fallbackCatalogCache = { mtimeMs: 0, data: null };
+const catalogEntriesCache = { registryMtimeMs: 0, expiresAt: 0, source: 'none', data: null };
+const prodHtmlCache = { mtimeMs: 0, html: null };
 const platformSettings = {
     publicSandboxEnabled: true,
     accessMode: 'public-sandbox',
@@ -2364,11 +2370,30 @@ function sendHtmlFile(res, filePath) {
     res.sendFile(filePath);
 }
 
-function sendProdPage(res, bootstrap = null) {
+function getFileMtimeMs(filePath) {
+    try {
+        return fs.statSync(filePath).mtimeMs;
+    } catch {
+        return 0;
+    }
+}
+
+function getCachedProdHtml() {
+    const mtimeMs = getFileMtimeMs(prodHtmlPath);
+    if (prodHtmlCache.html && prodHtmlCache.mtimeMs === mtimeMs) {
+        return prodHtmlCache.html;
+    }
     let html = fs.readFileSync(prodHtmlPath, 'utf8');
     if (!html.includes('<script src="/dynamic-metadata.js"></script>')) {
         html = html.replace('</body>', '  <script src="/dynamic-metadata.js"></script>\n</body>');
     }
+    prodHtmlCache.mtimeMs = mtimeMs;
+    prodHtmlCache.html = html;
+    return html;
+}
+
+function sendProdPage(res, bootstrap = null) {
+    let html = getCachedProdHtml();
     if (bootstrap) {
         const safeBootstrap = JSON.stringify(bootstrap).replace(/</g, '\u003c');
         html = html.replace('</head>', '<script>window.__CINTENT_BOOTSTRAP__=' + safeBootstrap + ';</script>\n</head>');
@@ -2756,23 +2781,38 @@ function enrichMetadata(entry) {
 }
 
 function getFallbackCatalog() {
-    const metadataRegistryPath = path.join(__dirname, 'api-metadata-registry.json');
+    const registryMtimeMs = getFileMtimeMs(METADATA_REGISTRY_PATH);
+    if (fallbackCatalogCache.data && fallbackCatalogCache.mtimeMs === registryMtimeMs) {
+        return fallbackCatalogCache.data;
+    }
     try {
-        const registry = JSON.parse(fs.readFileSync(metadataRegistryPath, 'utf8'));
+        const registry = loadMetadataRegistry();
         const registryApis = Array.isArray(registry.apis) ? registry.apis : [];
         if (registryApis.length) {
-            return registryApis.map(enrichMetadata);
+            const enriched = registryApis.map(enrichMetadata);
+            fallbackCatalogCache.mtimeMs = registryMtimeMs;
+            fallbackCatalogCache.data = enriched;
+            return enriched;
         }
     } catch (error) {
         console.warn('Backend metadata registry load failed:', error.message);
     }
-    return fallbackCatalog.map(enrichMetadata);
+    const enrichedFallback = fallbackCatalog.map(enrichMetadata);
+    fallbackCatalogCache.mtimeMs = registryMtimeMs;
+    fallbackCatalogCache.data = enrichedFallback;
+    return enrichedFallback;
 }
 
 function loadMetadataRegistry() {
-    const metadataRegistryPath = path.join(__dirname, 'api-metadata-registry.json');
+    const registryMtimeMs = getFileMtimeMs(METADATA_REGISTRY_PATH);
+    if (metadataRegistryCache.data && metadataRegistryCache.mtimeMs === registryMtimeMs) {
+        return metadataRegistryCache.data;
+    }
     try {
-        return JSON.parse(fs.readFileSync(metadataRegistryPath, 'utf8'));
+        const registry = JSON.parse(fs.readFileSync(METADATA_REGISTRY_PATH, 'utf8'));
+        metadataRegistryCache.mtimeMs = registryMtimeMs;
+        metadataRegistryCache.data = registry;
+        return registry;
     } catch (error) {
         console.warn('Backend metadata registry load failed:', error.message);
         return { apis: fallbackCatalog, domains: [] };
@@ -2861,14 +2901,27 @@ async function loadCatalogEntries() {
     const fallbackCatalog = getFallbackCatalog();
     const registry = loadMetadataRegistry();
     const registryApis = Array.isArray(registry.apis) ? registry.apis : [];
+    const registryMtimeMs = getFileMtimeMs(METADATA_REGISTRY_PATH);
     const mergeCatalog = (catalogEntries) => {
         const merged = new Map((catalogEntries || []).map(api => [api.api_key, api]));
         registryApis.forEach(api => merged.set(api.api_key, { ...merged.get(api.api_key), ...api }));
         return Array.from(merged.values()).map(enrichMetadata);
     };
+    const useCache = catalogEntriesCache.data
+        && catalogEntriesCache.registryMtimeMs === registryMtimeMs
+        && (catalogEntriesCache.source === 'fallback' || catalogEntriesCache.expiresAt > Date.now());
+
+    if (useCache) {
+        return catalogEntriesCache.data;
+    }
 
     if (!dbEnabled) {
-        return mergeCatalog(fallbackCatalog);
+        const mergedFallback = mergeCatalog(fallbackCatalog);
+        catalogEntriesCache.registryMtimeMs = registryMtimeMs;
+        catalogEntriesCache.expiresAt = Number.POSITIVE_INFINITY;
+        catalogEntriesCache.source = 'fallback';
+        catalogEntriesCache.data = mergedFallback;
+        return mergedFallback;
     }
 
     const query = `
@@ -2887,10 +2940,20 @@ async function loadCatalogEntries() {
     try {
         const result = await pool.query(query);
         const dbCatalog = result.rows.map(normalizeApiRow);
-        return mergeCatalog(dbCatalog.length ? dbCatalog : fallbackCatalog);
+        const mergedCatalog = mergeCatalog(dbCatalog.length ? dbCatalog : fallbackCatalog);
+        catalogEntriesCache.registryMtimeMs = registryMtimeMs;
+        catalogEntriesCache.expiresAt = Date.now() + CATALOG_CACHE_TTL_MS;
+        catalogEntriesCache.source = dbCatalog.length ? 'database' : 'fallback';
+        catalogEntriesCache.data = mergedCatalog;
+        return mergedCatalog;
     } catch (error) {
         console.error('Catalog load failed:', error.message);
-        return mergeCatalog(fallbackCatalog);
+        const mergedFallback = mergeCatalog(fallbackCatalog);
+        catalogEntriesCache.registryMtimeMs = registryMtimeMs;
+        catalogEntriesCache.expiresAt = Number.POSITIVE_INFINITY;
+        catalogEntriesCache.source = 'fallback';
+        catalogEntriesCache.data = mergedFallback;
+        return mergedFallback;
     }
 }
 
