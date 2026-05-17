@@ -68,7 +68,12 @@ EOF
 
 ### 6. Start Server with PM2
 
+server.js is the only supported runtime entrypoint for this project. Do not deploy or restart legacy server variants for the live app.
+
 ```bash
+# Optional preflight: if this returns healthy, stop the old process before restarting
+curl http://127.0.0.1:3000/api/health
+
 npm install -g pm2
 pm2 start server.js --name "cintent-platform"
 pm2 save
@@ -107,7 +112,8 @@ curl http://localhost:3000/api/health
 
 **Port in use?**
 ```bash
-pm2 kill
+curl http://127.0.0.1:3000/api/health
+pm2 delete cintent-platform
 pm2 start server.js --name "cintent-platform"
 ```
 

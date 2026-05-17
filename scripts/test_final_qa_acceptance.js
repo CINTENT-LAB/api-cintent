@@ -14,6 +14,18 @@ async function request(path, options = {}, jar = {}) {
   return { response, body, headers: response.headers };
 }
 
+async function acceptLicense(jar) {
+  const view = await request('/api/license/view', { method: 'POST' }, jar);
+  assert.equal(view.response.status, 200, 'license policy view should be tracked');
+
+  const accept = await request('/api/license/accept', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'acknowledgedReview=true'
+  }, jar);
+  assert.equal(accept.response.status, 200, 'license acceptance should succeed');
+}
+
 const domains = [
   { domain: 'healthcare', app: 'smart-hospital', workflow: 'ICU patient flow orchestration', simulation: 'hospital-operations', prompt: 'Build a smart hospital workflow with telemetry and replay.' },
   { domain: 'drone', app: 'chaxu', workflow: 'UAV swarm mission orchestration', simulation: 'drone-fleet-coordination', prompt: 'Build UAV swarm orchestration.' },
@@ -47,6 +59,7 @@ async function main() {
   const sandbox = await request('/sandbox', {}, jar);
   assert([200, 302].includes(sandbox.response.status), 'sandbox should initialize without credentials');
   assert(jar.cookie, 'sandbox should set isolated session cookie');
+  await acceptLicense(jar);
 
   const health = await request('/api/health', {}, jar);
   assert.equal(health.response.status, 200);

@@ -43,6 +43,8 @@ The app exposes:
 
    `npm start`
 
+   `server.js` is the only supported runtime entrypoint for deployment.
+
 6. Set Node version:
 
    Node.js 18+ recommended.
@@ -63,12 +65,14 @@ The app exposes:
 
    `https://api-cintent.cognivantalabs.com/health`
 
+   If a restart fails because port `3000` is still occupied, stop the existing process first and retry the start command.
+
    Expected response:
 
    ```json
    {
-     "status": "ok",
-     "service": "api-cintent-platform"
+     "status": "healthy",
+     "version": "2.0.0"
    }
    ```
 

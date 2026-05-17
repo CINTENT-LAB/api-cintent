@@ -17,12 +17,25 @@ async function request(path, options = {}) {
   return { response, payload, headers: response.headers };
 }
 
+async function acceptLicense(authHeaders) {
+  const view = await request('/api/license/view', { method: 'POST', headers: authHeaders });
+  assert.equal(view.response.status, 200, 'license policy view should be tracked');
+
+  const accept = await request('/api/license/accept', {
+    method: 'POST',
+    headers: { ...authHeaders, 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'acknowledgedReview=true'
+  });
+  assert.equal(accept.response.status, 200, 'license acceptance should succeed');
+}
+
 async function main() {
   const login = await request('/api/auth/demo', { method: 'POST', body: JSON.stringify({}) });
   assert.equal(login.response.status, 200, 'demo bypass should create an auditable sandbox session');
   const cookie = login.headers.get('set-cookie');
   assert(cookie, 'demo bypass should set an authenticated session cookie');
   const authHeaders = { Cookie: cookie };
+  await acceptLicense(authHeaders);
 
   const ux = await request('/api/enterprise-ux/status?domain=drone&application=CHAXU', { headers: authHeaders });
   assert.equal(ux.response.status, 200, 'enterprise UX status endpoint should be available');

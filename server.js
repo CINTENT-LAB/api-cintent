@@ -33,6 +33,7 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
+app.set('trust proxy', 1);
 
 // Database connection
 const databaseSslEnabled = /^true$/i.test(process.env.DB_SSL || process.env.DATABASE_SSL || '');
@@ -1095,21 +1096,34 @@ function buildToken(payload, expiresIn = JWT_EXPIRES_IN) {
     return jwt.sign(payload, JWT_SECRET, { expiresIn });
 }
 
-function sendSessionCookie(res, token, expiresIn = JWT_EXPIRES_IN) {
+function requestUsesSecureTransport(req) {
+    if (!req) return false;
+    if (req.secure) return true;
+    const forwardedProto = req.headers['x-forwarded-proto'];
+    return typeof forwardedProto === 'string' && forwardedProto.split(',')[0].trim().toLowerCase() === 'https';
+}
+
+function setHtmlResponseHeaders(res) {
+    res.type('html');
+    res.setHeader('Content-Disposition', 'inline');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+}
+
+function sendSessionCookie(req, res, token, expiresIn = JWT_EXPIRES_IN) {
     const maxAge = expiresIn === DEMO_EXPIRES_IN ? 1000 * 60 * 60 : 1000 * 60 * 60 * 2;
     res.cookie(COOKIE_NAME, token, {
         httpOnly: true,
         sameSite: 'Lax',
-        secure: NODE_ENV === 'production',
+        secure: requestUsesSecureTransport(req),
         maxAge
     });
 }
 
-function clearSessionCookie(res) {
+function clearSessionCookie(req, res) {
     res.cookie(COOKIE_NAME, '', {
         httpOnly: true,
         sameSite: 'Lax',
-        secure: NODE_ENV === 'production',
+        secure: requestUsesSecureTransport(req),
         maxAge: 0
     });
 }
@@ -2341,16 +2355,25 @@ app.use(express.json({ limit: HARDENING_POLICY.maxJsonBytes }));
 app.use(express.urlencoded({ extended: true }));
 app.use(idempotencyMiddleware);
 
+const loginHtmlPath = path.join(__dirname, 'public', 'login.html');
 const prodHtmlPath = path.join(__dirname, 'public', 'CINTENT-PLATFORM-PROD.html');
+const adminHtmlPath = path.join(__dirname, 'public', 'CINTENT-ADMIN-GOVERNANCE-CONSOLE.html');
+
+function sendHtmlFile(res, filePath) {
+    setHtmlResponseHeaders(res);
+    res.sendFile(filePath);
+}
+
 function sendProdPage(res, bootstrap = null) {
     let html = fs.readFileSync(prodHtmlPath, 'utf8');
     if (!html.includes('<script src="/dynamic-metadata.js"></script>')) {
         html = html.replace('</body>', '  <script src="/dynamic-metadata.js"></script>\n</body>');
     }
     if (bootstrap) {
-        const safeBootstrap = JSON.stringify(bootstrap).replace(/</g, '\\u003c');
-        html = html.replace('</head>', `<script>window.__CINTENT_BOOTSTRAP__=${safeBootstrap};</script>\n</head>`);
+        const safeBootstrap = JSON.stringify(bootstrap).replace(/</g, '\u003c');
+        html = html.replace('</head>', '<script>window.__CINTENT_BOOTSTRAP__=' + safeBootstrap + ';</script>\n</head>');
     }
+    setHtmlResponseHeaders(res);
     res.send(html);
 }
 
@@ -2780,6 +2803,7 @@ function applySessionPolicy(api, user) {
     const executableProduction = canExecuteApi(api, user, 'production-preview');
     return {
         ...api,
+        id: api.id || api.api_key,
         domain_key: api.domain_key || domainKeyForApi(api),
         domain_status: api.domain_status || (getDomainRoadmap().find(domain => domain.domain_key === (api.domain_key || domainKeyForApi(api))) || {}).status || 'operational',
         access_policy: {
@@ -2804,6 +2828,7 @@ function applySessionPolicy(api, user) {
 
 function normalizeApiRow(row) {
     return {
+        id: row.id || row.api_key,
         api_key: row.api_key,
         domain_key: row.domain_key,
         name: row.name,
@@ -2833,8 +2858,17 @@ function normalizeApiRow(row) {
 }
 
 async function loadCatalogEntries() {
+    const fallbackCatalog = getFallbackCatalog();
+    const registry = loadMetadataRegistry();
+    const registryApis = Array.isArray(registry.apis) ? registry.apis : [];
+    const mergeCatalog = (catalogEntries) => {
+        const merged = new Map((catalogEntries || []).map(api => [api.api_key, api]));
+        registryApis.forEach(api => merged.set(api.api_key, { ...merged.get(api.api_key), ...api }));
+        return Array.from(merged.values()).map(enrichMetadata);
+    };
+
     if (!dbEnabled) {
-        return getFallbackCatalog();
+        return mergeCatalog(fallbackCatalog);
     }
 
     const query = `
@@ -2850,13 +2884,14 @@ async function loadCatalogEntries() {
         LEFT JOIN api_categories c ON am.category_id = c.id
     `;
 
-    const result = await pool.query(query);
-    const dbCatalog = result.rows.map(normalizeApiRow);
-    const registry = loadMetadataRegistry();
-    const registryApis = Array.isArray(registry.apis) ? registry.apis : [];
-    const merged = new Map(dbCatalog.map(api => [api.api_key, api]));
-    registryApis.forEach(api => merged.set(api.api_key, { ...merged.get(api.api_key), ...api }));
-    return Array.from(merged.values()).map(enrichMetadata);
+    try {
+        const result = await pool.query(query);
+        const dbCatalog = result.rows.map(normalizeApiRow);
+        return mergeCatalog(dbCatalog.length ? dbCatalog : fallbackCatalog);
+    } catch (error) {
+        console.error('Catalog load failed:', error.message);
+        return mergeCatalog(fallbackCatalog);
+    }
 }
 
 function searchApiCatalog(catalog, filters) {
@@ -2864,21 +2899,30 @@ function searchApiCatalog(catalog, filters) {
     const query = String(q || '').trim().toLowerCase();
     const queryTerms = tokenizeQuery(query);
     return catalog.filter(api => {
-        const matchesDomain = !domain || api.category_name === domain || api.category_name.toLowerCase() === domain.toLowerCase() || api.capabilities.some(cap => cap.toLowerCase() === domain.toLowerCase());
-        const matchesStage = !stage || api.status_name === stage || api.lifecycle_state === stage;
-        const matchesGovernance = governance ? api.capabilities.some(cap => cap.toLowerCase().includes('governance')) || api.governance_support : true;
-        const matchesReplay = replay ? api.replay_support || api.capabilities.some(cap => cap.toLowerCase().includes('replay')) : true;
+        const capabilities = Array.isArray(api.capabilities) ? api.capabilities : [];
+        const tags = Array.isArray(api.tags) ? api.tags : [];
+        const endpoints = Array.isArray(api.endpoints) ? api.endpoints : [];
+        const categoryName = String(api.category_name || '');
+        const statusName = String(api.status_name || '');
+        const lifecycleState = String(api.lifecycle_state || '');
+        const matchesDomain = !domain
+            || categoryName === domain
+            || categoryName.toLowerCase() === domain.toLowerCase()
+            || capabilities.some(cap => String(cap || '').toLowerCase() === domain.toLowerCase());
+        const matchesStage = !stage || statusName === stage || lifecycleState === stage;
+        const matchesGovernance = governance ? capabilities.some(cap => String(cap || '').toLowerCase().includes('governance')) || api.governance_support : true;
+        const matchesReplay = replay ? api.replay_support || capabilities.some(cap => String(cap || '').toLowerCase().includes('replay')) : true;
         const matchesSdk = sdk ? (Array.isArray(api.sdk_languages) ? api.sdk_languages.includes(sdk) : false) : true;
-        const matchesLifecycle = lifecycle ? api.lifecycle_state === lifecycle : true;
+        const matchesLifecycle = lifecycle ? lifecycleState === lifecycle : true;
         const haystack = [
             api.name,
             api.short_description,
             api.full_description,
-            api.tags.join(' '),
-            api.capabilities.join(' '),
-            api.category_name,
-            api.status_name,
-            api.lifecycle_state,
+            tags.join(' '),
+            capabilities.join(' '),
+            categoryName,
+            statusName,
+            lifecycleState,
             api.operational_notes,
             api.rag_context,
             JSON.stringify(api.replay_examples || []),
@@ -2891,7 +2935,7 @@ function searchApiCatalog(catalog, filters) {
             JSON.stringify(api.protocols_supported || []),
             JSON.stringify(api.ecosystem_compatibility || []),
             JSON.stringify(api.regulatory_alignment || []),
-            (api.endpoints || []).map(e => `${e.method} ${e.path} ${JSON.stringify(e.request_schema)} ${JSON.stringify(e.response_schema)}`).join(' ')
+            endpoints.map(e => `${e.method} ${e.path} ${JSON.stringify(e.request_schema)} ${JSON.stringify(e.response_schema)}`).join(' ')
         ].join(' ').toLowerCase();
         const matchesQuery = !queryTerms.length || queryTerms.some(token => haystack.includes(token));
         return matchesDomain && matchesStage && matchesGovernance && matchesReplay && matchesSdk && matchesLifecycle && matchesQuery;
@@ -8308,7 +8352,7 @@ function redirectToPlatformIfAuthenticated(req, res, next) {
 }
 
 function sendLoginPage(res) {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+    sendHtmlFile(res, loginHtmlPath);
 }
 
 app.use((req, res, next) => {
@@ -8328,9 +8372,9 @@ app.use((req, res, next) => {
         if (req.path === '/CINTENT-PLATFORM-PROD.html' || req.path === '/CINTENT-DEVELOPER-PLATFORM-V2.html') {
             return sendProdPage(res);
         }
-        return res.sendFile(path.join(__dirname, 'public', 'CINTENT-ADMIN-GOVERNANCE-CONSOLE.html'));
+        return sendHtmlFile(res, adminHtmlPath);
     } catch (error) {
-        clearSessionCookie(res);
+        clearSessionCookie(req, res);
         return res.redirect('/login');
     }
 });
@@ -8339,7 +8383,12 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, 'public'), {
     maxAge: '1d',
     etag: false,
-    immutable: true
+    immutable: true,
+    setHeaders: (res, filePath) => {
+        if (path.extname(filePath).toLowerCase() === '.html') {
+            setHtmlResponseHeaders(res);
+        }
+    }
 }));
 
 
@@ -8385,7 +8434,7 @@ app.get('/sandbox', (req, res) => {
         sandboxExpiresAt: sandbox.expiresAt,
         emailVerified: true
     }, DEMO_EXPIRES_IN);
-    sendSessionCookie(res, token, DEMO_EXPIRES_IN);
+    sendSessionCookie(req, res, token, DEMO_EXPIRES_IN);
     recordTrace('sandbox.session.created', { tenant: sandbox.tenant, sessionId: sandbox.id, role: sandbox.role, sandbox: true, demo: true }, sandbox.preload, {
         summary: 'Anonymous sandbox session created with a one-hour TTL and a preloaded drone workflow.'
     });
@@ -8399,7 +8448,7 @@ app.get('/sandbox', (req, res) => {
 });
 app.get('/platform', authMiddleware, (req, res) => sendProdPage(res));
 app.get('/admin', authMiddleware, requireRoles('admin'), (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'CINTENT-ADMIN-GOVERNANCE-CONSOLE.html'));
+    sendHtmlFile(res, adminHtmlPath);
 });
 app.get('/CINTENT-PLATFORM-PROD.html', authMiddleware, (req, res) => sendProdPage(res));
 
@@ -9323,7 +9372,7 @@ app.post('/api/auth/login', async (req, res) => {
         demo: false,
         emailVerified: true
     });
-    sendSessionCookie(res, token);
+    sendSessionCookie(req, res, token);
     res.json({ message: 'Authenticated successfully.', user: { email: user.email, name: user.name, role: user.role, tenant: user.tenant } });
 });
 
@@ -9351,8 +9400,8 @@ app.post('/api/auth/demo', (req, res) => {
         demo: true,
         emailVerified: true
     }, DEMO_EXPIRES_IN);
-    sendSessionCookie(res, token, DEMO_EXPIRES_IN);
-    res.json({ message: 'Demo Mode enabled. Welcome to CINTENT Demo.', demo: true, user: { name: demoUser.name, role: demoUser.role, tenant: demoUser.tenant, demo: true } });
+    sendSessionCookie(req, res, token, DEMO_EXPIRES_IN);
+    res.json({ message: 'Demo Mode enabled. Welcome to CINTENT Demo.', demo: true, user: { email: demoUser.email, name: demoUser.name, role: demoUser.role, tenant: demoUser.tenant, demo: true } });
 });
 
 app.post('/api/auth/forgot-password', async (req, res) => {
@@ -9388,7 +9437,7 @@ app.post('/api/auth/reset-password', async (req, res) => {
 });
 
 app.post('/api/auth/logout', (req, res) => {
-    clearSessionCookie(res);
+    clearSessionCookie(req, res);
     res.json({ message: 'Logged out successfully.' });
 });
 
@@ -13547,7 +13596,9 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const server = app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0');
+
+server.on('listening', () => {
     refreshDatabaseState().then(state => {
         if (state.connected) {
             console.log(`PostgreSQL connected as ${state.currentUser} to ${state.currentDatabase}`);
@@ -13556,26 +13607,34 @@ const server = app.listen(PORT, '0.0.0.0', () => {
         }
     });
     console.log(`
-╔═════════════════════════════════════════════════════════╗
-║  CINTENT Developer Platform v2                         ║
-║  Server running on port ${PORT}                        ║
-║  Environment: ${NODE_ENV.toUpperCase()}${' '.repeat(32 - NODE_ENV.length)}║
-╚═════════════════════════════════════════════════════════╝
+?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+???  CINTENT Developer Platform v2                         ???
+???  Server running on port ${PORT}                        ???
+???  Environment: ${NODE_ENV.toUpperCase()}${' '.repeat(32 - NODE_ENV.length)}???
+?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 
-✅ Frontend:
-   • Platform: http://localhost:${PORT}/
-   • Admin: http://localhost:${PORT}/admin
+??? Frontend:
+   ??? Platform: http://localhost:${PORT}/
+   ??? Admin: http://localhost:${PORT}/admin
 
-✅ API:
-   • Health: http://localhost:${PORT}/api/health
-   • Status: http://localhost:${PORT}/api/status
-   • Docs: http://localhost:${PORT}/docs
+??? API:
+   ??? Health: http://localhost:${PORT}/api/health
+   ??? Status: http://localhost:${PORT}/api/status
+   ??? Docs: http://localhost:${PORT}/docs
 
-📍 Hostinger Subdomain:
-   • https://api-cintent.cognivantalabs.com
+???? Hostinger Subdomain:
+   ??? https://api-cintent.cognivantalabs.com
 
-🚀 Ready for connections...
+???? Ready for connections...
     `);
+});
+
+server.on('error', (error) => {
+    if (error && error.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use. Stop the existing process on http://localhost:${PORT} or set a different PORT before restarting CINTENT.`);
+        process.exit(1);
+    }
+    throw error;
 });
 
 process.on('SIGTERM', () => {

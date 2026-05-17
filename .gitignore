@@ -15,6 +15,7 @@ redis-data/
 tmp/
 .cache/
 .cintent-runtime/
+audit-evidence/
 
 .DS_Store
 Thumbs.db

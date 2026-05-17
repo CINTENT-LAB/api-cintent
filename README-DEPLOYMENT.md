@@ -17,8 +17,8 @@
 
 ### Backend Files (Ready to Deploy)
 ```
-✅ SIMPLE-SERVER.js                           Express.js server (copy as server.js)
-✅ CINTENT-NODE-SERVER.js                     Extended version with more endpoints
+✅ server.js                                  Canonical Express.js runtime
+✅ public/                                    Login, platform, and admin UI assets
 ✅ package.json                               NPM dependencies and scripts
 ```
 
@@ -70,7 +70,7 @@
 /your-project-root/
 ├── CINTENT-DEVELOPER-PLATFORM-V2.html           (In public/ folder)
 ├── CINTENT-ADMIN-GOVERNANCE-CONSOLE.html        (In public/ folder)
-├── server.js                                     (Copy from SIMPLE-SERVER.js)
+├── server.js                                     (Canonical runtime entrypoint)
 ├── package.json
 ├── .env                                          (Create locally, don't commit)
 ├── .gitignore
